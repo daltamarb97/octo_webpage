@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "adpool-d592d": {
+      "hosting": {
+        "material": [
+          "adpool-d592d"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "adpool-d592d"
+  }
+}

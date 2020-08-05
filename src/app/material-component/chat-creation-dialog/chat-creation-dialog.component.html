@@ -1,0 +1,30 @@
+<h1 mat-dialog-title>Configuración de sala de chat</h1>
+<div mat-dialog-content *ngIf="action != 'delete'; else elseTemplate">
+  <mat-form-field>
+    <input type="text" placeholder="Nombre de la sala de chat" matInput [(ngModel)]="local_data.name">
+  </mat-form-field>
+
+<mat-form-field>
+    <input type="text" placeholder="Descrpción de la sala de chat" matInput [(ngModel)]="local_data.description">
+  </mat-form-field>
+
+<mat-form-field>
+    <mat-label>Participantes</mat-label>
+    <mat-select [(ngModel)]="local_data.participants" multiple>
+      <mat-option *ngFor="let res of residentsList" [value]="res">{{res.name}} {{res.lastname}} ({{res.property}}{{res.job}})</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancelar</button>
+    <button mat-button mat-flat-button color="warn" (click)="createChatRoom()">Continuar</button>
+  </div>
+</div>
+
+<ng-template #elseTemplate>
+  ¿Estás seguro de eliminar esta sala de chat?
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancelar</button>
+    <button mat-button mat-flat-button color="warn" (click)="deleteChatRoom()">Eliminar</button>
+  </div>
+</ng-template>

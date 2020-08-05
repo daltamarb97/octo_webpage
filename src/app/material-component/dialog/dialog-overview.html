@@ -1,0 +1,57 @@
+<div mat-dialog-content>
+  <div *ngIf="action === 'Update' || action === 'Add'">
+
+      <mat-form-field>
+          <input type="number" placeholder="apto/oficina/casa" matInput [(ngModel)]="local_data.facility_number">
+        </mat-form-field>
+      
+        <mat-form-field>
+          <input type="email" placeholder="email asociado" matInput [(ngModel)]="local_data.email">
+        </mat-form-field>
+      
+        <mat-form-field>
+          <input type="number" placeholder="telefono asociado" matInput [(ngModel)]="local_data.phone">
+        </mat-form-field>
+      
+        <mat-form-field>
+          <input type="number" placeholder="cédula del residente" matInput [(ngModel)]="local_data.legal_id">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input type="number" placeholder="valor de cuota admin" matInput [(ngModel)]="local_data.amount_to_pay">
+        </mat-form-field>
+  </div>
+
+
+  <div *ngIf="action === 'Payment'">
+
+      <p>Valor actual pendiente por pagar: <b>{{local_data.pending_to_pay | currency}}</b></p>
+    
+      <mat-form-field>
+        <input type="number" placeholder="Monto del abono realizado" matInput [(ngModel)]="local_data.payment">
+      </mat-form-field>
+</div>
+
+
+  <div *ngIf="action==='Delete'">
+    ¿Estás seguro de eliminar la información del apto/oficina/casa: <b>{{local_data.facility_number}}</b>?
+  </div>
+</div>
+
+<!-- buttons footer -->
+
+<div mat-dialog-actions *ngIf="action === 'Update' || action === 'Add'">
+  <button mat-button (click)="doAction()">Enviar</button>
+  <button mat-button (click)="closeDialog()" mat-flat-button color="warn">Cancel</button>
+</div>
+
+<div mat-dialog-actions *ngIf="action === 'Payment'">
+  <button mat-button style="color: green;" (click)="doAction()" mat-flat-button>Confirmar Pago</button>
+  <button mat-button (click)="closeDialog()" mat-flat-button color="warn">Cancel</button>
+</div>
+
+<div mat-dialog-actions *ngIf="action==='Delete'">
+  <button mat-button (click)="doAction()">Eliminar</button>
+  <button mat-button (click)="closeDialog()" mat-flat-button color="warn">Cancel</button>
+</div>
+

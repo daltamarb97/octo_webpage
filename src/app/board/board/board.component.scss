@@ -1,0 +1,49 @@
+.first-button {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}   
+
+.main-content{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card {
+    max-width: 30%;
+    min-width: 30%;
+    max-height: 40%;
+}
+
+.header{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.content{
+    display: flex;
+    justify-content: center;
+    border-bottom:  0.2px solid #c9c8c7;
+    margin-bottom: 0px;
+}
+
+.buttons{
+    display: flex;
+    justify-content: center;
+
+    button{
+        margin-bottom: 10px;
+    }
+}
+    .truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+.content {
+        width:100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }

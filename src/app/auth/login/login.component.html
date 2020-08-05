@@ -1,0 +1,31 @@
+<div class="login-wrapper" fxLayout="row" fxLayoutAlign="center center">
+
+        <mat-card class="box">
+          <mat-card-header>
+            <mat-card-title>Inicia Sesión</mat-card-title>
+          </mat-card-header>
+      
+            <mat-card-content>
+              <form class="example-form" [formGroup]="loginForm" (ngSubmit)="logIn($event)">
+                <mat-form-field class="example-full-width">
+                    <mat-label>Email de administración</mat-label>
+                    <input matInput type="email" formControlName="email">
+                </mat-form-field>
+      
+                <mat-form-field class="example-full-width">
+                    <mat-label>Contraseña</mat-label>
+                    <input matInput type="password" formControlName="password">
+                </mat-form-field>
+                
+                <button mat-stroked-button [disabled]="loginForm.invalid" color="accent" class="btn-block">Ingresar</button>
+              </form>
+            </mat-card-content>
+            
+
+          <mat-card-actions style="justify-content: space-around;">
+            <p>¿Aún no tienes cuenta? <a [routerLink]="['/auth', 'signup']"><span style="color:primary">Regístrate Aquí</span></a></p>
+            <p><a [routerLink]="['/auth', 'pass-reset']"><span style="color:primary">¿Olvidaste tu contraseña?</span></a></p>
+          </mat-card-actions>
+        </mat-card>
+      
+      </div>

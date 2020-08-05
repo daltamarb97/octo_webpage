@@ -1,0 +1,31 @@
+<div mat-dialog-content *ngIf="action == 'doorman'; else elseTemplate">
+
+    <mat-form-field>
+        <input type="email" placeholder="email para la cuenta portería" matInput [(ngModel)]="local_data.email">
+    </mat-form-field>
+
+    <mat-form-field>
+        <input type="text" placeholder="contraseña para la cuenta de portería" matInput [(ngModel)]="local_data.password">
+    </mat-form-field>
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancelar</button>
+    <button mat-button mat-flat-button color="warn" (click)="createDoormanAccount()">Crear Cuenta de Portería</button>
+  </div>
+</div>
+
+<ng-template #elseTemplate>
+  Copia y pega este link en tu navegador de internet para pagar la mensualidad de Admos.
+  Cada mes se actualiza el link.
+    <section class="payment-input">
+        <mat-form-field>
+            <mat-label>Link de Pago</mat-label>
+            <input [(ngModel)]="local_data.paymentLink" matInput readonly>
+        </mat-form-field>
+        
+        <button mat-stroked-button color='primary' (click)="copyMessage()">Copiar</button>
+    </section>
+    <div mat-dialog-actions>
+        <button mat-button (click)="onNoClick()">Salir</button>
+    </div>
+</ng-template>

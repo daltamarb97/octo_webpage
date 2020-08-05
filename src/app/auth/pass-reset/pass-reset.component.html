@@ -1,0 +1,34 @@
+<div class="login-wrapper" fxLayout="row" fxLayoutAlign="center center" *ngIf="showInput == true">
+
+    <mat-card class="box">
+        <mat-card-header>
+        <mat-card-title>Recuperación de contraseña</mat-card-title>
+        </mat-card-header>
+    
+        <mat-card-content>
+            <form class="example-form" [formGroup]="passResetForm" (ngSubmit)="resetPass()">
+                <mat-form-field class="example-full-width">
+                    <mat-label>Email con el que te registraste</mat-label>
+                    <input matInput type="email" formControlName="email">
+                </mat-form-field>
+                
+                <button mat-stroked-button [disabled]="passResetForm.invalid" color="accent" class="btn-block">Recuperar</button>
+            </form>
+        </mat-card-content>
+        
+
+        <mat-card-actions style="justify-content: space-around;">
+        <p>¿Ya tienes cuenta? <a [routerLink]="['/auth']"><span style="color:primary">Inicia Sesión Aquí</span></a></p>
+        </mat-card-actions>
+    </mat-card>
+</div>
+
+
+<div class="login-wrapper" fxLayout="row" fxLayoutAlign="center center" *ngIf="showInput == false">
+    <mat-card class="box">
+            <mat-card-header>
+            <mat-card-title style="margin-bottom: 10px;">Revisa tu email</mat-card-title>
+            <mat-card-subtitle>Te hemos enviado un link a tu email en dónde podrás recuperar tu contraseña</mat-card-subtitle>
+            </mat-card-header>
+    </mat-card>
+</div>
