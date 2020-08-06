@@ -48,19 +48,11 @@ export class ChatCreationDialogComponent {
 
   private  getBuidlingResidentsAndEmployees(buildingId){
     // list of residents and employees
-    this.fetchData.getBuidlingResidents(buildingId)
+    this.fetchData.getCompanyEmployees(buildingId)
     .subscribe((resData)=>{
       resData.map(r => {
         const res = r.payload.doc.data();
         this.residentsList.push(res);
-      })
-    });
-
-    this.fetchData.getBuidlingEmployees(buildingId)
-    .subscribe((empData)=>{
-      empData.map(e => {
-        const emp = e.payload.doc.data();
-        this.residentsList.push(emp);
       })
     });
   }

@@ -1,131 +1,86 @@
 
-<!-- <div class="main-content">
-    <mat-card class="card" *ngFor="let item of announcementList ; let i = index">
-        <mat-card-header class="header"  [ngStyle]="{'background-color': item.colorHeader}">
-            <mat-card-subtitle style="color: white">
-                {{item.timestamp.toDate() | date }}
-            </mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content class="content">
-            <p>{{item.title}}</p>
-        </mat-card-content>
-        <mat-card-actions class="buttons">
-            <button mat-button (click)="viewAnnouncementBody(item, i)">ver anuncio completo</button>
-        </mat-card-actions>
-    </mat-card>
-</div> -->
-<!-- --------------------------------------------------------- -->
-
-<!-- ----------------------------------------------------------- -->
-    <!-- Card column -->
-    <!-- <div fxFlex.gt-lg="75" fxFlex.gt-md="60" fxFlex.gt-xs="100" fxFlex="100"> -->
         <mat-card>
             <div class="p-20 bg-info position-relative">
-                <h4 class="card-title text-white m-0">Anuncios</h4>
-                <h6 class="card-subtitle text-white m-0 op-5">Estos son los anuncios publicados para la comunidad {{buildingInfo.name}}</h6>
+                <h4 class="card-title text-white m-0">Tareas</h4>
+                <h6 class="card-subtitle text-white m-0 op-5">Estas son las tareas publicadas para $Tu empresa</h6>
             </div>
             
-<!-- <div class="example-button-container">
-    <button (click)="creationAnnouncement()" mat-fab  aria-label="Example icon button with a home icon">
-      <mat-icon>add</mat-icon>
-    </button>
-  </div> -->
             <mat-tab-group>
                 <!-- Tab 1 -->
-                <mat-tab label="Publicados">
+                <mat-tab label="Todas las tareas">
                     <mat-card-content>
-                        <div class="d-flex no-blcok" *ngFor="let item of announcementList ; let i = index">
+                        <div class="d-flex no-blcok" *ngFor="let item of taskList ; let i = index">
                             <div class="m-r-20">
                                 <img class="img-circle" width="50" src="assets/images/users/1.jpg" alt="Image"> </div>
                             <div class="p-b-20 b-b m-b-30">
-                                <h4 class="m-0">{{item.title}}
-                                    <small class="text-muted">{{item.timestamp.toDate() | date }}</small>
-                                </h4>
-                                <p class="text-muted" >{{item.body.length}}</p>
-
-                                <p class="text-muted" >{{(item.body.length>50)? (item.body | slice:0:260)+'..':(item.body)}}</p>
-
-                                    <!-- <div fxFlex.gt-sm="20" fxFlex="100">
-                                        <img class="img-responsive rounded" src="assets/images/big/img2.jpg" alt="Image">
-                                    </div> -->
-                                        <button mat-button (click)="viewAnnouncementBody(item, i)">ver anuncio completo</button>
+                                <h4 class="m-0">{{item.title | titlecase}}</h4>
+                                <p >Asignada a: <span class="text-muted"> Nombre de persona</span></p>
+                                <p >Fecha de entrega: <span class="text-muted"> {{item.timestamp.toDate() | date }}</span></p>
+                                <button mat-raised-button color="primary" (click)="viewAnnouncementBody(item, i)">ver detalles</button>
                             </div>
                         </div>
-                         <div class="d-flex no-blcok">
-                            <div class="m-r-20">
-                                <img class="img-circle" width="50" src="assets/images/users/2.jpg" alt="Image"> </div>
-                            <div class="p-b-20 b-b m-b-30">
-                                <h4 class="m-0">Sunil joshi
-                                    <small class="text-muted">(3 minute ago)</small>
-                                </h4>
-                                <p class="text-muted">
-                                    
-                                    libero.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.</p>
-                                <button mat-raised-button color="primary">Check Now</button>
-                            </div>
-                        </div>
-                      <!--  <div class="d-flex no-blcok">
-                            <div class="m-r-20">
-                                <img class="img-circle" width="50" src="assets/images/users/3.jpg" alt="Image"> </div>
-                            <div class="p-b-20 b-b m-b-30">
-                                <h4 class="m-0">Vishal Bhatt
-                                    <small class="text-muted">(1 minute ago)</small>
-                                </h4>
-                                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.</p>
-                                <div fxLayout="row wrap">
-                                    <div fxFlex.gt-sm="20" fxFlex="100">
-                                        <img class="img-responsive rounded" src="assets/images/big/img1.jpg" alt="Image">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex no-blcok">
-                            <div class="m-r-20">
-                                <img class="img-circle" width="50" src="assets/images/users/4.jpg" alt="Image"> </div>
-                            <div class="p-b-20 b-b m-b-30">
-                                <h4 class="m-0">Dhiren Adesara
-                                    <small class="text-muted">(1 minute ago)</small>
-                                </h4>
-                                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.</p>
-                                <button mat-raised-button color="warn">Check Now</button>
-                            </div>
-                        </div> -->
                     </mat-card-content>
                 </mat-tab>
-                <!-- End Tab 1 -->
-                <!-- Tab 2 -->
-                <mat-tab label="Profile">
+                <!-- end tab 1 -->
+                <!-- tab 2 -->
+                <mat-tab label="Asignadas a mi">
                     <mat-card-content>
-                        <mat-card-title>Crear Anuncio</mat-card-title>
+                        <div class="d-flex no-blcok" *ngFor="let item of taskListPersonal ; let i = index">
+                            <div class="m-r-20">
+                                <img class="img-circle" width="50" src="assets/images/users/1.jpg" alt="Image"> </div>
+                            <div class="p-b-20 b-b m-b-30">
+                                <h4 class="m-0">{{item.title}}</h4>
+                                <p >Fecha de entrega: <span class="text-muted"> {{item.timestamp.toDate() | date }}</span></p>
+                                <button mat-button (click)="viewAnnouncementBody(item, i)">ver detalles</button>
+                            </div>
+                        </div>
+                    </mat-card-content>
+                </mat-tab>
+                <!-- end tab 2 -->
+                <!-- Tab 3 -->
+                <mat-tab label="Crear tarea">
+                    <mat-card-content>
+                        <mat-card-title>Crear Tarea</mat-card-title>
                         <!-- ============================================================== -->
                         <!-- column -->
                         <!-- ============================================================== -->
-                        <form class="basic-form">
+                        <form class="basic-form" [formGroup]="taskForm" (ngSubmit)="createAnnouncement()">
                             <div fxLayout="row wrap">
                                 <!-- column -->
                                 <div fxFlex.gt-sm="100" fxFlex="100">
                                     <mat-form-field>
-                                        <input [(ngModel)]="title" [ngModelOptions]="{standalone: true}" matInput placeholder="Título">
+                                        <input formControlName="title" matInput placeholder="Título">
                                     </mat-form-field>
                                 </div>
                                 <!-- column -->
-                               
-                              
-
-                            
 
                                 <!-- column -->
                                 <div fxFlex.gt-sm="100" fxFlex="100">
                                     <mat-form-field>
-                                        <textarea [(ngModel)]="body" [ngModelOptions]="{standalone: true}" cols="1" rows="10"  matInput placeholder="Cuerpo del anuncio"></textarea>
+                                        <textarea formControlName="details" cols="1" rows="10"  matInput placeholder="Cuerpo del anuncio"></textarea>
                                     </mat-form-field>
                                 </div>
+
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Fecha de entrega</mat-label>
+                                    <input matInput [matDatepicker]="picker1" formControlName="date">
+                                    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker1></mat-datepicker>
+                                </mat-form-field>
+
+                                <mat-form-field>
+                                    <mat-label>Asignar a</mat-label>
+                                    <mat-select formControlName="assigned">
+                                      <mat-option *ngFor="let e of employeesList" [value]="e.userId">{{e.name}} {{e.lastname}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
                                 <!-- column -->
                                 <div fxFlex.gt-sm="100" fxFlex="100">
-                                    <button mat-raised-button color="primary"  (click)="createAnnouncement()">Publicar</button>
+                                    <button mat-raised-button [disabled]="taskForm.invalid" color="primary" type="submit">Publicar</button>
                                 </div>
                             </div>
                         </form>
+                        
                     </mat-card-content>
                 </mat-tab>
             </mat-tab-group>

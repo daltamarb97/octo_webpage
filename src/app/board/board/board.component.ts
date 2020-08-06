@@ -1,5 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog, MatSnackBar } from '@angular/material';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { 
+  MatDialog, 
+  MatSnackBarHorizontalPosition, 
+  MatSnackBarVerticalPosition, 
+  MatSnackBar,
+  MatTabGroup
+} from '@angular/material';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -18,35 +25,48 @@ import { BoardDialogComponent } from '../../material-component/board-dialog/boar
 
 
 
+
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss']
 })
 export class BoardComponent implements OnInit {
+  @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
+
   destroy$:  Subject<void> = new Subject();
 
   userId:string;
   buildingInfo: any;
-  announcementList: Array<any> = []; // array of announcements used in the html
+  taskList: Array<any> = []; // array of tasks used in the html
+  taskListPersonal: Array<any> = []; // array of personal tasks used in the html 
+  employeesList: Array<any> = []; // array of personal tasks used in the html 
   backColor:string; // color of header background
   listOfBacgroundColors: Array<string> = ['#ADD8E6', '#F5B6C1', '#DDBDF1', '#90EE90'];
   body:string;
   title:string;
+  taskForm: FormGroup;
+  // snack bar variables
+  horizontalPosition: MatSnackBarHorizontalPosition = 'center';
+  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
   constructor(
     public dialog: MatDialog,
+    private formBuilder: FormBuilder,
+    private _snackBar: MatSnackBar,
     // services
     private fetchData: FecthDataService,
     private setData: SetDataService,
     private deleteData: DeleteDataService,
     private holdData: HoldDataService,
-    private _snackBar: MatSnackBar,
-  ) { }
+  ) { 
+    this.buildForm();
+  }
 
   ngOnInit(): void {
     this.userId = this.holdData.userId;
     this.buildingInfo = this.holdData.buildingInfo;
     this.getAnnouncements();
+    this.getEmployees();
   }
 
 
@@ -58,41 +78,56 @@ export class BoardComponent implements OnInit {
 
   private getAnnouncements(){
     // get announcements of building
-    this.announcementList = [];
-    this.fetchData.getBoardAnnouncements(this.holdData.userInfo.buildingId)
+    this.taskList = [];
+    this.fetchData.getCompanyTasks(this.holdData.userInfo.companyId)
     .pipe(
       takeUntil(this.destroy$)
     )
     .subscribe((announcements)=>{
-      this.announcementList = announcements;
-      this.colorBackgroundChange();
+      announcements.map(a => {
+        const announcement = a.payload.doc.data();
+        this.taskList.push(announcement);
+        console.log(this.holdData.userId);
+        
+        if (announcement.assignedTo === this.holdData.userId) {
+          this.taskListPersonal.push(announcement);
+        }
+      })
     });
   }
 
-
-  private colorBackgroundChange(){
-    // change the color of the background of cards headers 
-    this.announcementList.forEach((el)=>{
-      const indexOfColor = Math.floor(Math.random()*this.listOfBacgroundColors.length);
-      el.colorHeader = this.listOfBacgroundColors[indexOfColor];
-    });
+  private getEmployees () {
+    // get employees to assign tasks
+    this.fetchData.getCompanyEmployees(this.holdData.userInfo.companyId)
+      .subscribe(empl => {
+        empl.map(e => {
+          const employee = e.payload.doc.data();
+          this.employeesList.push(employee);
+        })
+      })
   }
 
 
   createAnnouncement(){
-    console.log(this.title);
-    console.log(this.body);
+    const formValue = this.taskForm.value;
     const resultData = {
-      title: this.title,
-      body: this.body,
-      timestamp: this.holdData.convertJSDateIntoFirestoreTimestamp()
-        };
-      
-     // creation of new announcement
-     this.setData.createAnnouncement(this.holdData.userInfo.activeBuilding, resultData)
+      title: formValue.title,
+      body: formValue.details,
+      timestamp: this.holdData.convertJSCustomDateIntoFirestoreTimestamp(formValue.date),
+      assignedTo: formValue.assigned
+    };
+    
+     // creation of new task
+     this.setData.createTask(this.holdData.userInfo.companyId, resultData)
      .then(()=>{
-      // let snackBarRef = snackBar.open('Message archived');
+        this._snackBar.open('Tarea creada con exito', 'Cerrar', {
+          duration: 3000,
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+        });
 
+        this.taskForm.reset();
+        this.tabGroup.selectedIndex = 0;
      })
   }
   
@@ -122,18 +157,23 @@ export class BoardComponent implements OnInit {
 
   private updateAnnouncement(item, data){
     // edition of announcement
-    this.setData.updateAnnouncement(this.holdData.userInfo.buildingId, item.announcementId, data);
+    this.setData.updateTask(this.holdData.userInfo.companyId, item.announcementId, data);
   }
 
 
   private deleteAnnouncement(item){
     // elimination of announcement
-    this.deleteData.deleteAnnouncement(this.holdData.userInfo.buildingId, item.announcementId);
+    this.deleteData.deleteTask(this.holdData.userInfo.companyId, item.announcementId);
   }
 
+  private buildForm(){
+    // build the login in form
+    this.taskForm = this.formBuilder.group({
+      title: ['', [Validators.required]],
+      details: ['', [Validators.required]],
+      assigned: ['', [Validators.required]],
+      date: ['', [Validators.required]]
+    })
+  }
 
-  // private createAnnouncement(data){
-  //   // creation of new announcement
-  //   this.setData.createAnnouncement(this.holdData.userInfo.buildingId, data);
-  // }
 }

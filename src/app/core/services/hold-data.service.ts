@@ -24,6 +24,12 @@ export class HoldDataService {
     return time;    
   }
 
+  convertJSCustomDateIntoFirestoreTimestamp(date){
+    // translate js date into firestore date to be push
+    const time = firebase.firestore.Timestamp.fromDate(date);
+    return time;    
+  }
+
   createRandomId(){
     const id = this.db.createId();
     return id;

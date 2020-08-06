@@ -106,10 +106,10 @@ export class DeleteDataService {
 
 // BOARD SERVICES
 
-  deleteAnnouncement(buildingId:string, announcementId:string){
+  deleteTask(companyId:string, announcementId:string){
     // update body or title of the announcement
     let ref = this.db.collection('board')
-    .doc(buildingId)
+    .doc(companyId)
     .collection('announcements')
     .doc(announcementId)
 

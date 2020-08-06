@@ -11,7 +11,7 @@
 <mat-form-field>
     <mat-label>Participantes</mat-label>
     <mat-select [(ngModel)]="local_data.participants" multiple>
-      <mat-option *ngFor="let res of residentsList" [value]="res">{{res.name}} {{res.lastname}} ({{res.property}}{{res.job}})</mat-option>
+      <mat-option *ngFor="let res of residentsList" [value]="res">{{res.name}} {{res.lastname}}</mat-option>
     </mat-select>
   </mat-form-field>
 

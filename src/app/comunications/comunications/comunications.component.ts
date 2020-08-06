@@ -35,7 +35,7 @@ export class ComunicationsComponent implements OnInit {
   destroy$: Subject<void> = new Subject();
 
   userId:string;
-  buildingId:string;
+  companyId:string;
   chatRooms:Array<any> = [];  // list of names of rooms
   privateChats:Array<any> = [];  // private chats messages
   privateChatsNames:Array<any> = []; // list of names of private chats
@@ -62,7 +62,7 @@ export class ComunicationsComponent implements OnInit {
 
   ngOnInit(): void {
     this.userId = this.holdData.userId;
-    this.buildingId = this.holdData.userInfo.buildingId;
+    this.companyId = this.holdData.userInfo.companyId;
     this.getChatRoomNames();
     this.getPrivateMessages();
   }
@@ -111,6 +111,8 @@ export class ComunicationsComponent implements OnInit {
       roomId: data.roomId,
       description: data.roomDescription,
     }
+    console.log(data);
+    
     this.showRoomChats=true;
     this.showPrivateChats=false;
     this.chatMessages = []; //clear the array on click
@@ -135,7 +137,7 @@ export class ComunicationsComponent implements OnInit {
         timestamp = new Date;
      }
      this.fetchData.getMessagesFromSpecificRoom(
-      this.buildingId, 
+      this.companyId, 
       data.roomId,
       timestamp,
       limit
@@ -175,7 +177,7 @@ export class ComunicationsComponent implements OnInit {
     this.currentRoomParticipants = []; //clear the array on click
     // get participants of current room
     this.fetchData.getParticipantsFromSpecificRoom(
-      this.buildingId, 
+      this.companyId, 
       this.currentRoomData.roomId
     )
     .pipe(
@@ -190,7 +192,7 @@ export class ComunicationsComponent implements OnInit {
   }
 
   addChatRoom(){
-    const dialogRef = this.dialog.open(ChatCreationDialogComponent, {data: this.buildingId});
+    const dialogRef = this.dialog.open(ChatCreationDialogComponent, {data: this.companyId});
 
     dialogRef.afterClosed()
     .subscribe(result =>{
@@ -203,11 +205,13 @@ export class ComunicationsComponent implements OnInit {
       const participants: Array<any> = result.data.participants;
 
       this.setData.createChatRoom(
-        this.buildingId, 
+        this.companyId, 
         roomData, 
         this.userId,
         participants
       );  
+      console.log(participants);
+      
     })  
   }
 
@@ -230,8 +234,10 @@ export class ComunicationsComponent implements OnInit {
       timestamp: new Date,
       userId: this.userId
     }
+    console.log(this.currentRoomData);
+    
     this.chatMessages.push(tempData);
-    this.setData.sendChatMessage(this.buildingId, this.currentRoomData.roomId, messageData);
+    this.setData.sendChatMessage(this.companyId, this.currentRoomData.roomId, messageData);
     this.currentMessage = '';
   }
 
@@ -241,7 +247,7 @@ export class ComunicationsComponent implements OnInit {
     dialogRef.afterClosed()
     .subscribe(result => {
       if(result.data === 'delete'){
-        this.deleteData.deleteChatRoom(this.buildingId, this.currentRoomData.roomId, this.userId);
+        this.deleteData.deleteChatRoom(this.companyId, this.currentRoomData.roomId, this.userId);
       }else{
         // do nothing
       }

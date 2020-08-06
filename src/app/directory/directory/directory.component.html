@@ -3,73 +3,27 @@
 <mat-card>
     <div class="p-20 bg-info position-relative">
         <h4 class="card-title text-white m-0">Directorio</h4>
-        <h6 class="card-subtitle text-white m-0 op-5">Estos son los contactos de los propietarios de {{buildingInfo.name}}</h6>
+        <h6 class="card-subtitle text-white m-0 op-5">Estos son los contactos de los miembros de Tu empresa</h6>
     </div>
     <div class="message-box contact-box p-20">
         <div class="message-widget contact-widget">
             <!-- Message -->
-            Administrador
             <a >
                 <div class="user-img"><img src="../assets/images/users/2.jpg" alt="user"
                     class="img-circle"> <span class="profile-status online pull-right"></span> </div>
                 <div class="mail-contnet">
                     <h5>{{user.name}} {{user.lastname}}</h5> 
                     <span class="mail-desc">Teléfono: {{user.phone}} </span>
-                </div>     
-            </a>
-        </div>
-    </div>
+                </div>    
 
-    <div class="message-box contact-box p-20">
-        <div class="message-widget contact-widget">
-            Emergencias
-            <a  *ngFor="let person of emergency">
-                <div class="user-img"> <img src="../assets/images/users/2.jpg" alt="user"
-                        class="img-circle"> <span class="profile-status busy pull-right"></span> </div>
-                <div class="mail-contnet">
-                    <h5>{{person.name}}</h5> 
-                    <span class="mail-desc"> Teléfono: {{person.phone}}</span>
-
-                </div> 
-            </a>
-        </div>
-    </div>
-
-    <div class="message-box contact-box p-20">
-        <div class="message-widget contact-widget">
-
-            Residentes
-            <a  *ngFor="let person of residents">
-                <div class="user-img"> <img src="../assets/images/users/2.jpg" alt="user"
-                        class="img-circle"> <span class="profile-status busy pull-right"></span> </div>
-                <div class="mail-contnet">
-                    <h5>{{person.name}} {{person.lastname}} <span class="mail-desc">{{person.email}}</span></h5> 
-                    <span class="mail-desc"> Teléfono: {{person.phone}}</span>
-
-                </div> 
                 <div class="example-button-container">
-                    <button (click)="chat(person)" mat-mini-fab  aria-label="Example icon button with a home icon">
+                    <button (click)="chat(user)" mat-mini-fab  aria-label="Example icon button with a home icon">
                       <mat-icon>chat</mat-icon>
                     </button>
-                  </div>
+                </div>
             </a>
         </div>
     </div>
-
-    <div class="message-box contact-box p-20">
-            <div class="message-widget contact-widget">
-                Otros Contactos
-                <a  *ngFor="let person of others">
-                    <div class="user-img"> <img src="../assets/images/users/2.jpg" alt="user"
-                            class="img-circle"> <span class="profile-status busy pull-right"></span> </div>
-                    <div class="mail-contnet">
-                        <h5>{{person.name}}<span class="mail-desc">{{person.description}}</span></h5> 
-                        <span class="mail-desc"> Teléfono: {{person.phone}}</span>
-
-                    </div> 
-                </a>
-            </div>
-        </div>
 </mat-card>
 
 

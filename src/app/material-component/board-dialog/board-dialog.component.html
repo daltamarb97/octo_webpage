@@ -2,15 +2,19 @@
     <div mat-dialog-content>
         <div>
             <mat-form-field>
-                <input type="text" placeholder="Título" matInput [(ngModel)]="local_data.title" [readonly]="isReadOnly">
+                <input type="text" placeholder="Tarea" matInput [(ngModel)]="local_data.title" [readonly]="isReadOnly">
             </mat-form-field>
     
             <mat-form-field>
-                <textarea cols="1" rows="10" placeholder="Cuerpo del Anuncio" matInput [(ngModel)]="local_data.body" [readonly]="isReadOnly"></textarea>
+                <textarea cols="1" rows="10" placeholder="Detalles de la Tarea" matInput [(ngModel)]="local_data.body" [readonly]="isReadOnly"></textarea>
             </mat-form-field>
     
             <mat-form-field>
-                <input type="text" placeholder="fecha de creación" matInput [(ngModel)]="local_data.timestamp" readonly>
+                <input type="text" placeholder="fecha de entrega" matInput [(ngModel)]="local_data.timestamp" readonly>
+            </mat-form-field>
+
+            <mat-form-field>
+                <input type="text" placeholder="asignado a" matInput [(ngModel)]="local_data.assignedTo" readonly>
             </mat-form-field>
         </div>
     </div>
@@ -19,8 +23,8 @@
             
     <div mat-dialog-actions>
         <button mat-button (click)="onNoClick()">Cerrar</button>
-        <button mat-button mat-flat-button color="accent" (click)="allowEdition()" *ngIf="isReadOnly">Editar Anuncio</button>
-        <button mat-button mat-flat-button color="warn" (click)="deleteAnnouncement()" *ngIf="isReadOnly">Eliminar Anuncio</button>
+        <button mat-button mat-flat-button color="accent" (click)="allowEdition()" *ngIf="isReadOnly">Editar Tarea</button>
+        <button mat-button mat-flat-button color="warn" (click)="deleteAnnouncement()" *ngIf="isReadOnly">Eliminar Tarea</button>
         <button mat-button mat-flat-button color="warn" (click)="editAnnouncement()" *ngIf="isReadOnly===false">Confirmar</button>
     </div>
 </div>

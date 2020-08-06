@@ -10,7 +10,7 @@ export interface Menu {
 const MENUITEMS = [
   // { state: 'tabla-pagos', name: 'Tabla de pagos', type: 'link', icon: 'payment' },
   { state: 'canales-comunicacion', type: 'link', name: 'chats', icon: 'message' },
-  { state: 'pizarra', type: 'link', name: 'Pizarra', icon: 'message' },
+  { state: 'pizarra', type: 'link', name: 'Tareas', icon: 'message' },
   { state: 'directorio', type: 'link', name: 'Directorio', icon: 'book' },
 
 ];

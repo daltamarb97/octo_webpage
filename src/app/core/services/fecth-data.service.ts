@@ -23,7 +23,7 @@ export class FecthDataService {
   }
 
 
-  // BUIDLING SERVICES
+  // COMPANY SERVICES
 
   getBuildingInfo(buildingId){
     // get building info
@@ -34,11 +34,11 @@ export class FecthDataService {
   }
 
 
-  getBuidlingResidents(buildingId){
+  getCompanyEmployees(companyId){
     // get building residents
-    let ref = this.db.collection('buildings')
-    .doc(buildingId)
-    .collection('residents')
+    let ref = this.db.collection('company')
+    .doc(companyId)
+    .collection('employees')
 
     return ref.stateChanges(['added']);
   }
@@ -127,10 +127,10 @@ export class FecthDataService {
     return ref.stateChanges(['added', 'removed']);
   }
 
-  getMessagesFromSpecificRoom(buildingId: string, roomId: string, timestamp, limit: number){
+  getMessagesFromSpecificRoom(companyId: string, roomId: string, timestamp, limit: number){
     // get messages from specific room
     let ref = this.db.collection('chats')
-    .doc(buildingId)
+    .doc(companyId)
     .collection('rooms')
     .doc(roomId)
     .collection('messages', ref => ref.orderBy('timestamp', "desc").where("timestamp", "<", timestamp).limit(limit))
@@ -181,13 +181,13 @@ export class FecthDataService {
 
   // BOARD SERVICES
     
-  getBoardAnnouncements(buildingId){
+  getCompanyTasks(companyId){
     // get all the announcements for a building
     let ref = this.db.collection('board')
-    .doc(buildingId)
+    .doc(companyId)
     .collection('announcements', ref => ref.orderBy('timestamp', 'desc'))
     
-    return ref.valueChanges();
+    return ref.stateChanges(['added']);
   }
 
   // END OF BOARD SERVICES

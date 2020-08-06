@@ -175,7 +175,7 @@ export class SetDataService {
       // set additional user data
       ref.update({
         userId: data.userId,
-        comapnyId: companyData.companyId
+        companyId: companyData.companyId
       }).then(()=>{          
           // set info of user in employees subcollection of company
           let companyRef = this.db.collection('company')
@@ -200,7 +200,7 @@ export class SetDataService {
       // set additional user data
       ref.update({
         userId: data.userId,
-        comapnyId: companyData.companyId
+        companyId: companyData.companyId
       }).then(()=>{          
           // set info of user in employees subcollection of company
           let companyRef = this.db.collection('company')
@@ -262,14 +262,14 @@ export class SetDataService {
 
   // CHATS AND COMUNICATIONS SERVICES
 
-  createDefaultChatRoom(comapnyId:string, companyName:string, roomData:any, userId:string){
+  createDefaultChatRoom(companyId:string, companyName:string, roomData:any, userId:string){
     // creates building chats db ref and default chat room
     let ref = this.db.collection('chats')
-    .doc(comapnyId)
+    .doc(companyId)
 
     return ref.set({
-      comapnyId: comapnyId,
-      comapny: companyName
+      companyId: companyId,
+      company: companyName
     }).then(()=>{
       ref.collection('rooms')
       .add({
@@ -304,10 +304,10 @@ export class SetDataService {
   }
 
 
-  createChatRoom(buildingId:string, roomData:any, userId:string, participants:Array<any>){
+  createChatRoom(companyId:string, roomData:any, userId:string, participants:Array<any>){
     // creates new Chat room
       let ref = this.db.collection('chats')
-      .doc(buildingId)
+      .doc(companyId)
 
       return ref.collection('rooms')
       .add({
@@ -322,7 +322,6 @@ export class SetDataService {
         }).then(()=>{
           // each participant is pushed into specific chat room
           participants.forEach((p)=>{
-            if(p.property){
               ref.collection('rooms')
               .doc(roomId)
               .collection('participants')
@@ -330,8 +329,7 @@ export class SetDataService {
               .set({
                 userId: p.userId,
                 name: p.name,
-                lastname: p.lastname,
-                property: p.property
+                lastname: p.lastname
               }).then(()=>{
                 // push room infor into user node
                 this.setChatRoomInfoInUser(
@@ -341,28 +339,7 @@ export class SetDataService {
                   roomData.roomDescription
                 )
               })
-            }else{
-              ref.collection('rooms')
-              .doc(roomId)
-              .collection('participants')
-              .doc(p.userId)
-              .set({
-                userId: p.userId,
-                name: p.name,
-                lastname: p.lastname,
-                property: p.job
-              }).then(()=>{
-                this.setChatRoomInfoInUser(
-                  p.userId,  
-                  roomId, 
-                  roomData.roomName, 
-                  roomData.roomDescription
-                )
-              })
-            }
           })
-        }).then(()=>{
-          this.setChatRoomInfoInUser(userId, roomId, roomData.roomName, roomData.roomDescription);
         })
       }) 
   }
@@ -412,10 +389,10 @@ export class SetDataService {
   }
 
 
-  sendChatMessage(buildingId, roomId, messageData){
+  sendChatMessage(companyId, roomId, messageData){
     // send chat message to firestore
     let ref = this.db.collection('chats')
-    .doc(buildingId)
+    .doc(companyId)
     .collection('rooms')
     .doc(roomId)
     .collection('messages')
@@ -450,10 +427,10 @@ export class SetDataService {
 
   // BOARD SERVICES
 
-  createAnnouncement(buildingId:string, data:object){
+  createTask(companyId:string, data:object){
     // update body or title of the announcement
     let ref = this.db.collection('board')
-    .doc(buildingId)
+    .doc(companyId)
     .collection('announcements')
 
     return ref.add(data)
@@ -471,10 +448,10 @@ export class SetDataService {
   }
   
 
-  updateAnnouncement(buildingId:string, announcementId:string, data:object){
+  updateTask(companyId:string, announcementId:string, data:object){
     // update body or title of the announcement
     let ref = this.db.collection('board')
-    .doc(buildingId)
+    .doc(companyId)
     .collection('announcements')
     .doc(announcementId)
 

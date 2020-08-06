@@ -57,13 +57,10 @@ export class LoginComponent implements OnInit {
         )
         .subscribe((user)=>{
           this.holdData.userInfo = user;
-          if(this.holdData.userInfo.isAdmin !== true){
-            // if user is not admin automatically log them out in order to execute guards
-            alert('sólo puedes ingresar si tienes perfil de administrador')
-            this.authService.logOut();
-          }else if(result.user.emailVerified !== true){
+          if(result.user.emailVerified !== true){
             // email verification required
-            alert('por favor verifica el correo de la administración para ingresar');
+            alert('por favor verifica tu email para ingresar');
+            this.authService.logOut();
           }else{
             // allow user to login
             this.router.navigate(['/'])
