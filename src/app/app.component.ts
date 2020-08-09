@@ -40,10 +40,10 @@ export class AppComponent {
 
   private getBuildingInfo(){
     // get building Info to be used
-    this.fetchData.getBuildingInfo(this.holdData.userInfo.buildingId)
-    .subscribe(building => {
+    this.fetchData.getCompanyInfo(this.holdData.userInfo.companyId)
+    .subscribe(company => {
       // assign buildinginfo value to global variable
-      this.holdData.buildingInfo = building;  
+      this.holdData.companyInfo = company;  
       this.holdData.hideSpinner = true; 
       console.log('app component salio')  
     })

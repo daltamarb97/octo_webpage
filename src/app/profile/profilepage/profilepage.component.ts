@@ -27,11 +27,11 @@ export class ProfilepageComponent implements OnInit {
 
   destroy$: Subject<void> = new Subject()
   doormanList:Array<any> = []; 
-  buildingPassword:string;
+  companyPassword:string;
   paymentLink:string;
   showAddDoormanButton:boolean = true;
   user:any; 
-  buildingInfo:any;
+  companyInfo:any;
   // snackbar variables
   horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
@@ -49,10 +49,12 @@ export class ProfilepageComponent implements OnInit {
 
   ngOnInit(): void {    
     this.getDoormanInfo();
+    console.log(this.holdData.userInfo);
+    
     this.user = this.holdData.userInfo;
-    this.buildingInfo = this.holdData.buildingInfo;
-    this.paymentLink = this.holdData.buildingInfo.paymentLink;
-    this.buildingPassword = this.holdData.buildingInfo.buildingPassword;
+    this.companyInfo = this.holdData.companyInfo;
+    this.paymentLink = this.holdData.companyInfo.paymentLink;
+    this.companyPassword = this.holdData.companyInfo.companyPassword;
   }
 
 
@@ -64,7 +66,7 @@ export class ProfilepageComponent implements OnInit {
 
   getDoormanInfo(){
     // gets initial data of doorman
-    this.fetchData.getBuidlingEmployees(this.holdData.buildingInfo.buildingId)
+    this.fetchData.getBuidlingEmployees(this.holdData.companyInfo.companyId)
     .pipe(
       takeUntil(this.destroy$)
     )
@@ -87,7 +89,7 @@ export class ProfilepageComponent implements OnInit {
 
   deleteDoormanAccount(data){
     // disable doorman account
-    this.deleteData.disableDoormanAccountFromDB(this.holdData.buildingInfo.buildingId, data.doormanId);
+    this.deleteData.disableDoormanAccountFromDB(this.holdData.companyInfo.companyId, data.doormanId);
     this.doormanList.pop();
     this.showAddDoormanButton = true;
   }
@@ -100,7 +102,7 @@ export class ProfilepageComponent implements OnInit {
     selBox.style.left = '0';
     selBox.style.top = '0';
     selBox.style.opacity = '0';
-    selBox.value = this.buildingPassword;
+    selBox.value = this.companyPassword;
     document.body.appendChild(selBox);
     selBox.focus();
     selBox.select();
@@ -169,8 +171,8 @@ export class ProfilepageComponent implements OnInit {
     const doormanData: object = {
       email: data.email,
       password: data.password,
-      name: `Portería ${this.holdData.buildingInfo.name}`,
+      name: `Portería ${this.holdData.companyInfo.name}`,
     }
-    this.setData.doormanCreationTrigger(this.holdData.buildingInfo.buildingId, doormanData);
+    this.setData.doormanCreationTrigger(this.holdData.companyInfo.companyId, doormanData);
   }
 }

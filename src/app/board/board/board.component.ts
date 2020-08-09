@@ -37,7 +37,7 @@ export class BoardComponent implements OnInit {
   destroy$:  Subject<void> = new Subject();
 
   userId:string;
-  buildingInfo: any;
+  companyInfo: any;
   taskList: Array<any> = []; // array of tasks used in the html
   taskListPersonal: Array<any> = []; // array of personal tasks used in the html 
   employeesList: Array<any> = []; // array of personal tasks used in the html 
@@ -64,7 +64,7 @@ export class BoardComponent implements OnInit {
 
   ngOnInit(): void {
     this.userId = this.holdData.userId;
-    this.buildingInfo = this.holdData.buildingInfo;
+    this.companyInfo = this.holdData.companyInfo;
     this.getAnnouncements();
     this.getEmployees();
   }

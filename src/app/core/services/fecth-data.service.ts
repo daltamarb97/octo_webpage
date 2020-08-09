@@ -25,10 +25,10 @@ export class FecthDataService {
 
   // COMPANY SERVICES
 
-  getBuildingInfo(buildingId){
+  getCompanyInfo(companyId: string){
     // get building info
-    let ref = this.db.collection('buildings')
-    .doc(buildingId)
+    let ref = this.db.collection('company')
+    .doc(companyId)
 
     return ref.valueChanges();
   }

@@ -1,0 +1,14 @@
+<div style="width: 600px;">
+    <mat-form-field class="input-field">
+        <mat-label>Ingresa los emails de las personas a invitar separados por coma</mat-label>
+        <input matInput type="text" [(ngModel)]="value">
+        <button mat-button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-form-field>
+    <!-- Buttons Footer -->       
+    <div mat-dialog-actions>
+        <button mat-button (click)="onNoClick()">Cerrar</button>
+        <button mat-button mat-flat-button color="warn" (click)="confirmEmails()">Confirmar</button>
+    </div>
+</div>

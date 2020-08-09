@@ -12,15 +12,15 @@
     
     <mat-card class="card-building">
         <mat-card-header>
-            <mat-card-title>{{buildingInfo.name}}</mat-card-title>
-            <mat-card-subtitle>{{buildingInfo.address}}</mat-card-subtitle>
+            <mat-card-title>{{companyInfo.name}}</mat-card-title>
+            <mat-card-subtitle>{{companyInfo.address}}</mat-card-subtitle>
         </mat-card-header>
-        <img mat-card-image src="{{buildingInfo.photoLink}}" alt="Building Picture"> 
+        <img mat-card-image src="{{companyInfo.photoLink}}" alt="Building Picture"> 
         <mat-card-content>
             <section class="password-input">
                 <mat-form-field>
                     <mat-label>CONTRASEÑA PARA REGISTRO DE RESIDENTES DEL EDIFCIO</mat-label>
-                    <input [(ngModel)]="buildingPassword" matInput readonly>
+                    <input [(ngModel)]="companyPassword" matInput readonly>
                 </mat-form-field>
                     
                 <button mat-stroked-button color='primary' (click)="copyMessage()">Copiar</button>
