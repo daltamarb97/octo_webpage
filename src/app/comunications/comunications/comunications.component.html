@@ -1,140 +1,95 @@
-<mat-sidenav-container class="chat-sidebar-container">
-    <!-- left side menu -->
-    <mat-sidenav opened mode="side">
-        <mat-toolbar class=".mat-toolbar  mat-primary mat-toolbar-single-row" style="height: 8%; background-color: #2C3B4D !important;" > 
-             <span class="toolbar-msg" >Chats Grupales</span> 
-             <span style="margin-left: auto;" class="material-icons">group_add</span>
-        </mat-toolbar>
-
-        <mat-list >
-            <mat-list-item *ngFor="let room of chatRooms" [class.highlighted]="currentRoomData.roomId === room.roomId" 
-            (click)="getMessagesFromRoom(room)" > {{room.roomName}} </mat-list-item>
-        </mat-list>
-
-        <mat-toolbar  class=".mat-toolbar  mat-primary mat-toolbar-single-row" style="height: 8%; background-color: #2C3B4D !important;"> 
-            <span class="toolbar-msg">Mensajes Directos</span>
-            <span style="margin-left: auto;" class="material-icons">add</span>
-       </mat-toolbar>
-      
-        <mat-list >
-            <mat-list-item *ngFor="let chat of privateChatsNames" [class.highlighted]="currentPrivateChat && currentPrivateChat.chatId === chat.chatId" 
-            (click)="getMessagesFromPrivateChat(chat)">{{chat.name}} {{chat.lastname}} </mat-list-item>
-        </mat-list>
-
-        <div style="display: flex; justify-content: center; margin-top: 20px;">
-            <button mat-raised-button (click)="addChatRoom()" color="primary" >Crear Grupo</button>
-        </div>
-    </mat-sidenav>
-    <!-- right side menu -->
-    <mat-sidenav opened mode="side" position="end" *ngIf="showDetail && showRoomChats">
-        <h3 *ngIf="currentRoomData"><b>#{{currentRoomData.name}}</b></h3>
-        <div>
-            <mat-card>
-                <mat-card-header>
-                    <mat-card-title>Descripción</mat-card-title>
-                    <mat-card-subtitle *ngIf="currentRoomData">{{currentRoomData.description}}</mat-card-subtitle>
-                </mat-card-header>
-            </mat-card>
-        </div>
-        <h5 *ngIf="currentRoomData">Participantes de <b>#{{currentRoomData.name}}</b></h5>
-        <div>
-            <mat-card>
-                <mat-card-content *ngFor="let participant of currentRoomParticipants">
-                    <p>
-                    {{participant.name}} {{participant.lastname}}
-                    </p>
-                </mat-card-content>
-            </mat-card>
-        </div>
-        <div style="display: flex; justify-content: center;">
-        <button mat-raised-button color="warn" (click)="deleteChatRoom()" *ngIf="currentRoomData">Eliminar #{{currentRoomData.name}}</button>
-        </div>
-    </mat-sidenav> 
-
-    <!-- /*******************
-        ROOM CHATS
-    *******************/ -->
-   <div *ngIf="showRoomChats"> 
-        <mat-toolbar  class="background-room" style="height: 8%; background-color: #2C3B4D !important;">
-            <span class="toolbar-msg"  ># {{currentRoomData.name}}</span>
-            <span class="example-spacer"></span>
-            <button  mat-raised-button color="primary" class="example-icon" (click)="showDetails()">Detalles</button>
-            <button mat-icon-button [matMenuTriggerFor]="profile"  class="example-icon"  aria-label="Example icon-button with share icon">
-                <mat-icon>more_vert</mat-icon>
-            </button>
-            <!-- drop down menu of 3 dot button -->
-            <mat-menu #profile="matMenu" class="mymegamenu">
-                <button mat-menu-item (click)="moreMessages()">
-                    <mat-icon>hourglass_bottom</mat-icon> Cargar más mensajes 
-                </button>
-            </mat-menu>
+    <mat-sidenav-container class="chat-sidebar-container">
+        <!-- left side menu -->
+        <mat-sidenav opened mode="side">
+            <!-- <mat-tab-group mat-align-tabs="center"> 
+                <mat-tab label="Second"> Content 2 </mat-tab>
+                <mat-tab label="Third"> Content 3 </mat-tab>
+              </mat-tab-group> -->
+            <mat-toolbar > 
+                
+                 <span class="toolbar-msg" >Chats Grupales</span> 
+                 <span style="margin-left: auto;" class="material-icons">group_add</span>
+            </mat-toolbar>
+    
+            <mat-list >
+                <mat-list-item *ngFor="let room of chatRooms"  
+                (click)="getMessagesFromRoom(room)" > {{room.roomName}} </mat-list-item>
+            </mat-list>
+    
+            <mat-toolbar  class=".mat-toolbar  mat-primary mat-toolbar-single-row" style="height: 8%; background-color: #2C3B4D !important;"> 
+                <span class="toolbar-msg">Mensajes Directos</span>
+                <span style="margin-left: auto;" class="material-icons">add</span>
+           </mat-toolbar>
           
-        </mat-toolbar>
-        <div class="chat"  *ngFor="let message of chatMessages" >
-            <div class="me"  *ngIf="userId == message.userId">          
-                <span style="word-wrap: break-word;">{{message.message}} </span>     
-                <p class="time-left">{{message.timestamp | date: 'hh:mm'}}</p> 
+            <mat-list >
+                <mat-list-item *ngFor="let chat of privateChatsNames"
+                (click)="getMessagesFromPrivateChat(chat)">{{chat.name}} {{chat.lastname}} </mat-list-item>
+            </mat-list>
+    
+            <div style="display: flex; justify-content: center; margin-top: 20px;">
+                <button mat-raised-button (click)="addChatRoom()" color="primary" >Crear Grupo</button>
             </div>
-            <div class="otherMessage"   *ngIf="userId !== message.userId">
-                <span class="name"  >
-                    {{message.name}} {{message.lastname}}<p class="time-right" style="margin-left:10px;">{{message.timestamp | date: 'hh:mm'}}</p> 
-                </span> <br>
-                <span style="word-wrap: break-word;">{{message.message}}</span>      
+        </mat-sidenav>
+        <!-- right side menu -->
+        <mat-sidenav opened mode="side" position="end" *ngIf="showDetail">
+            <h3 *ngIf="currentRoomData"><b>#{{currentRoomData.name}}</b></h3>
+            <div>
+                <mat-card>
+                    <mat-card-header>
+                        <mat-card-title>Descripción</mat-card-title>
+                        <mat-card-subtitle *ngIf="currentRoomData">{{currentRoomData.description}}</mat-card-subtitle>
+                    </mat-card-header>
+                </mat-card>
             </div>
-        </div>  
-        
-    <!-- if no messages show this card -->
-    <div *ngIf="chatMessages.length === 0">
-        <mat-card class="message-card">
-            <mat-card-content>
-                <p>
-                Aún no hay mensajes en esta sala
-                </p>
-            </mat-card-content>
-        </mat-card>
-    </div>
-   </div>
-    <!-- /*******************
-    END OF ROOM CHATS
-    *******************/ -->
-
-
-    <!-- /*******************
-    PRIVATE CHAT
-    *******************/ -->
-   <div *ngIf="showPrivateChats"> 
-    <mat-toolbar  class="background-room" style="height: 8%; background-color: #2C3B4D !important;">
-        <span class="toolbar-msg" >{{currentPrivateChat.name}}</span>
-        <span class="example-spacer"></span>
-        
-        <button mat-icon-button [matMenuTriggerFor]="profile"  class="example-icon"  aria-label="Example icon-button with share icon">
-            <mat-icon>more_vert</mat-icon>
-        </button>
-            <!-- drop down menu of 3 dot button -->
-            <!-- In the future option button can have some blocking feature in the button below -->
-        <mat-menu #profile="matMenu" class="mymegamenu">
-            <button mat-menu-item (click)="morePrivateMessages()">
-                <mat-icon>hourglass_bottom</mat-icon> Cargar más mensajes 
-            </button>
-        </mat-menu>
-      </mat-toolbar>
-        <div class="chat"  *ngFor="let message of privateChats" >
-            <!-- <img class="user-img" [src]="msg.userAvatar" alt="" src=""> -->
-            <!-- <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner> -->
-              <div class="me"  *ngIf="userId == message.userId">          
-                  <span style="word-wrap: break-word;">{{message.message}} </span>     
-                  <p class="time-left">{{message.timestamp | date: 'hh:mm'}}</p> 
-              </div>
-              <div class="otherMessage"   *ngIf="userId !== message.userId">
-                <span class="name"  >
-                    {{message.name}} {{message.lastname}}<p class="time-right" style="margin-left:10px;">{{message.timestamp | date: 'hh:mm'}}</p> 
-                </span> <br>
-                <span style="word-wrap: break-word;">{{message.message}}</span>      
-              </div>
-            </div> 
+            <h5 *ngIf="currentRoomData">Participantes de <b>#{{currentRoomData.name}}</b></h5>
+            <div>
+                <mat-card>
+                    <mat-card-content *ngFor="let participant of currentRoomParticipants">
+                        <p>
+                        {{participant.name}} {{participant.lastname}}
+                        </p>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            <div style="display: flex; justify-content: center;">
+            <button mat-raised-button color="warn" (click)="deleteChatRoom()" *ngIf="currentRoomData">Eliminar #{{currentRoomData.name}}</button>
+            </div>
+        </mat-sidenav> 
+    
+        <!-- /*******************
+            ROOM CHATS
+        *******************/ -->
+       <div *ngIf="showRoomChats"> 
+            <mat-toolbar  class="background-room" style="height: 8%; background-color: #2C3B4D !important;">
+                <span class="toolbar-msg"  ># {{currentRoomData.name}}</span>
+                <span class="example-spacer"></span>
+                <button  mat-raised-button color="primary" class="example-icon" (click)="showDetails()">Detalles</button>
+                <button mat-icon-button [matMenuTriggerFor]="profile"  class="example-icon"  aria-label="Example icon-button with share icon">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <!-- drop down menu of 3 dot button -->
+                <mat-menu #profile="matMenu" class="mymegamenu">
+                    <button mat-menu-item (click)="moreMessages()">
+                        <mat-icon>hourglass_bottom</mat-icon> Cargar más mensajes 
+                    </button>
+                </mat-menu>
+              
+            </mat-toolbar>
+            <div class="chat"  *ngFor="let message of chatMessages" >
+                <div class="me"  *ngIf="userId == message.userId">          
+                    <span style="word-wrap: break-word;">{{message.message}} </span>     
+                    <p class="time-left">{{message.timestamp | date: 'hh:mm'}}</p> 
+                </div>
+                <div class="otherMessage"   *ngIf="userId !== message.userId">
+                    <span class="name"  >
+                        {{message.name}} {{message.lastname}}<p class="time-right" style="margin-left:10px;">{{message.timestamp | date: 'hh:mm'}}</p> 
+                    </span> <br>
+                    <span style="word-wrap: break-word;">{{message.message}}</span>      
+                </div>
+            </div>  
             
-             <!-- if no messages show this card -->
-        <div *ngIf="privateChats.length === 0">
+        <!-- if no messages show this card -->
+        <div *ngIf="chatMessages.length === 0">
             <mat-card class="message-card">
                 <mat-card-content>
                     <p>
@@ -143,31 +98,82 @@
                 </mat-card-content>
             </mat-card>
         </div>
-   </div>
-
-   
-    <!-- /*******************
-    END OF PRIVATE CHAT
-    *******************/ -->
-   
-    <!-- end of chat messages layout -->
-    <footer>
-        <mat-form-field style="background-color: white; border-top: gray;">
-            <div style="display: flex;">
-                <textarea matInput
-                cdkTextareaAutosize
-                #autosize="cdkTextareaAutosize"
-                cdkAutosizeMinRows="1"
-                cdkAutosizeMaxRows="9"
-                [(ngModel)]="currentMessage" placeholder="Envía un mensaje"></textarea>
+       </div>
+        <!-- /*******************
+        END OF ROOM CHATS
+        *******************/ -->
+    
+    
+        <!-- /*******************
+        PRIVATE CHAT
+        *******************/ -->
+       <div *ngIf="showPrivateChats"> 
+        <mat-toolbar  class="background-room" style="height: 8%; background-color: #2C3B4D !important;">
+            <span class="toolbar-msg" >{{currentPrivateChat.name}}</span>
+            <span class="example-spacer"></span>
+            
+            <button mat-icon-button [matMenuTriggerFor]="profile"  class="example-icon"  aria-label="Example icon-button with share icon">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+                <!-- drop down menu of 3 dot button -->
+                <!-- In the future option button can have some blocking feature in the button below -->
+            <mat-menu #profile="matMenu" class="mymegamenu">
+                <button mat-menu-item (click)="morePrivateMessages()">
+                    <mat-icon>hourglass_bottom</mat-icon> Cargar más mensajes 
+                </button>
+            </mat-menu>
+          </mat-toolbar>
+            <div class="chat"  *ngFor="let message of privateChats" >
+                <!-- <img class="user-img" [src]="msg.userAvatar" alt="" src=""> -->
+                <!-- <ion-spinner name="dots" *ngIf="msg.status === 'pending'"></ion-spinner> -->
+                  <div class="me"  *ngIf="userId == message.userId">          
+                      <span style="word-wrap: break-word;">{{message.message}} </span>     
+                      <p class="time-left">{{message.timestamp | date: 'hh:mm'}}</p> 
+                  </div>
+                  <div class="otherMessage"   *ngIf="userId !== message.userId">
+                    <span class="name"  >
+                        {{message.name}} {{message.lastname}}<p class="time-right" style="margin-left:10px;">{{message.timestamp | date: 'hh:mm'}}</p> 
+                    </span> <br>
+                    <span style="word-wrap: break-word;">{{message.message}}</span>      
+                  </div>
+                </div> 
                 
-                <div class="example-button-container">
-                    <button mat-mini-fab>
-                        <mat-icon *ngIf="showRoomChats" (click)="sendMessage()">send</mat-icon>
-                        <mat-icon *ngIf="showPrivateChats" (click)="sendPrivateMessage()">send</mat-icon>
-                    </button>
-                </div>
+                 <!-- if no messages show this card -->
+            <div *ngIf="privateChats.length === 0">
+                <mat-card class="message-card">
+                    <mat-card-content>
+                        <p>
+                        Aún no hay mensajes en esta sala
+                        </p>
+                    </mat-card-content>
+                </mat-card>
             </div>
-        </mat-form-field>
-    </footer>
-</mat-sidenav-container>
+       </div>
+    
+       
+        <!-- /*******************
+        END OF PRIVATE CHAT
+        *******************/ -->
+       
+        <!-- end of chat messages layout -->
+        <footer *ngIf="showRoomChats || showPrivateChats ">
+            <mat-form-field style="background-color: white; border-top: gray;">
+                <div style="display: flex;">
+                    <textarea matInput
+                    cdkTextareaAutosize
+                    #autosize="cdkTextareaAutosize"
+                    cdkAutosizeMinRows="1"
+                    cdkAutosizeMaxRows="9"
+                    [(ngModel)]="currentMessage" placeholder="Envía un mensaje"></textarea>
+                    
+                    <div class="example-button-container">
+                        <button mat-mini-fab>
+                            <mat-icon *ngIf="showRoomChats" (click)="sendMessage()">send</mat-icon>
+                            <mat-icon *ngIf="showPrivateChats" (click)="sendPrivateMessage()">send</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </mat-form-field>
+        </footer>
+    </mat-sidenav-container>
+

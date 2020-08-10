@@ -1,0 +1,122 @@
+
+<!-- <mat-card-title style="color:gray; margin-right: 20px;" >Inicio</mat-card-title> -->
+
+    <!-- Card column -->
+
+    <div fxFlex.gt-lg="75" fxFlex.gt-md="40" >
+        <mat-card>
+            <div class="p-20  position-relative">
+                <h4 class="card-title  m-0 font-20 font-medium">Chats</h4>
+            </div>
+            <mat-tab-group mat-align-tabs="center"> 
+                <!-- Tab 1 -->
+     <mat-tab label="Chats Grupales">    
+        <mat-list >
+            <mat-list-item  *ngFor="let room of chatRooms; index as i" (click)="goToChat(room,i)">
+                 <span class="material-icons m-r-15 b-b">
+                groups
+                </span > #{{room.roomName}}  
+             </mat-list-item>
+             
+        </mat-list>
+     </mat-tab> 
+
+                <!-- End Tab 1 -->
+                <!-- Tab 2 -->
+
+                <mat-tab label="Mensajes Directos">
+                        <!-- ============================================================== -->
+                        <!-- column -->
+                        <!-- ============================================================== -->
+                       
+                        <mat-list >
+                            <mat-list-item *ngFor="let privateChat of privateChatsNames; index as i"  
+                            (click)="goToPrivateChat(privateChat,i)"> 
+                            <span class="material-icons m-r-15">
+                                account_circle
+                                </span>{{privateChat.name}} {{privateChat.lastname}}  
+                            </mat-list-item>
+                        </mat-list>
+                </mat-tab>
+            </mat-tab-group>
+        </mat-card>
+    </div>
+
+    <!-- Card column -->
+
+     <div fxFlex.gt-lg="75" fxFlex.gt-md="50" >
+        <mat-card>
+            <div class="p-20  position-relative">
+                <h4 class="card-title  m-0 font-20 font-medium">Tareas</h4>
+            </div>
+            <mat-tab-group mat-align-tabs="center"> 
+
+                <!-- Tab 1 -->
+
+                 <mat-tab label="Asignadas para mí">
+                    <mat-card-content>
+                        <div class="d-flex no-blcok"  *ngFor="let item of taskListPersonal;index as i" (click)="goToPersonalTask(item,i)">
+                            <div class="m-r-10">
+                                <!--  <img class="img-circle" width="50" src="assets/images/users/1.jpg" alt="Image">  -->
+                                </div> 
+                            <div class="p-b-10 b-b m-b-30">
+                                <span class="m-0 font-14 font-medium">{{item.title | titlecase}}
+
+                                </span>
+                                
+                                <div style="display: flex;"><small class="text-muted font-12">Fecha de Entrega: {{item.timestamp.toDate() | date }}</small>
+                                 
+                                    <div style="margin-left: auto;margin-left: 10px;" class="m-l-15">
+                                        <span class="material-icons" >
+                                            picture_as_pdf
+                                            </span>
+                                            <span class="material-icons">
+                                                insert_photo
+                                                </span>
+                                    </div>  
+                                </div>                                
+                                <div>
+                                  <!-- <p class="text-muted font-14">Enviar Acta de constitución al cliente y a sus abogados por correo y otros medios magneticos sin fallas ortográficas.</p> -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </mat-card-content>
+                </mat-tab> 
+
+                <!-- End Tab 1 -->
+                <!-- Tab 2 -->
+
+                <mat-tab label="Todas las tareas">
+                    <mat-card-content>
+                        <div class="d-flex no-blcok" (click)="goToTask(item,i)" *ngFor="let item of taskList; i as index">
+                            <div class="m-r-10">
+                                <!--  <img class="img-circle" width="50" src="assets/images/users/1.jpg" alt="Image">  -->
+                                </div> 
+                            <div class="p-b-10 b-b m-b-30">
+                                <span class="m-0 font-14 font-medium">{{item.title | titlecase}}
+
+                                </span>
+                                
+                                <div style="display: flex;"><small class="text-muted font-12">Fecha de Entrega: {{item.timestamp.toDate() | date }}</small>
+                                 
+                                    <div style="margin-left: auto;margin-left: 10px;" class="m-l-15">
+                                        <span class="material-icons" >
+                                            picture_as_pdf
+                                            </span>
+                                            <span class="material-icons">
+                                                insert_photo
+                                                </span>
+                                    </div>  
+                                </div>                                
+                                <div>
+                                  <!-- <p class="text-muted font-14">Enviar Acta de constitución al cliente y a sus abogados por correo y otros medios magneticos sin fallas ortográficas.</p> -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </mat-card-content>
+                </mat-tab>
+            </mat-tab-group>
+        </mat-card>
+    </div>
