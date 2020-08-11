@@ -75,7 +75,7 @@ export class BoardComponent implements OnInit {
         this.taskLink = this.router.getCurrentNavigation().extras.state.task;
         console.log(this.taskLink);
 
-        this.currentTask(this.taskLink.info,this.taskLink.index)
+        this.viewTaskBody(this.taskLink.info,this.taskLink.index)
 
         
       }
@@ -85,8 +85,8 @@ export class BoardComponent implements OnInit {
     this.route.queryParams.subscribe(() => {
       if (this.router.getCurrentNavigation().extras.state) {
         this.personalTaskLink = this.router.getCurrentNavigation().extras.state.personalTask;
-        console.log(this.personalTaskLink);
-        this.currentTask(this.personalTaskLink.info,this.personalTaskLink.index)
+        console.log(this.personalTaskLink.info);
+        this.viewTaskBody(this.personalTaskLink.info,this.personalTaskLink.index)
 
       }
     });
