@@ -1,32 +1,54 @@
 <div *ngIf="action === 'view'">
     <div mat-dialog-content>
-        <div>
-            <mat-form-field>
-                <input type="text" placeholder="Tarea" matInput [(ngModel)]="local_data.title" [readonly]="isReadOnly">
-            </mat-form-field>
-    
-            <mat-form-field>
-                <textarea cols="1" rows="10" placeholder="Detalles de la Tarea" matInput [(ngModel)]="local_data.body" [readonly]="isReadOnly"></textarea>
-            </mat-form-field>
-    
-            <mat-form-field>
-                <input type="text" placeholder="fecha de entrega" matInput [(ngModel)]="local_data.timestamp" readonly>
-            </mat-form-field>
+        <mat-card>
+            <mat-card-content>
+                <mat-card-title>Crear Tarea</mat-card-title>
+                <!-- ============================================================== -->
+                <!-- column -->
+                <!-- ============================================================== -->
+                <form class="basic-form" [formGroup]="taskForm" (ngSubmit)="createAnnouncement()">
+                    <div fxLayout="row wrap">
+                        <!-- column -->
+                        <div fxFlex.gt-sm="100" fxFlex="100">
+                            <mat-form-field>
+                                <input formControlName="title" matInput placeholder="Título">
+                            </mat-form-field>
+                        </div>
+                        <!-- column -->
 
-            <mat-form-field>
-                <input type="text" placeholder="asignado a" matInput [(ngModel)]="local_data.assignedTo" readonly>
-            </mat-form-field>
-        </div>
-    </div>
+                        <!-- column -->
+                        <div fxFlex.gt-sm="100" fxFlex="100">
+                            <mat-form-field>
+                                <textarea formControlName="details" cols="1" rows="10"  matInput placeholder="Cuerpo del anuncio"></textarea>
+                            </mat-form-field>
+                        </div>
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>Fecha de entrega</mat-label>
+                            <input matInput [matDatepicker]="picker1" formControlName="date">
+                            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                            <mat-datepicker #picker1></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field>
+                            <mat-label>Asignar a</mat-label>
+                            <mat-select formControlName="assigned">
+                              <mat-option *ngFor="let e of employeesList" [value]="e.userId">{{e.name}} {{e.lastname}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <!-- column -->
+                        <div fxFlex.gt-sm="100" fxFlex="100">
+                            <button mat-raised-button [disabled]="taskForm.invalid" color="primary" type="submit">Publicar</button>
+                        </div>
+                    </div>
+                </form>
+                
+            </mat-card-content>
+        </mat-card>
+
             
-        <!-- Buttons Footer -->
-            
-    <div mat-dialog-actions>
-        <button mat-button (click)="onNoClick()">Cerrar</button>
-        <button mat-button mat-flat-button color="accent" (click)="allowEdition()" *ngIf="isReadOnly">Editar Tarea</button>
-        <button mat-button mat-flat-button color="warn" (click)="deleteAnnouncement()" *ngIf="isReadOnly">Eliminar Tarea</button>
-        <button mat-button mat-flat-button color="warn" (click)="editAnnouncement()" *ngIf="isReadOnly===false">Confirmar</button>
-    </div>
+    </div>            
+    
 </div>
 
 

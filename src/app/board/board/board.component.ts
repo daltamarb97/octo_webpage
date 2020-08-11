@@ -52,6 +52,10 @@ export class BoardComponent implements OnInit {
   // snack bar variables
   horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  isReadOnly:boolean;
+  local_data:any;
+  showTask:boolean = false;
+  currentTask:any;
   constructor(
     public dialog: MatDialog,
     private formBuilder: FormBuilder,
@@ -71,7 +75,7 @@ export class BoardComponent implements OnInit {
         this.taskLink = this.router.getCurrentNavigation().extras.state.task;
         console.log(this.taskLink);
 
-        this.viewAnnouncementBody(this.taskLink.info,this.taskLink.index)
+        this.currentTask(this.taskLink.info,this.taskLink.index)
 
         
       }
@@ -82,7 +86,7 @@ export class BoardComponent implements OnInit {
       if (this.router.getCurrentNavigation().extras.state) {
         this.personalTaskLink = this.router.getCurrentNavigation().extras.state.personalTask;
         console.log(this.personalTaskLink);
-        this.viewAnnouncementBody(this.personalTaskLink.info,this.personalTaskLink.index)
+        this.currentTask(this.personalTaskLink.info,this.personalTaskLink.index)
 
       }
     });
@@ -155,26 +159,21 @@ export class BoardComponent implements OnInit {
   }
   
 
-  viewAnnouncementBody(item, i){
-    item.action = 'view';
-    const dialogRef = this.dialog.open(BoardDialogComponent,{
-      data: item
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      const event = result.event;
-      if(event === 'edit'){
-        const resultData = {
-          announcementId: item.announcementId,
-          title: result.data.title,
-          body: result.data.body,
-          timestamp: result.data.timestamp
-        };
-        this.updateAnnouncement(item, resultData);
-      }else if(event === 'delete'){
-        this.deleteAnnouncement(item);
-      }else{}
-    })
+  viewTaskBody(item, i){
+    this.showTask = true;
+      this.currentTask = item;
+      // if(event === 'edit'){
+      //   let resultData = {
+      //     announcementId: item.announcementId,
+      //     title: item.title,
+      //     body: item.body,
+      //     timestamp: item.timestamp
+      //   };
+      //   this.updateAnnouncement(item, resultData);
+      // }else if(event === 'delete'){
+      //   this.deleteAnnouncement(item);
+      // }
+    
   }
 
 

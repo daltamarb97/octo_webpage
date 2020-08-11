@@ -47,7 +47,7 @@ export class ComunicationsComponent implements OnInit {
   currentRoomParticipants: Array<any> = []; // information of current room participants
   residentsData:Array<any> = []; // residents list
   employeesData:Array<any> = []; // employees list
-  showDetail: boolean = true;
+  showDetail: boolean = false;
   showPrivateChats:boolean=false;
   showRoomChats:boolean=false;
   chat:any;
