@@ -15,13 +15,22 @@ export const AppRoutes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: '/canales-comunicacion',
+        redirectTo: '/inicio',
         pathMatch: 'full'
       },
       {
         path: '',
         loadChildren: 
           () => import('./material-component/material.module').then(m => m.MaterialComponentsModule)
+      },
+      {
+        path: 'inicio',
+        canActivate: [
+          CurrentUserGuard,
+          EmailVerifiedGuardService
+        ],
+        loadChildren:
+          () => import('./dashboard/dashboard.module').then(m => m.DashboardModule)
       },
       {
         path: 'canales-comunicacion',

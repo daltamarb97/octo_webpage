@@ -20,6 +20,7 @@ import { HoldDataService } from '../../core/services/hold-data.service';
 
 // dialog material
 import { BoardDialogComponent } from '../../material-component/board-dialog/board-dialog.component';
+import { Router, ActivatedRoute } from '@angular/router';
 
 
 
@@ -46,9 +47,15 @@ export class BoardComponent implements OnInit {
   body:string;
   title:string;
   taskForm: FormGroup;
+  taskLink:any;
+  personalTaskLink:any;
   // snack bar variables
   horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  isReadOnly:boolean;
+  local_data:any;
+  showTask:boolean = false;
+  currentTask:any;
   constructor(
     public dialog: MatDialog,
     private formBuilder: FormBuilder,
@@ -58,8 +65,31 @@ export class BoardComponent implements OnInit {
     private setData: SetDataService,
     private deleteData: DeleteDataService,
     private holdData: HoldDataService,
+    private router: Router,
+    private route: ActivatedRoute,
   ) { 
     this.buildForm();
+    //getting chat from home link 
+    this.route.queryParams.subscribe(() => {
+      if (this.router.getCurrentNavigation().extras.state) {
+        this.taskLink = this.router.getCurrentNavigation().extras.state.task;
+        console.log(this.taskLink);
+
+        this.viewTaskBody(this.taskLink.info,this.taskLink.index)
+
+        
+      }
+    });
+     //getting chat from home link 
+
+    this.route.queryParams.subscribe(() => {
+      if (this.router.getCurrentNavigation().extras.state) {
+        this.personalTaskLink = this.router.getCurrentNavigation().extras.state.personalTask;
+        console.log(this.personalTaskLink.info);
+        this.viewTaskBody(this.personalTaskLink.info,this.personalTaskLink.index)
+
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -69,11 +99,6 @@ export class BoardComponent implements OnInit {
     this.getEmployees();
   }
 
-
-  ngOnDestroy(){
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
 
 
   private getAnnouncements(){
@@ -88,7 +113,6 @@ export class BoardComponent implements OnInit {
         const announcement = a.payload.doc.data();
         this.taskList.push(announcement);
         console.log(this.holdData.userId);
-        
         if (announcement.assignedTo === this.holdData.userId) {
           this.taskListPersonal.push(announcement);
         }
@@ -132,26 +156,21 @@ export class BoardComponent implements OnInit {
   }
   
 
-  viewAnnouncementBody(item, i){
-    item.action = 'view';
-    const dialogRef = this.dialog.open(BoardDialogComponent,{
-      data: item
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      const event = result.event;
-      if(event === 'edit'){
-        const resultData = {
-          announcementId: item.announcementId,
-          title: result.data.title,
-          body: result.data.body,
-          timestamp: result.data.timestamp
-        };
-        this.updateAnnouncement(item, resultData);
-      }else if(event === 'delete'){
-        this.deleteAnnouncement(item);
-      }else{}
-    })
+  viewTaskBody(item, i){
+    this.showTask = true;
+      this.currentTask = item;
+      // if(event === 'edit'){
+      //   let resultData = {
+      //     announcementId: item.announcementId,
+      //     title: item.title,
+      //     body: item.body,
+      //     timestamp: item.timestamp
+      //   };
+      //   this.updateAnnouncement(item, resultData);
+      // }else if(event === 'delete'){
+      //   this.deleteAnnouncement(item);
+      // }
+    
   }
 
 

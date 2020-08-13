@@ -73,6 +73,8 @@ export class DirectoryComponent implements OnInit {
 
   
   chat(person){  
+    // console.log(person.);
+    
     // verifying the user already have a conversation with the person
    this.fecthDataService.getPrivateChatKey(this.user.userId,person.userId)
     .subscribe( res => {

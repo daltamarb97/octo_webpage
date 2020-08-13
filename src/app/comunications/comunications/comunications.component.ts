@@ -11,6 +11,7 @@ import { takeUntil, take } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { HoldDataService } from '../../core/services/hold-data.service';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { Router, ActivatedRoute } from '@angular/router';
 
 export class currentRoomData {
   name:string;
@@ -46,9 +47,11 @@ export class ComunicationsComponent implements OnInit {
   currentRoomParticipants: Array<any> = []; // information of current room participants
   residentsData:Array<any> = []; // residents list
   employeesData:Array<any> = []; // employees list
-  showDetail: boolean = true;
+  showDetail: boolean = false;
   showPrivateChats:boolean=false;
   showRoomChats:boolean=false;
+  chat:any;
+  privateChat:any;
   constructor(
     private fetchData: FecthDataService,
     private setData: SetDataService,
@@ -57,7 +60,27 @@ export class ComunicationsComponent implements OnInit {
     // UI components
     public dialog: MatDialog,
     private _ngZone: NgZone,
-  ) { }
+    private router: Router,
+    private route: ActivatedRoute,
+  ) { 
+    //getting chat from home link 
+    this.route.queryParams.subscribe(() => {
+      if (this.router.getCurrentNavigation().extras.state) {
+        this.chat = this.router.getCurrentNavigation().extras.state.room;
+        console.log(this.chat);
+        
+      }
+    });
+     //getting chat from home link 
+
+    this.route.queryParams.subscribe(() => {
+      if (this.router.getCurrentNavigation().extras.state) {
+        this.privateChat = this.router.getCurrentNavigation().extras.state.privateChat;
+        console.log(this.privateChat);
+        
+      }
+    });
+  }
 
 
   ngOnInit(): void {
@@ -65,6 +88,7 @@ export class ComunicationsComponent implements OnInit {
     this.companyId = this.holdData.userInfo.companyId;
     this.getChatRoomNames();
     this.getPrivateMessages();
+    
   }
 
 
@@ -87,7 +111,14 @@ export class ComunicationsComponent implements OnInit {
         if(a.type === 'added'){
           const data= a.payload.doc.data(); 
           this.chatRooms.push(data);
-          
+          if(this.chat !== undefined){
+       
+            this.getMessagesFromRoom(this.chatRooms[this.chat.index]); 
+            this.chat = undefined;
+            this.showRoomChats=true;
+            this.showPrivateChats=false;   
+            console.log("HAY CHAT Y NO PRIVATE CHAT");
+           }
         }else if( a.type === 'removed'){
           for(let i in this.chatRooms){
             if(this.chatRooms[i].roomId === this.currentRoomData.roomId){
@@ -97,13 +128,14 @@ export class ComunicationsComponent implements OnInit {
           }
         }
       });
-      // getting messages of default room on init
-      this.getMessagesFromRoom(this.chatRooms[0]); 
-      this.showRoomChats=true;
-      this.showPrivateChats=false;    
-    })
+      //check if its a link from Home
+     
+
+       
+    });
   }
 
+ 
 
   getMessagesFromRoom(data){
     this.currentRoomData = {
@@ -270,28 +302,37 @@ export class ComunicationsComponent implements OnInit {
 /*******************
 PRIVATE CHAT
 *******************/
-  getPrivateMessages(){
-    // get names from private messages 
-    this.fetchData.getPrivateChats(this.userId)
-    .subscribe(data => {
-      data.map(a=>{
-        if(a.type === 'added'){
-          const data= a.payload.doc.data(); 
-          this.privateChatsNames.push(data);
-          
-        }else if( a.type === 'removed'){
-          for(let i in this.privateChatsNames){
-            if(this.privateChatsNames[i].chatId === this.currentRoomData.roomId){
-              const index = parseInt(i);
-              this.privateChatsNames.splice(index, 1);
-            }
+ 
+getPrivateMessages(){
+  // get names from private messages 
+  this.fetchData.getPrivateChats(this.userId)
+  .subscribe(data => {
+    data.map(a=>{
+      if(a.type === 'added'){
+        const data= a.payload.doc.data(); 
+        this.privateChatsNames.push(data);
+          //check if its a link from Home
+       if(this.privateChat !== undefined){
+          this.getMessagesFromPrivateChat(this.privateChatsNames[this.privateChat.index]); 
+          console.log('FUNCIONO');
+          this.showRoomChats=false;
+          this.showPrivateChats=true;
+          this.privateChat = undefined;
+          console.log("nO HAY cHAT PERO SI PRIVATECHAT");
+
+        }
+      }else if( a.type === 'removed'){
+        for(let i in this.privateChatsNames){
+          if(this.privateChatsNames[i].chatId === this.currentRoomData.roomId){
+            const index = parseInt(i);
+            this.privateChatsNames.splice(index, 1);
           }
         }
-      });
-    })
-  }
+      }
+    });
 
-
+  })
+}
   getMessagesFromPrivateChat(data){
     this.currentPrivateChat = {
       name: data.name,
