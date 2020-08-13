@@ -19,7 +19,6 @@ import { HoldDataService } from '../../core/services/hold-data.service';
 
 
 // dialog material
-import { BoardDialogComponent } from '../../material-component/board-dialog/board-dialog.component';
 import { Router, ActivatedRoute } from '@angular/router';
 
 

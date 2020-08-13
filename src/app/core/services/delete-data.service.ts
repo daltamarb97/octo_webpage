@@ -154,4 +154,16 @@ disableDoormanAccountFromDB(buildingId:string, doormanId:string){
 
 // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 
+// SINGUP SERVICES
+
+deleteInviteAfterSignup(inviteId: any) {
+  // delete invite if found one
+  let ref = this.db.collection('invites')
+  .doc(inviteId)
+
+  return ref.delete();
+}
+
+// END OF SIGNUP SERVICES
+
 }

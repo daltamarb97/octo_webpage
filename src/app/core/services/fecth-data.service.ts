@@ -53,11 +53,9 @@ export class FecthDataService {
     return ref.stateChanges(['added']);
   }
 
-  getCompanyPasswords() {
+  getInviteCodes() {
     // retreive all company pass
-    let ref = this.db.collection('company')
-    .doc('companyPasswords')
-    .collection('references')
+    let ref = this.db.collection('invites')
 
     return ref.get();
   }

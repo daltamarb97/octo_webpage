@@ -7,6 +7,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { SetDataService } from '../../core/services/set-data.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { FecthDataService } from '../../core/services/fecth-data.service';
+import { DeleteDataService } from '../../core/services/delete-data.service';
 
 export interface CompanyData {
   name: string,
@@ -32,6 +33,7 @@ export class SignUpComponent implements OnInit {
     private authService: AuthService,
     private setDataService: SetDataService,
     private fetchDataService: FecthDataService,
+    private deleteDataService: DeleteDataService,
   ) {
     
   }
@@ -79,8 +81,9 @@ export class SignUpComponent implements OnInit {
     // Create user in Firebase Authentication database 
     if(this.form1.valid){
       const formValue = this.form1.value;
-      const passwordCompany = this.form1.get('companyPassword').value;
-      this.companyPasswordCheck(passwordCompany)
+      const inviteCode = this.form1.get('inviteCode').value;
+      const emailCheck = this.form1.get('email').value;
+      this.inviteCodeCheck(inviteCode, emailCheck)
         .then(data => {
           const companyData: any = data;
           this.authService.signUp(formValue.email, formValue.password)
@@ -137,28 +140,26 @@ export class SignUpComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       name: ['', [Validators.required]],
       lastname: ['', [Validators.required]],
-      companyPassword: ['', [Validators.required]]
+      inviteCode: ['', [Validators.required]]
     })
   }
 
 
-  private companyPasswordCheck(password: any) {
+  private inviteCodeCheck(invite: any, email: any) {
     // get companies passwords to check if the password that user is referencing is correct
     return new Promise((resolve, reject) => {
-      this.fetchDataService.getCompanyPasswords()
+      this.fetchDataService.getInviteCodes()
       .subscribe(data => {
         const rta = data.docs.map (d => d.data());
         for (let i in rta) {
-          if (rta[i].companyPassword === password) {
-            const companyData: CompanyData = {
-              name:rta[i].name,
-              companyId:rta[i].companyId
-            }
-            resolve(companyData);
+          if (rta[i].inviteId === invite && rta[i].guestEmail === email) {
+            // delete invite if found one
+            this.deleteDataService.deleteInviteAfterSignup(rta[i].inviteId);
+            resolve(rta[i]);
             break;
           }
         }
-        reject('No se ha encontrado la empresa a la que deseas ingresar')
+        reject('No se ha encontrado código de invitación asociado a tu email')
       })
     })
   }

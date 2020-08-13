@@ -111,7 +111,8 @@ export class DirectoryComponent implements OnInit {
         const data = {
           hostEmail: hostEmail,
           guestEmail: email,
-          company: companyName
+          company: companyName,
+          companyId: this.holdData.companyInfo.companyId,
         }
         this.setInviteEmail(data);
         this._snackBar.open('Invitaciones enviadas!', 'Cerrar', {
