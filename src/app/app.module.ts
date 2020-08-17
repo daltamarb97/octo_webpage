@@ -26,6 +26,7 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore'
 import { AngularFireAuthModule } from '@angular/fire/auth'
 import { AngularFireStorageModule } from '@angular/fire/storage';
+import { NotfoundComponent } from './notfound/notfound.component';
 
 
 
@@ -36,6 +37,7 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
     AppHeaderComponent,
     SpinnerComponent,
     AppSidebarComponent,
+    NotfoundComponent,
     
   ],
   imports: [

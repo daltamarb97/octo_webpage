@@ -2,10 +2,13 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 
 import { FullComponent } from './layouts/full/full.component';
+import { NotfoundComponent } from './notfound/notfound.component';
 
 // guards
 import {  EmailVerifiedGuardService } from './core/guards/email-verified.service';
 import { CurrentUserGuard } from './core/guards/current-user-guard.service';
+import { UserinfoGuard } from './core/guards/userinfo.guard';
+
 
 
 export const AppRoutes: Routes = [
@@ -20,6 +23,9 @@ export const AppRoutes: Routes = [
       },
       {
         path: '',
+        canActivate: [
+          UserinfoGuard
+        ],
         loadChildren: 
           () => import('./material-component/material.module').then(m => m.MaterialComponentsModule)
       },
@@ -27,7 +33,8 @@ export const AppRoutes: Routes = [
         path: 'inicio',
         canActivate: [
           CurrentUserGuard,
-          EmailVerifiedGuardService
+          EmailVerifiedGuardService,
+          UserinfoGuard
         ],
         loadChildren:
           () => import('./dashboard/dashboard.module').then(m => m.DashboardModule)
@@ -36,7 +43,8 @@ export const AppRoutes: Routes = [
         path: 'canales-comunicacion',
         canActivate: [
           CurrentUserGuard,
-          EmailVerifiedGuardService
+          EmailVerifiedGuardService,
+          UserinfoGuard
         ],
         loadChildren:
           () => import('./comunications/comunications.module').then(m => m.ComunicationsModule)
@@ -45,7 +53,8 @@ export const AppRoutes: Routes = [
         path: 'pizarra',
         canActivate: [
           CurrentUserGuard,
-          EmailVerifiedGuardService
+          EmailVerifiedGuardService,
+          UserinfoGuard
         ],
         loadChildren:
           () => import('./board/board.module').then(m => m.BoardModule)
@@ -54,7 +63,8 @@ export const AppRoutes: Routes = [
         path: 'directorio',
         canActivate: [
           CurrentUserGuard,
-          EmailVerifiedGuardService
+          EmailVerifiedGuardService,
+          UserinfoGuard
         ],
         loadChildren:
           () => import('./directory/directory.module').then(m => m.DirectoryModule)
@@ -63,7 +73,8 @@ export const AppRoutes: Routes = [
         path: 'perfil',
         canActivate: [
           CurrentUserGuard,
-          EmailVerifiedGuardService
+          EmailVerifiedGuardService,
+          UserinfoGuard
         ],
         loadChildren:
           () => import('./profile/profile.module').then(m => m.ProfileModule)
@@ -74,6 +85,10 @@ export const AppRoutes: Routes = [
     path: 'auth',
     loadChildren:
       () => import('./auth/auth.module').then(m => m.AuthModule)
+  },
+  {
+    path: '**',
+    component: NotfoundComponent
   },
 ];
 

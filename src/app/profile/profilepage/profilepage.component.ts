@@ -48,9 +48,6 @@ export class ProfilepageComponent implements OnInit {
 
 
   ngOnInit(): void {    
-    this.getDoormanInfo();
-    console.log(this.holdData.userInfo);
-    
     this.user = this.holdData.userInfo;
     this.companyInfo = this.holdData.companyInfo;
     this.paymentLink = this.holdData.companyInfo.paymentLink;
@@ -62,25 +59,6 @@ export class ProfilepageComponent implements OnInit {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
-
-  getDoormanInfo(){
-    // gets initial data of doorman
-    this.fetchData.getBuidlingEmployees(this.holdData.companyInfo.companyId)
-    .pipe(
-      takeUntil(this.destroy$)
-    )
-    .subscribe(doorman => {
-      doorman.map(data => {
-        const dataDoorman = data.payload.doc.data();
-        this.doormanList.push(dataDoorman);
-      })
-      if(this.doormanList.length > 0){
-        this.showAddDoormanButton = false;
-      }
-    })
-  }
-
 
   changeProfilePic(){
     console.log('hice click');
@@ -111,51 +89,6 @@ export class ProfilepageComponent implements OnInit {
   }
 
   
-  addDoorman(){
-    // add a new doorman
-    let data = {
-      action: 'doorman'
-    }
-    const dialogRef = this.dialog.open(ProfileDialogComponent, {data: data})
-    
-    dialogRef.afterClosed().subscribe(result => {
-      if(result.event === data.action){
-        const dataResult = result.data; 
-        // check if doorman account already exists
-        this.authData.checkIfDoormanEmailExists(dataResult.email)
-        .then(res => {
-          if(res.length > 0){
-            // email alredy exists
-            this._snackBar.open('El correo que registraste ya existe', 'Cerrar', {
-              duration: 2000,
-              horizontalPosition: this.horizontalPosition,
-              verticalPosition: this.verticalPosition,
-            });
-          }else{
-            // create doorman account
-            this.createDoormanAccount(dataResult);
-            this._snackBar.open('Correo registrado exitosamente', 'Cerrar', {
-              duration: 2000,
-              horizontalPosition: this.horizontalPosition,
-              verticalPosition: this.verticalPosition,
-            });
-          }
-        })
-        .catch(err => {
-          // email is badly formatted, invalid for firebase
-          if(err.code === 'auth/invalid-email'){
-            this._snackBar.open('El correo que pusiste parece no existir, volver a registrar', 'Cerrar', {
-              duration: 2000,
-              horizontalPosition: this.horizontalPosition,
-              verticalPosition: this.verticalPosition,
-            });
-          }
-        })
-      }
-    })
-  }
-
-
   goToPaymentLink(){
     // re-direct user to the payment link
     let data = {

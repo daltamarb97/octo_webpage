@@ -4,43 +4,8 @@
             <mat-card-title>¡Hola, {{user.name}}!</mat-card-title>
             <mat-card-subtitle>{{user.email}}</mat-card-subtitle>
         </mat-card-header>
-        <img mat-card-image src="./../../../assets/images/users/1.jpg" alt="Profile Picture" class="profile-img">
-        <a mat-stroked-button (click)="changeProfilePic()">Cambiar foto de perfil</a>
-        <mat-card-content class="content-admin">                
-        </mat-card-content>
-    </mat-card>
-    
-    <mat-card class="card-building">
-        <mat-card-header>
-            <mat-card-title>{{companyInfo.name}}</mat-card-title>
-            <mat-card-subtitle>{{companyInfo.address}}</mat-card-subtitle>
-        </mat-card-header>
-        <img mat-card-image src="{{companyInfo.photoLink}}" alt="Building Picture"> 
         <mat-card-content>
-            <section class="password-input">
-                <mat-form-field>
-                    <mat-label>CONTRASEÑA PARA REGISTRO DE RESIDENTES DEL EDIFCIO</mat-label>
-                    <input [(ngModel)]="companyPassword" matInput readonly>
-                </mat-form-field>
-                    
-                <button mat-stroked-button color='primary' (click)="copyMessage()">Copiar</button>
-            </section>
-            <mat-accordion class="headers-align">
-                <mat-expansion-panel>
-                    <mat-expansion-panel-header>
-                        <mat-panel-title>
-                            Cuenta de Portería
-                        </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    
-                    <mat-list role="list" class="staff-row" *ngFor="let d of doormanList">
-                        <mat-list-item role="listitem">{{d.email}}</mat-list-item>
-                        <mat-icon color="warn" (click)='deleteDoormanAccount(d)'>delete</mat-icon>
-                    </mat-list>
-
-                    <button mat-stroked-button color='primary' (click)="addDoorman()" *ngIf="showAddDoormanButton">Agregar Cuenta de Portería</button>
-                </mat-expansion-panel>
-            </mat-accordion>
+            <h2>Tu empresa: {{companyInfo.name | titlecase}}</h2>
         </mat-card-content>
         <mat-card-actions>
             <button mat-button (click)="goToPaymentLink()">Mi Suscripción</button>

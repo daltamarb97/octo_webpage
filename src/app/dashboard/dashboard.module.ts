@@ -6,7 +6,6 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { DashboardComponent } from './dashboard.component';
 import { DashboardRoutes } from './dashboard.routing';
 import { ChartistModule } from 'ng-chartist';
-import { UserTableProfileComponent } from './user-table-profile/user-table-profile.component';
 
 @NgModule({
   imports: [
@@ -16,6 +15,6 @@ import { UserTableProfileComponent } from './user-table-profile/user-table-profi
     ChartistModule,
     RouterModule.forChild(DashboardRoutes)
   ],
-  declarations: [DashboardComponent, UserTableProfileComponent]
+  declarations: [DashboardComponent]
 })
 export class DashboardModule {}

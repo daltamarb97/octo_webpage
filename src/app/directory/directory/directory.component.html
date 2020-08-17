@@ -9,18 +9,19 @@
         <a class=" m-r-20" mat-raised-button color="warn" (click)="invitePeople()">Invitar a personas</a>
     </div>
     <div class="message-box contact-box p-20">
-        <div class="message-widget contact-widget">
+        <div class="message-widget contact-widget" *ngFor="let empl of employees">
             <!-- Message -->
             <a >
                 <div class="user-img"><img src="../assets/images/users/2.jpg" alt="user"
-                    class="img-circle"> <span class="profile-status online pull-right"></span> </div>
+                    class="img-circle"> <span class="profile-status online pull-right"></span> 
+                </div>
                 <div class="mail-contnet">
-                    <h5>{{user.name}} {{user.lastname}}</h5> 
-                    <span class="mail-desc">Teléfono: {{user.phone}} </span>
+                    <h5>{{empl.name}} {{empl.lastname}}</h5> 
+                    <span class="mail-desc">{{empl.email}} </span>
                 </div>    
 
                 <div class="example-button-container">
-                    <button (click)="chat(user)" mat-mini-fab  aria-label="Example icon button with a home icon">
+                    <button (click)="chat(empl)" mat-mini-fab  aria-label="Example icon button with a home icon">
                       <mat-icon>chat</mat-icon>
                     </button>
                 </div>

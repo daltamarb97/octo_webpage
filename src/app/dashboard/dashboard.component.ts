@@ -31,45 +31,38 @@ export class currentPrivateChatData {
 
 export class DashboardComponent implements OnInit {
      
-  destroy$: Subject<void> = new Subject();
-  file:any;
-  arrayBuffer:any;
-  filelist = [];
-  companyId: string;
-  // snackbar variables
-  horizontalPosition: MatSnackBarHorizontalPosition = 'center';
-  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+    destroy$: Subject<void> = new Subject();
+    file:any;
+    arrayBuffer:any;
+    filelist = [];
+    companyId: string;
+    // snackbar variables
+    horizontalPosition: MatSnackBarHorizontalPosition = 'center';
+    verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
-  taskList: Array<any> = []; // array of tasks used in the html
-  taskListPersonal: Array<any> = []; // array of personal tasks used in the html 
-    // chat variables
-  userId:string;
-  chatRooms:Array<any> = [];  // list of names of rooms
-  privateChats:Array<any> = [];  // private chats messages
-  privateChatsNames:Array<any> = []; // list of names of private chats
-  currentPrivateChat:currentPrivateChatData;
-  currentMessage:string; // message to be send
-  currentRoomData: currentRoomData;  // information of selected room chat
-  currentRoomParticipants: Array<any> = []; // information of current room participants
-  residentsData:Array<any> = []; // residents list
-  employeesData:Array<any> = []; // employees list
-  showDetail: boolean = true;
-  showPrivateChats:boolean=false;
-  showRoomChats:boolean=false;
+    taskList: Array<any> = []; // array of tasks used in the html
+    taskListPersonal: Array<any> = []; // array of personal tasks used in the html 
+      // chat variables
+    userId:string;
+    chatRooms:Array<any> = [];  // list of names of rooms
+    privateChats:Array<any> = [];  // private chats messages
+    privateChatsNames:Array<any> = []; // list of names of private chats
+    currentPrivateChat:currentPrivateChatData;
+    currentMessage:string; // message to be send
+    currentRoomData: currentRoomData;  // information of selected room chat
+    currentRoomParticipants: Array<any> = []; // information of current room participants
+    residentsData:Array<any> = []; // residents list
+    employeesData:Array<any> = []; // employees list
+    showDetail: boolean = true;
+    showPrivateChats:boolean=false;
+    showRoomChats:boolean=false;
     constructor(
       // services
       private fetchData: FecthDataService,
       private holdData: HoldDataService,
       // angular components
       private router: Router,
-    ){
-       
-    }
-
-    // table variables
-    displayedColumns: string[] = [];
-    dataSource = new MatTableDataSource([]);
-
+    ){ }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -83,9 +76,7 @@ export class DashboardComponent implements OnInit {
     this.getChatRoomNames();
     this.getPrivateMessages();
     this.getTasks();
-
-    }, 2000);
-    
+    }, 2000); 
   }
 
     /*******************

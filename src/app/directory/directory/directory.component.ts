@@ -14,9 +14,7 @@ import { MatDialog, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition, 
 })
 export class DirectoryComponent implements OnInit {
   user:any;
-  residents :Array<any> = [];
-  emergency :Array<any> = [];
-  others :Array<any> = [];
+  employees :Array<any> = [];
   keyChats:any;
   companyInfo: any;
   // snackbar variables
@@ -36,45 +34,20 @@ export class DirectoryComponent implements OnInit {
   ngOnInit(): void {
     this.user= this.holdData.userInfo;
     this.companyInfo = this.holdData.companyInfo;
-    this.getInfoDirectoryEmergency();
-    this.getInfoDirectoryOthers();
-    this.getInfoDirectoryResidents();
+    this.getInfoDirectory();
   }
 
-  private getInfoDirectoryResidents() {
-    this.fecthDataService.getDirectory(this.user.companyId, 'residents')
-      .subscribe( res => {
-        res.map(r => {
-          const data = r.payload.doc.data();
-          this.residents.push(data);
+  getInfoDirectory() {
+    this.fecthDataService.getCompanyEmployees(this.companyInfo.companyId)
+      .subscribe(data => {
+        data.map(e => {
+          const data = e.payload.doc.data(); 
+          this.employees.push(data);
         })
-      });
+      })
   }
-
-  private getInfoDirectoryEmergency() {
-    this.fecthDataService.getDirectory(this.user.companyId, 'emergency')
-      .subscribe( res => {
-        res.map(r => {
-          const data = r.payload.doc.data();
-          this.emergency.push(data);
-        })
-      });
-  }
-
-  private getInfoDirectoryOthers() {
-    this.fecthDataService.getDirectory(this.user.companyId, 'others')
-      .subscribe( res => {
-        res.map(r => {
-          const data = r.payload.doc.data();
-          this.others.push(data);
-        })
-      });
-  }
-
   
-  chat(person){  
-    // console.log(person.);
-    
+  chat(person){ 
     // verifying the user already have a conversation with the person
    this.fecthDataService.getPrivateChatKey(this.user.userId,person.userId)
     .subscribe( res => {

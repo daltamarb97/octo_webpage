@@ -42,15 +42,6 @@ export class FecthDataService {
   }
 
 
-  getBuidlingEmployees(buildingId){
-    // get building employees (use in profile) 
-    let ref = this.db.collection('buildings')
-    .doc(buildingId)
-    .collection('employees')
-    
-    return ref.stateChanges(['added']);
-  }
-
   getInviteCodes() {
     // retreive all company pass
     let ref = this.db.collection('invites')
@@ -61,46 +52,6 @@ export class FecthDataService {
   // END BUIDLING SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
-
-  // PAYMENT TABLE SERVICES
-
-  getTableData(buildingId){
-     // get payment table's data 
-    return this.db.collection('payment_tables')
-    .doc(buildingId)
-    .collection('rows_data')
-    .valueChanges();
-  }
-
-
-  getColumnNames(){
-    // get metadata of table payments
-    let ref = this.db.collection('payments_metadata')
-    .doc('col_names')
-
-    return ref.get();
-  }
-
-
-  getSingleUserPaymentRecords(rowId){
-    // get payment record of specific row in user detail's view after click on admin's table of payments
-    let ref = this.db.collection('payments_records')
-    .doc(rowId)
-    .collection('record_of_payments')
-
-    return ref.valueChanges();
-  }
-
-  async getPaymentProofImage(data){
-    // get payment proof image form storage firebase
-    let ref = firebase.storage().ref(`paymentRecords/${data.buildingId}`).child(`${data.rowId}`);
-    const url = await ref.getDownloadURL();
-    return url;
-  }
-
-  // END OF PAYMENT TABLE SERVICES
-
-  // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 
   // CHATS AND COMUNICATIONS SERVICES
 
@@ -225,14 +176,5 @@ export class FecthDataService {
     return  ref.get();
   }
 
-
-    getDirectory(buildingId: string, type: string){
-      let ref =  this.db.collection('buildings')
-      .doc(buildingId)
-      .collection(type)
-      
-      return ref.stateChanges(['added']); 
-  }
-   // END OF DIRECTORY SERVICES
 
 }
