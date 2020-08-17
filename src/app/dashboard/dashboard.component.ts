@@ -1,25 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import {
   MatTableDataSource, 
-  MatDialog, 
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
-  MatSnackBar
 } from '@angular/material';
 import { Router, NavigationExtras } from '@angular/router';
 
 import { FecthDataService } from '../core/services/fecth-data.service';
-import { SetDataService } from '../core/services/set-data.service';
-
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
-import * as XLSX from 'xlsx';
-
-import { DialogOverviewComponent } from './../material-component/dialog/dialog.component'
-import { DeleteDataService } from '../core/services/delete-data.service';
 import { HoldDataService } from '../core/services/hold-data.service';
-import { ExcelDialogComponent } from '../material-component/excel-dialog/excel-dialog.component';
 
 export class currentRoomData {
   name:string;
@@ -40,16 +31,16 @@ export class currentPrivateChatData {
 
 export class DashboardComponent implements OnInit {
      
-    destroy$: Subject<void> = new Subject();
-    file:any;
-    arrayBuffer:any;
-    filelist = [];
-    companyId: string;
-    // snackbar variables
-    horizontalPosition: MatSnackBarHorizontalPosition = 'center';
-    verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  destroy$: Subject<void> = new Subject();
+  file:any;
+  arrayBuffer:any;
+  filelist = [];
+  companyId: string;
+  // snackbar variables
+  horizontalPosition: MatSnackBarHorizontalPosition = 'center';
+  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
-    taskList: Array<any> = []; // array of tasks used in the html
+  taskList: Array<any> = []; // array of tasks used in the html
   taskListPersonal: Array<any> = []; // array of personal tasks used in the html 
     // chat variables
   userId:string;
@@ -68,14 +59,9 @@ export class DashboardComponent implements OnInit {
     constructor(
       // services
       private fetchData: FecthDataService,
-      private setData: SetDataService,
-      private deleteData: DeleteDataService,
-      // private authService: AuthService,
       private holdData: HoldDataService,
-      // UI components
-      public dialog: MatDialog,
+      // angular components
       private router: Router,
-      private _snackBar: MatSnackBar,
     ){
        
     }
@@ -85,7 +71,7 @@ export class DashboardComponent implements OnInit {
     dataSource = new MatTableDataSource([]);
 
 
-       ngOnInit(): void {
+  ngOnInit(): void {
     setTimeout(() => {
       console.log(this.holdData.userInfo.userId);
     console.log(this.holdData.userInfo.userId);

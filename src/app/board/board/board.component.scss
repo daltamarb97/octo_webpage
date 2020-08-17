@@ -47,3 +47,8 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+.create_task {
+    display: flex;
+    justify-content: space-between;
+}

@@ -1,51 +1,55 @@
 import { Component, Inject } from '@angular/core';
-import {  MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import {  MatDialogRef, MAT_DIALOG_DATA, MAT_CHIPS_DEFAULT_OPTIONS } from '@angular/material';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 
 @Component({
   selector: 'app-board-dialog',
-  templateUrl: './board-dialog.component.html'
+  templateUrl: './board-dialog.component.html',
+  styleUrls: ['./board-dialog.component.scss']
 })
 export class BoardDialogComponent {
   action:string;
-  local_data:any;
+  local_data: any;
   isReadOnly:boolean;
+  fileInfo:string;
+  TaskForm: FormGroup;
 
   constructor(
     public dialogRef: MatDialogRef<BoardDialogComponent>,
+    private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    // local_data receives data from the component in which this dialog was called
-    this.local_data = {...data}
-    this.action = this.local_data.action;
-
-    if(this.action === 'view'){
-      this.isReadOnly = true;
-      this.local_data.timestamp = this.local_data.timestamp.toDate();
-    }
+    this.buildForm();
   }
 
   onNoClick(): void {
     this.dialogRef.close({event: 'close'});
   }
 
-
-  allowEdition(){
-    this.isReadOnly = false;
-  }
-
-
-  editAnnouncement(){
-    this.dialogRef.close({event: 'edit', data: this.local_data});
-  }
-
-  
-  deleteAnnouncement(){
-    this.dialogRef.close({event: 'delete'});
-  }
-
-
-  createAnnouncement(){
+  createTask() {
+    this.local_data = this.TaskForm.value;
     this.dialogRef.close({event: 'create', data: this.local_data});
+  }
+
+  addfile(event){
+    if(event.target.files.length > 0) {
+      this.fileInfo = event.target.files[0];
+      this.TaskForm.patchValue({
+        file: this.fileInfo
+      }); 
+    }
+  }
+
+  private buildForm(){
+    // build the login in form
+    this.TaskForm = this.formBuilder.group({
+      title: ['', [Validators.required]],
+      details: ['', [Validators.required]],
+      date: ['', [Validators.required]],
+      assigned: ['', [Validators.required]],
+      file: [null],
+    })
   }
 }
 

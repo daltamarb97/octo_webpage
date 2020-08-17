@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { HttpClient } from '@angular/common/http';
+import * as firebase  from "firebase"
+import { HoldDataService } from './hold-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class SetDataService {
 
   constructor(
     private db: AngularFirestore,
-    private http: HttpClient
+    private holdData: HoldDataService,
   ) { }
 
 
@@ -366,26 +367,48 @@ export class SetDataService {
 
   // BOARD SERVICES
 
-  createTask(companyId:string, data:object){
+  private uploadTaskFile(companyId: string, taskId: string, fileId: string, file:any) {
+    const storage = firebase.storage();
+    let ref =  storage.ref(`/tasks/${companyId}/${taskId}/${fileId}`);
+    return ref.put(file);
+  }
+
+
+  createTask(companyId:string, data:any){
     // update body or title of the announcement
     let ref = this.db.collection('board')
     .doc(companyId)
-    .collection('announcements')
+    .collection('tasks')
 
-    return ref.add(data)
-    .then((docRef)=>{
-      const announcementId = docRef.id;
-      // update document with announcementId
-      ref.doc(announcementId)
-      .update({
-        announcementId : announcementId
+    return ref.add({
+      title: data.title,
+      body: data.details,
+      timestamp: data.timestamp,
+      assignedTo: data.assignedTo,
+      assignedBy: data.assignedBy,
+    })
+      .then(async (docRef)=>{
+        const taskId: string = docRef.id;
+        // update document with announcementId
+        ref.doc(taskId)
+        .update({
+          taskId: taskId
+        });
+        // if file, uploads it
+        if (data.file === true) {
+          const fileId = this.holdData.createRandomId();
+          ref.doc(taskId)
+          .update({
+            fileId: fileId
+          })
+          await this.uploadTaskFile(companyId, taskId, fileId, data.fileInfo);
+          console.log('la imagen se subió');     
+        } else {
+          // do nothing
+        }
       });
-
-      console.log('creation of announcement done');
-      
-    });
   }
-  
+
 
   updateTask(companyId:string, announcementId:string, data:object){
     // update body or title of the announcement

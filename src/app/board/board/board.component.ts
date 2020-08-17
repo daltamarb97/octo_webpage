@@ -3,10 +3,11 @@ import {
   MatDialog, 
   MatSnackBarHorizontalPosition, 
   MatSnackBarVerticalPosition, 
-  MatSnackBar,
-  MatTabGroup
+  //MatSnackBar,
+  MatTabGroup,
+  MatSnackBar
 } from '@angular/material';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { formatDate } from '@angular/common';
 
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -17,13 +18,9 @@ import { SetDataService } from '../../core/services/set-data.service';
 import { DeleteDataService } from '../../core/services/delete-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
 
-
 // dialog material
 import { Router, ActivatedRoute } from '@angular/router';
-
-
-
-
+import { BoardDialogComponent } from '../../material-component/board-dialog/board-dialog.component';
 
 
 @Component({
@@ -45,19 +42,16 @@ export class BoardComponent implements OnInit {
   listOfBacgroundColors: Array<string> = ['#ADD8E6', '#F5B6C1', '#DDBDF1', '#90EE90'];
   body:string;
   title:string;
-  taskForm: FormGroup;
   taskLink:any;
   personalTaskLink:any;
+  showTask:boolean = false;
+  currentTask:any;
+  fileId:any;
   // snack bar variables
   horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
-  isReadOnly:boolean;
-  local_data:any;
-  showTask:boolean = false;
-  currentTask:any;
   constructor(
     public dialog: MatDialog,
-    private formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
     // services
     private fetchData: FecthDataService,
@@ -67,26 +61,22 @@ export class BoardComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
   ) { 
-    this.buildForm();
-    //getting chat from home link 
+    //getting tasks from home link 
     this.route.queryParams.subscribe(() => {
       if (this.router.getCurrentNavigation().extras.state) {
         this.taskLink = this.router.getCurrentNavigation().extras.state.task;
         console.log(this.taskLink);
 
-        this.viewTaskBody(this.taskLink.info,this.taskLink.index)
-
-        
+        this.viewTaskBody(this.taskLink.info,this.taskLink.index)    
       }
     });
-     //getting chat from home link 
 
+    //getting personal tasks from home link 
     this.route.queryParams.subscribe(() => {
       if (this.router.getCurrentNavigation().extras.state) {
         this.personalTaskLink = this.router.getCurrentNavigation().extras.state.personalTask;
         console.log(this.personalTaskLink.info);
         this.viewTaskBody(this.personalTaskLink.info,this.personalTaskLink.index)
-
       }
     });
   }
@@ -94,21 +84,21 @@ export class BoardComponent implements OnInit {
   ngOnInit(): void {
     this.userId = this.holdData.userId;
     this.companyInfo = this.holdData.companyInfo;
-    this.getAnnouncements();
+    this.getTasks();
     this.getEmployees();
   }
 
 
 
-  private getAnnouncements(){
-    // get announcements of building
+  private getTasks(){
+    // get tasks of company
     this.taskList = [];
     this.fetchData.getCompanyTasks(this.holdData.userInfo.companyId)
     .pipe(
       takeUntil(this.destroy$)
     )
-    .subscribe((announcements)=>{
-      announcements.map(a => {
+    .subscribe((tasks)=>{
+      tasks.map(a => {
         const announcement = a.payload.doc.data();
         this.taskList.push(announcement);
         console.log(this.holdData.userId);
@@ -131,67 +121,91 @@ export class BoardComponent implements OnInit {
   }
 
 
-  createAnnouncement(){
-    const formValue = this.taskForm.value;
-    const resultData = {
-      title: formValue.title,
-      body: formValue.details,
-      timestamp: this.holdData.convertJSCustomDateIntoFirestoreTimestamp(formValue.date),
-      assignedTo: formValue.assigned
-    };
-    
-     // creation of new task
-     this.setData.createTask(this.holdData.userInfo.companyId, resultData)
-     .then(()=>{
+  createTask(){
+    // REFACTOR EVERYTHING
+    const dialogRef = this.dialog.open(BoardDialogComponent);
+
+    dialogRef.afterClosed()
+    .subscribe(result =>{
+      console.log(result.data);
+      
+      if (result.event != 'close') {
+        const rta = result.data;
+        if (rta.file) {
+          const resultData = {
+            title: rta.title,
+            details: rta.details,
+            timestamp: this.holdData.convertJSCustomDateIntoFirestoreTimestamp(rta.date),
+            assignedTo: rta.assigned,
+            file: true,
+            fileInfo: rta.file,
+            assignedBy: this.userId,
+          };
+          this.createTaskFirebase(resultData);
+        } else {
+          const resultData = {
+            title: rta.title,
+            details: rta.details,
+            timestamp: this.holdData.convertJSCustomDateIntoFirestoreTimestamp(rta.date),
+            assignedTo: rta.assigned,
+            file: false,
+            assignedBy: this.userId,
+          };
+          this.createTaskFirebase(resultData);
+        }
+      } 
+    })  
+  }
+  
+
+  viewTaskBody(item, i){
+    if (item.fileId) {
+      const data = {
+        companyId: this.holdData.companyInfo.companyId,
+        taskId: item.taskId,
+        fileId: item.fileId,
+      }
+      this.getFile(data);
+    }
+    this.showTask = true;
+    this.currentTask = {
+      ...item,
+      timestamp: formatDate(item.timestamp.toDate(), 'yyyy-MM-dd', 'en-US') ,
+    }
+  }
+
+
+  private getFile(data) {
+    // get file for specific task
+    this.fetchData.getFileFromTask(data)
+    .then(url => {
+      this.fileId = url;
+    })
+  }
+
+
+
+  // private updateAnnouncement(item, data){
+  //   // edition of announcement
+  //   this.setData.updateTask(this.holdData.userInfo.companyId, item.announcementId, data);
+  // }
+
+
+  // private deleteAnnouncement(item){
+  //   // elimination of announcement
+  //   this.deleteData.deleteTask(this.holdData.userInfo.companyId, item.announcementId);
+  // }
+
+
+  private createTaskFirebase(data){
+    // creation of new task
+    this.setData.createTask(this.holdData.userInfo.companyId, data)
+    .then(()=>{
         this._snackBar.open('Tarea creada con exito', 'Cerrar', {
           duration: 3000,
           horizontalPosition: this.horizontalPosition,
           verticalPosition: this.verticalPosition,
         });
-
-        this.taskForm.reset();
-        this.tabGroup.selectedIndex = 0;
-     })
-  }
-  
-
-  viewTaskBody(item, i){
-    this.showTask = true;
-      this.currentTask = item;
-      // if(event === 'edit'){
-      //   let resultData = {
-      //     announcementId: item.announcementId,
-      //     title: item.title,
-      //     body: item.body,
-      //     timestamp: item.timestamp
-      //   };
-      //   this.updateAnnouncement(item, resultData);
-      // }else if(event === 'delete'){
-      //   this.deleteAnnouncement(item);
-      // }
-    
-  }
-
-
-  private updateAnnouncement(item, data){
-    // edition of announcement
-    this.setData.updateTask(this.holdData.userInfo.companyId, item.announcementId, data);
-  }
-
-
-  private deleteAnnouncement(item){
-    // elimination of announcement
-    this.deleteData.deleteTask(this.holdData.userInfo.companyId, item.announcementId);
-  }
-
-  private buildForm(){
-    // build the login in form
-    this.taskForm = this.formBuilder.group({
-      title: ['', [Validators.required]],
-      details: ['', [Validators.required]],
-      assigned: ['', [Validators.required]],
-      date: ['', [Validators.required]]
     })
   }
-
 }

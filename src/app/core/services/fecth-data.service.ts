@@ -9,9 +9,7 @@ export class FecthDataService {
 
   constructor(
     private db: AngularFirestore,
-  ) {
-    
-   }
+  ) {}
 
 
    getUserInfo(userId){
@@ -177,18 +175,26 @@ export class FecthDataService {
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 
-  // BOARD SERVICES
+  // TASK SERVICES
     
   getCompanyTasks(companyId){
     // get all the announcements for a building
     let ref = this.db.collection('board')
     .doc(companyId)
-    .collection('announcements', ref => ref.orderBy('timestamp', 'desc'))
+    .collection('tasks', ref => ref.orderBy('timestamp', 'desc'))
     
     return ref.stateChanges(['added']);
   }
 
-  // END OF BOARD SERVICES
+  getFileFromTask(data){
+    // get file from specific task
+    const storage = firebase.storage();
+    let ref =  storage.ref(`/tasks/${data.companyId}/${data.taskId}/${data.fileId}`);
+    return ref.getDownloadURL();
+  }
+
+
+  // END OF TASK SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 

@@ -242,8 +242,6 @@ export class ComunicationsComponent implements OnInit {
         this.userId,
         participants
       );  
-      console.log(participants);
-      
     })  
   }
 

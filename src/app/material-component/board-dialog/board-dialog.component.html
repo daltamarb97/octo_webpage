@@ -1,25 +1,18 @@
-<div *ngIf="action === 'view'">
+<div>
     <div mat-dialog-content>
         <mat-card>
             <mat-card-content>
                 <mat-card-title>Crear Tarea</mat-card-title>
-                <!-- ============================================================== -->
-                <!-- column -->
-                <!-- ============================================================== -->
-                <form class="basic-form" [formGroup]="taskForm" (ngSubmit)="createAnnouncement()">
+                <form class="basic-form" [formGroup]="TaskForm" (ngSubmit)="createTask()">
                     <div fxLayout="row wrap">
-                        <!-- column -->
                         <div fxFlex.gt-sm="100" fxFlex="100">
-                            <mat-form-field>
-                                <input formControlName="title" matInput placeholder="Título">
+                            <mat-form-field >
+                                <input matInput placeholder="Título" formControlName="title">
                             </mat-form-field>
                         </div>
-                        <!-- column -->
-
-                        <!-- column -->
                         <div fxFlex.gt-sm="100" fxFlex="100">
                             <mat-form-field>
-                                <textarea formControlName="details" cols="1" rows="10"  matInput placeholder="Cuerpo del anuncio"></textarea>
+                                <textarea cols="1" rows="10"  matInput placeholder="Detalles de la tarea" formControlName="details"></textarea>
                             </mat-form-field>
                         </div>
 
@@ -33,12 +26,20 @@
                         <mat-form-field>
                             <mat-label>Asignar a</mat-label>
                             <mat-select formControlName="assigned">
-                              <mat-option *ngFor="let e of employeesList" [value]="e.userId">{{e.name}} {{e.lastname}}</mat-option>
+                              <mat-option value="test">test</mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <!-- column -->
-                        <div fxFlex.gt-sm="100" fxFlex="100">
-                            <button mat-raised-button [disabled]="taskForm.invalid" color="primary" type="submit">Publicar</button>
+
+                        <div class="file-control">
+                            <input  
+                                type="file"  
+                                (change)="addfile($event)" 
+                                placeholder="Upload file" 
+                                accept="media_type"> 
+                        </div>  
+
+                        <div fxFlex.gt-sm="100" fxFlex="100" style="margin-top: 30px;">
+                            <button mat-raised-button color="primary" [disabled]="TaskForm.invalid" type="submit">Publicar</button>
                         </div>
                     </div>
                 </form>
@@ -52,7 +53,7 @@
 </div>
 
 
-<div *ngIf="action === 'create'">
+<!-- <div *ngIf="action === 'create'">
     <div mat-dialog-content>
         <div>
             <mat-form-field>
@@ -63,13 +64,13 @@
                 <textarea cols="1" rows="10" placeholder="Cuerpo del Anuncio" matInput [(ngModel)]="local_data.body"></textarea>
             </mat-form-field>
         </div>
-    </div>
+    </div> -->
             
         <!-- Buttons Footer -->
             
-    <div mat-dialog-actions>
+    <!-- <div mat-dialog-actions>
         <button mat-button (click)="onNoClick()">Cerrar</button>
         <button mat-button mat-flat-button color="accent" (click)="createAnnouncement()">Confirmar Anuncio</button>
     </div>
 </div>
-    
+     -->
