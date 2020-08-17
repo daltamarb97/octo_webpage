@@ -410,12 +410,12 @@ export class SetDataService {
   }
 
 
-  updateTask(companyId:string, announcementId:string, data:object){
+  updateTask(companyId:string, data:any){
     // update body or title of the announcement
     let ref = this.db.collection('board')
     .doc(companyId)
-    .collection('announcements')
-    .doc(announcementId)
+    .collection('tasks')
+    .doc(data.taskId)
 
     return ref.update(data)
     .then(()=>{

@@ -32,7 +32,7 @@ export class FecthDataService {
   }
 
 
-  getCompanyEmployees(companyId){
+  getCompanyEmployees(companyId: string){
     // get building residents
     let ref = this.db.collection('company')
     .doc(companyId)
@@ -183,16 +183,32 @@ export class FecthDataService {
     .doc(companyId)
     .collection('tasks', ref => ref.orderBy('timestamp', 'desc'))
     
-    return ref.stateChanges(['added']);
+    return ref.valueChanges();
   }
 
-  getFileFromTask(data){
+  async getFileFromTask(data){
     // get file from specific task
+    let rta = {
+      contentType: '',
+      url: '',
+    };
     const storage = firebase.storage();
     let ref =  storage.ref(`/tasks/${data.companyId}/${data.taskId}/${data.fileId}`);
-    return ref.getDownloadURL();
+    const metadata = await ref.getMetadata();
+    const url = await ref.getDownloadURL();
+    if (metadata.contentType.includes('image')) {
+      rta = {
+        contentType: 'image',
+        url: url,
+      }
+    } else{
+      rta = {
+        contentType: 'file',
+        url: url,
+      }
+    }
+    return rta;
   }
-
 
   // END OF TASK SERVICES
 

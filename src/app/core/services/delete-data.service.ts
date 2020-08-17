@@ -104,14 +104,14 @@ export class DeleteDataService {
 
 // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 
-// BOARD SERVICES
+// TASK SERVICES
 
-  deleteTask(companyId:string, announcementId:string){
+  deleteTask(companyId:string, taskId:string){
     // update body or title of the announcement
     let ref = this.db.collection('board')
     .doc(companyId)
-    .collection('announcements')
-    .doc(announcementId)
+    .collection('tasks')
+    .doc(taskId)
 
     return ref.delete()
     .then(()=>{
@@ -121,8 +121,12 @@ export class DeleteDataService {
     });
   }
 
-
-// END OF BOARD SERVICES
+  deleteFileOfTask(companyId: string, taskId: string, fileId: string) {
+    const storage = firebase.storage();
+    let ref =  storage.ref(`/tasks/${companyId}/${taskId}/${fileId}`);
+    return ref.delete();
+  }
+// END OF TASK SERVICES
 
 // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 

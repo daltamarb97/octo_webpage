@@ -26,7 +26,7 @@
                         <mat-form-field>
                             <mat-label>Asignar a</mat-label>
                             <mat-select formControlName="assigned">
-                              <mat-option value="test">test</mat-option>
+                              <mat-option *ngFor="let empl of employees" [value]="empl">{{empl}}</mat-option>
                             </mat-select>
                         </mat-form-field>
 

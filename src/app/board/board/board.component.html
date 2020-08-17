@@ -18,14 +18,12 @@
                     <mat-card-content>
                         <div class="d-flex no-blcok" *ngFor="let item of taskListPersonal ; let i = index" (click)="viewTaskBody(item, i)">
                             <div class="m-r-20">
-                                <span class="material-icons">
-                                    work
-                                    </span>
+                                <span class="material-icons">work</span>
                             </div> 
                             <div class="p-b-20 b-b m-b-30">
                                 <h4 class="m-0 font-medium font-14">{{item.title | titlecase}}</h4>
-                                <p class="m-0 font-12" >Asignada a: <span class="text-muted"> Nombre de persona</span></p>
-                                <p class="m-0 font-12" >Fecha de entrega: <span class="text-muted"> {{item.timestamp.toDate() | date }}</span></p>
+                                <p class="m-0 font-12" >Asignada a: <span class="text-muted"> {{item.assignedTo}}</span></p>
+                                <p class="m-0 font-12" >Fecha de entrega: <span class="text-muted"> {{item.timestamp | date }}</span></p>
                             </div>
                         </div>
                     </mat-card-content>
@@ -44,8 +42,8 @@
                              </div> 
                             <div class="p-b-20 b-b m-b-30">
                                 <h4 class="m-0 font-medium font-14">{{item.title | titlecase}}</h4>
-                                <p class="m-0 font-12">Asignada a: <span class="text-muted"> Nombre de persona</span></p>
-                                <p class="m-0 font-12" >Fecha de entrega: <span class="text-muted"> {{item.timestamp.toDate() | date }}</span></p>
+                                <p class="m-0 font-12">Asignada a: <span class="text-muted"> {{item.assignedTo}}</span></p>
+                                <p class="m-0 font-12" >Fecha de entrega: <span class="text-muted"> {{item.timestamp | date }}</span></p>
                             </div>
                         </div>
                     </mat-card-content>
@@ -61,26 +59,63 @@
                 <h4 class="card-title font-16 m-0 m-b-20">Tareas</h4>
             </div>
             <mat-form-field>
-                <input type="text" placeholder="Título" matInput [(ngModel)]="currentTask.title" [readonly]="isReadOnly">
+                <input type="text" placeholder="Título" matInput [(ngModel)]="currentTask.title" [readonly]="!editing">
             </mat-form-field>
     
             <mat-form-field>
-                <textarea cols="1" rows="10" placeholder="Detalles de la Tarea" matInput [(ngModel)]="currentTask.body" [readonly]="isReadOnly"></textarea>
+                <textarea cols="1" rows="10" placeholder="Detalles de la Tarea" matInput [(ngModel)]="currentTask.body" [readonly]="!editing"></textarea>
             </mat-form-field>
     
-            <mat-form-field>
+            <mat-form-field *ngIf="!editing">
                 <input type="text" placeholder="fecha de entrega" matInput [(ngModel)]="currentTask.timestamp" readonly>
             </mat-form-field>
 
-            <mat-form-field>
+            <mat-form-field *ngIf="!editing">
                 <input type="text" placeholder="asignado a" matInput [(ngModel)]="currentTask.assignedTo" readonly>
             </mat-form-field>
 
-            <img [src]="fileId" alt="">
+            <mat-form-field *ngIf="!editing">
+                <input type="text" placeholder="asignado por" matInput [(ngModel)]="currentTask.assignedBy" readonly>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" *ngIf="editing">
+                <mat-label>Fecha de entrega</mat-label>
+                <input matInput [matDatepicker]="picker1" [(ngModel)]="currentTask.timestamp">
+                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field *ngIf="editing">
+                <mat-label>Asignar a</mat-label>
+                <mat-select [(ngModel)]="currentTask.assignedTo">
+                    <mat-option *ngFor="let empl of employeesList" [value]="empl">{{empl}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <button 
+                mat-button 
+                mat-flat-button
+                *ngIf= "fileData && fileData.contentType === 'image'"
+                color="warn" 
+                (click)="downloadImage(fileData.url)">
+                <span class="material-icons">cloud_download</span>
+                Descargar Imagen
+            </button>
+
+            <button 
+                mat-button 
+                mat-flat-button
+                *ngIf= "fileData && fileData.contentType === 'file'"
+                color="primary" 
+                (click)="downloadFile(fileData.url)">
+                <span class="material-icons">cloud_download</span>
+                Descargar Archivo
+            </button>
             <mat-card-actions>    
-                <button mat-button mat-flat-button color="primary" (click)="allowEdition()" >Editar Tarea</button>
-                <button mat-button mat-flat-button color="warn" (click)="deleteAnnouncement()" >Eliminar Tarea</button>
-                <button mat-button mat-flat-button color="success" (click)="editAnnouncement()" >Finalizar Tarea</button>
+                <button mat-button mat-flat-button color="primary" (click)="allowEdition()" *ngIf="!editing">Editar Tarea</button>
+                <button mat-button mat-flat-button color="warn" (click)="deleteTask()" *ngIf="!editing">Eliminar Tarea</button>
+                <button mat-button mat-flat-button color="success" (click)="finishTask()" *ngIf="!editing">Finalizar Tarea</button>
+                <button mat-button mat-flat-button color="primary" (click)="finishEditing()" *ngIf="editing">Confirmar</button>
             </mat-card-actions>
         </mat-card>
     </div>

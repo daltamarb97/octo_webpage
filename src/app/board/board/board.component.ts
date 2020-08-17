@@ -9,6 +9,7 @@ import {
 } from '@angular/material';
 import { formatDate } from '@angular/common';
 
+
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -23,6 +24,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BoardDialogComponent } from '../../material-component/board-dialog/board-dialog.component';
 
 
+
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
@@ -31,28 +33,26 @@ import { BoardDialogComponent } from '../../material-component/board-dialog/boar
 export class BoardComponent implements OnInit {
   @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
 
-  destroy$:  Subject<void> = new Subject();
+  destroy$: Subject<void> = new Subject();
 
   userId:string;
   companyInfo: any;
   taskList: Array<any> = []; // array of tasks used in the html
   taskListPersonal: Array<any> = []; // array of personal tasks used in the html 
   employeesList: Array<any> = []; // array of personal tasks used in the html 
-  backColor:string; // color of header background
-  listOfBacgroundColors: Array<string> = ['#ADD8E6', '#F5B6C1', '#DDBDF1', '#90EE90'];
-  body:string;
-  title:string;
   taskLink:any;
   personalTaskLink:any;
   showTask:boolean = false;
   currentTask:any;
-  fileId:any;
+  fileData:any;
+  editing: boolean = false;
   // snack bar variables
   horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
   constructor(
     public dialog: MatDialog,
     private _snackBar: MatSnackBar,
+
     // services
     private fetchData: FecthDataService,
     private setData: SetDataService,
@@ -88,33 +88,44 @@ export class BoardComponent implements OnInit {
     this.getEmployees();
   }
 
-
+  ngOnDestroy(){
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   private getTasks(){
     // get tasks of company
     this.taskList = [];
+    this.taskListPersonal = [];
     this.fetchData.getCompanyTasks(this.holdData.userInfo.companyId)
     .pipe(
       takeUntil(this.destroy$)
     )
     .subscribe((tasks)=>{
-      tasks.map(a => {
-        const announcement = a.payload.doc.data();
-        this.taskList.push(announcement);
-        console.log(this.holdData.userId);
-        if (announcement.assignedTo === this.holdData.userId) {
-          this.taskListPersonal.push(announcement);
+      this.taskList = [];
+      this.taskListPersonal = [];
+      tasks.map(t => {
+        if(t.finished !== true) {
+          const taskToPush = {
+            ...t,
+            timestamp: t.timestamp.toDate()
+          };
+          (t.assignedTo === this.holdData.userInfo.email) 
+            ? this.taskListPersonal.push(taskToPush) 
+            : console.log('');
+          this.taskList.push(taskToPush);
         }
       })
     });
   }
+
 
   private getEmployees () {
     // get employees to assign tasks
     this.fetchData.getCompanyEmployees(this.holdData.userInfo.companyId)
       .subscribe(empl => {
         empl.map(e => {
-          const employee = e.payload.doc.data();
+          const employee = e.payload.doc.data().email;
           this.employeesList.push(employee);
         })
       })
@@ -122,13 +133,10 @@ export class BoardComponent implements OnInit {
 
 
   createTask(){
-    // REFACTOR EVERYTHING
     const dialogRef = this.dialog.open(BoardDialogComponent);
 
     dialogRef.afterClosed()
-    .subscribe(result =>{
-      console.log(result.data);
-      
+    .subscribe( async (result) =>{
       if (result.event != 'close') {
         const rta = result.data;
         if (rta.file) {
@@ -139,9 +147,9 @@ export class BoardComponent implements OnInit {
             assignedTo: rta.assigned,
             file: true,
             fileInfo: rta.file,
-            assignedBy: this.userId,
+            assignedBy: this.holdData.userInfo.email,
           };
-          this.createTaskFirebase(resultData);
+          await this.createTaskFirebase(resultData);
         } else {
           const resultData = {
             title: rta.title,
@@ -149,57 +157,100 @@ export class BoardComponent implements OnInit {
             timestamp: this.holdData.convertJSCustomDateIntoFirestoreTimestamp(rta.date),
             assignedTo: rta.assigned,
             file: false,
-            assignedBy: this.userId,
+            assignedBy: this.holdData.userInfo.email,
           };
-          this.createTaskFirebase(resultData);
+          await this.createTaskFirebase(resultData);
         }
       } 
+      if (this.taskList.length === 0) {
+        this.getTasks();
+        this.tabGroup.selectedIndex = 1;
+      }
     })  
   }
   
 
-  viewTaskBody(item, i){
+  async viewTaskBody(item, i){
+    this.currentTask = null;
+    this.fileData = null;
     if (item.fileId) {
       const data = {
         companyId: this.holdData.companyInfo.companyId,
         taskId: item.taskId,
         fileId: item.fileId,
       }
-      this.getFile(data);
+      await this.getFile(data);
     }
+    this.currentTask = { ...item};
     this.showTask = true;
-    this.currentTask = {
-      ...item,
-      timestamp: formatDate(item.timestamp.toDate(), 'yyyy-MM-dd', 'en-US') ,
-    }
   }
 
 
   private getFile(data) {
     // get file for specific task
-    this.fetchData.getFileFromTask(data)
-    .then(url => {
-      this.fileId = url;
+    return this.fetchData.getFileFromTask(data)
+    .then(data => {
+      this.fileData = data;
     })
   }
 
 
+  downloadFile(url) {
+    window.open(url, "_blank");
+  }
 
-  // private updateAnnouncement(item, data){
-  //   // edition of announcement
-  //   this.setData.updateTask(this.holdData.userInfo.companyId, item.announcementId, data);
-  // }
+  downloadImage(url) {
+    window.open(url, "_blank");
+  }
 
 
-  // private deleteAnnouncement(item){
-  //   // elimination of announcement
-  //   this.deleteData.deleteTask(this.holdData.userInfo.companyId, item.announcementId);
-  // }
+  private updateTask(data){
+    // edition of task
+    this.setData.updateTask(this.holdData.userInfo.companyId, data);
+  }
 
+
+  deleteTask(){
+    // delete a task
+    this.taskList = this.checkTaskInArray(this.taskList, this.currentTask.taskId);
+    this.taskListPersonal = this.checkTaskInArray(this.taskListPersonal, this.currentTask.taskId);
+    this.showTask = false;
+    if (this.currentTask.fileId) {
+      this.deleteData.deleteTask(this.holdData.userInfo.companyId, this.currentTask.taskId);
+      this.deleteData.deleteFileOfTask(this.holdData.userInfo.companyId, this.currentTask.taskId, this.currentTask.fileId);
+    } else {
+      this.deleteData.deleteTask(this.holdData.userInfo.companyId, this.currentTask.taskId);
+    } 
+  }
+
+  allowEdition() {
+    this.editing = true;
+  }
+
+  finishEditing() {
+    this.editing = false;
+    const taskUpdated = {
+      ...this.currentTask,
+      assignedBy: this.holdData.userInfo.email,
+      timestamp: this.holdData.convertJSCustomDateIntoFirestoreTimestamp(this.currentTask.timestamp),
+    }
+    this.updateTask(taskUpdated);
+  }
+
+  finishTask() {
+    const taskFinished = {
+      ...this.currentTask,
+      finished: true,
+    }
+    this.taskList = this.checkTaskInArray(this.taskList, this.currentTask.taskId);
+    this.taskListPersonal = this.checkTaskInArray(this.taskListPersonal, this.currentTask.taskId);
+    this.showTask = false;
+    this.updateTask(taskFinished);
+  }
 
   private createTaskFirebase(data){
     // creation of new task
-    this.setData.createTask(this.holdData.userInfo.companyId, data)
+    return this.setData.createTask(this.holdData.userInfo.companyId, data)
     .then(()=>{
         this._snackBar.open('Tarea creada con exito', 'Cerrar', {
           duration: 3000,
@@ -207,5 +258,10 @@ export class BoardComponent implements OnInit {
           verticalPosition: this.verticalPosition,
         });
     })
+  }
+  
+  checkTaskInArray(array: Array<any>, taskId: string) {
+    const rta = array.filter(t => t.taskId !== taskId);
+    return rta;
   }
 }

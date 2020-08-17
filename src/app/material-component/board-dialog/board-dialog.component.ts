@@ -1,6 +1,11 @@
 import { Component, Inject } from '@angular/core';
-import {  MatDialogRef, MAT_DIALOG_DATA, MAT_CHIPS_DEFAULT_OPTIONS } from '@angular/material';
+import {  MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+// services
+import { FecthDataService } from '../../core/services/fecth-data.service';
+import { HoldDataService } from '../../core/services/hold-data.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 
 @Component({
@@ -14,21 +19,42 @@ export class BoardDialogComponent {
   isReadOnly:boolean;
   fileInfo:string;
   TaskForm: FormGroup;
-
+  employees: Array<any> = [];
+  destroy$: Subject<void> = new Subject();
   constructor(
     public dialogRef: MatDialogRef<BoardDialogComponent>,
     private formBuilder: FormBuilder,
+    private fetchData: FecthDataService,
+    private holdData: HoldDataService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.buildForm();
+    this.getInfoEmployees();
   }
 
   onNoClick(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     this.dialogRef.close({event: 'close'});
+  }
+
+  private getInfoEmployees() {
+    this.fetchData.getCompanyEmployees(this.holdData.companyInfo.companyId)
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe(data => {
+        data.map(e => {
+          const employeeEmail = e.payload.doc.data().email;
+          this.employees.push(employeeEmail);
+        })
+      })
   }
 
   createTask() {
     this.local_data = this.TaskForm.value;
+    this.destroy$.next();
+    this.destroy$.complete();
     this.dialogRef.close({event: 'create', data: this.local_data});
   }
 

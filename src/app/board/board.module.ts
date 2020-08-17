@@ -7,7 +7,6 @@ import { BoardComponent } from './board/board.component';
 import { DemoMaterialModule } from '../demo-material-module';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
-
 @NgModule({
   declarations: [BoardComponent],
   imports: [
