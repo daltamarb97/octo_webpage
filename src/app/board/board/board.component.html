@@ -46,7 +46,7 @@
                              </div> 
                             <div class="p-b-20 b-b m-b-30">
                                 <h4 class="m-0 font-medium font-14">{{item.title | titlecase}}</h4>
-                                <p class="m-0 font-12">Asignada a: <span class="text-muted"> Nombre de persona</span></p>
+                                <p class="m-0 font-12">Asignada a: <span class="text-muted"> {{item.assignedTo}}</span></p>
                                 <p class="m-0 font-12">Fecha de entrega: <span class="text-muted"> {{item.timestamp.toDate() | date }}</span></p>
                             </div>
                         </div>
