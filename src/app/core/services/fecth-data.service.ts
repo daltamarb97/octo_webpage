@@ -189,7 +189,16 @@ export class FecthDataService {
     
     return ref.stateChanges(['added']);
   }
-
+  getComments(companyId,taskId){
+    // get all the announcements for a building
+    let ref = this.db.collection('board')
+    .doc(companyId)
+    .collection('announcements')
+    .doc(taskId)
+    .collection('comments', ref => ref.orderBy('timestamp', 'desc'))
+    
+    return ref.stateChanges(['added']);
+  }
   // END OF BOARD SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*

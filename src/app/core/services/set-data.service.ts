@@ -345,7 +345,7 @@ export class SetDataService {
   }
 
 
-  createPrivateChat(localData, foreignData) {
+  async createPrivateChat(localData, foreignData) {
     // first set keys in both sender and receiver
     const chatId = this.db.createId(); // create random chatId
     let ref = this.db.collection('users')
@@ -353,7 +353,7 @@ export class SetDataService {
     .collection('keyChats')
     .doc(foreignData.userId)
 
-    return ref.set({
+      await ref.set({
       chatId: chatId,
       name: foreignData.name,
       lastname: foreignData.lastname
@@ -370,6 +370,10 @@ export class SetDataService {
         lastname: localData.lastname
       })
     });
+    const newChat = {chatId: chatId,
+      name: foreignData.name,
+      lastname: foreignData.lastname} 
+      return newChat
   }
 
 
@@ -462,7 +466,22 @@ export class SetDataService {
       console.log('an error happened: ' +err);
     });
   }
-  
+  sendComments(companyId, taskId, comment){
+    // send comment to a task
+    let ref = this.db.collection('board')
+    .doc(companyId)
+    .collection('announcements')
+    .doc(taskId)
+    .collection('comments')
+
+    return ref.add({
+      name: comment.name,
+      lastname: comment.lastname,
+      text: comment.message,
+      timestamp: comment.timestamp,
+      userId: comment.userId
+    })
+  }
   // END OF BOARD SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*

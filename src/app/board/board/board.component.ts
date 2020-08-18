@@ -56,6 +56,9 @@ export class BoardComponent implements OnInit {
   local_data:any;
   showTask:boolean = false;
   currentTask:any;
+  commentText:any;
+
+  taskComments:any=[];
   constructor(
     public dialog: MatDialog,
     private formBuilder: FormBuilder,
@@ -141,7 +144,7 @@ export class BoardComponent implements OnInit {
       title: formValue.title,
       body: formValue.details,
       timestamp: this.holdData.convertJSCustomDateIntoFirestoreTimestamp(formValue.date),
-      assignedTo: formValue.assigned
+      assignedTo: formValue.assigned,
     };
     
      // creation of new task
@@ -161,22 +164,29 @@ export class BoardComponent implements OnInit {
 
   viewTaskBody(item, i){
     this.showTask = true;
-      this.currentTask = item;
-      // if(event === 'edit'){
-      //   let resultData = {
-      //     announcementId: item.announcementId,
-      //     title: item.title,
-      //     body: item.body,
-      //     timestamp: item.timestamp
-      //   };
-      //   this.updateAnnouncement(item, resultData);
-      // }else if(event === 'delete'){
-      //   this.deleteAnnouncement(item);
-      // }
-    
+    this.currentTask = item;
+    console.log(item);
+    // get the coments each time user select on a task
+    this.fetchData.getComments(this.holdData.userInfo.companyId,item.announcementId)
+    .pipe(
+      takeUntil(this.destroy$)
+    )
+    .subscribe((comments)=>{
+      comments.map(a => {
+        const comments = a.payload.doc.data();
+        this.taskComments.push(comments);
+        console.log(this.taskComments);        
+        })    
+    })
   }
-
-
+  sendComment(companyId, taskId, messageData){
+    const comment = {
+      name: this.holdData.userInfo.name,
+      lastname: this.holdData.userInfo.name,
+      text: this.commentText,
+      timestamp: this.holdData.convertJSDateIntoFirestoreTimestamp(),
+    };
+  }
   private updateAnnouncement(item, data){
     // edition of announcement
     this.setData.updateTask(this.holdData.userInfo.companyId, item.announcementId, data);

@@ -1,6 +1,7 @@
 
        
-       
+        <!-- <button mat-raised-button style="margin-left: auto;" color="primary" type="submit">hola</button> -->
+
         <div style="display: flex;">
         <!-- left Side -->
         <mat-card style="width: 35%;">
@@ -24,9 +25,8 @@
                                     </span>
                                 <!-- <img class="img-circle" width="50" src="assets/images/users/1.jpg" alt="Image">-->
                              </div> 
-                             <div class="p-b-20 b-b m-b-30">
+                             <div class="p-b-5 b-b m-b-10">
                                 <h4 class="m-0 font-medium font-14">{{item.title | titlecase}}</h4>
-                                <p class="m-0 font-12" >Asignada a: <span class="text-muted"> Nombre de persona</span></p>
                                 <p class="m-0 font-12" >Fecha de entrega: <span class="text-muted"> {{item.timestamp.toDate() | date }}</span></p>
                             </div>
                             </div>
@@ -47,7 +47,7 @@
                             <div class="p-b-20 b-b m-b-30">
                                 <h4 class="m-0 font-medium font-14">{{item.title | titlecase}}</h4>
                                 <p class="m-0 font-12">Asignada a: <span class="text-muted"> Nombre de persona</span></p>
-                                <p class="m-0 font-12" >Fecha de entrega: <span class="text-muted"> {{item.timestamp.toDate() | date }}</span></p>
+                                <p class="m-0 font-12">Fecha de entrega: <span class="text-muted"> {{item.timestamp.toDate() | date }}</span></p>
                             </div>
                         </div>
                     </mat-card-content>
@@ -58,31 +58,63 @@
         </mat-card>
         <!-- End of left Side -->
         
-        <mat-card style="width: 63%;height: 100%;padding: 25px !important;" *ngIf="showTask">
-            <div class=" position-relative">
-                <h4 class="card-title font-16 m-0 m-b-20">Tareas</h4>
-            </div>
-                <mat-form-field>
+        <mat-card style="width: 63%;height: 100%;padding: 25px !important;"  *ngIf="showTask">          
+                <mat-form-field class="font-16">
                     <input type="text" placeholder="Título" matInput [(ngModel)]="currentTask.title" [readonly]="isReadOnly">
                 </mat-form-field>
+                <mat-form-field>
+                    <textarea cols="1" rows="3" placeholder="Detalles de la Tarea" matInput [(ngModel)]="currentTask.body" [readonly]="isReadOnly"></textarea>
+                </mat-form-field>
+                <div style="display: flex;">
+                    <mat-form-field class="m-r-15">
+                        <input type="text" placeholder="fecha de entrega" matInput [(ngModel)]="currentTask.timestamp" readonly>
+                    </mat-form-field>
         
-                <mat-form-field>
-                    <textarea cols="1" rows="10" placeholder="Detalles de la Tarea" matInput [(ngModel)]="currentTask.body" [readonly]="isReadOnly"></textarea>
-                </mat-form-field>
-        
-                <mat-form-field>
-                    <input type="text" placeholder="fecha de entrega" matInput [(ngModel)]="currentTask.timestamp" readonly>
-                </mat-form-field>
-    
-                <mat-form-field>
-                    <input type="text" placeholder="asignado a" matInput [(ngModel)]="currentTask.assignedTo" readonly>
-                </mat-form-field>
-                <mat-card-actions>
+                    <mat-form-field>
+                        <input type="text" placeholder="asignado a" matInput [(ngModel)]="currentTask.assignedTo" readonly>
+                    </mat-form-field>
+                </div>
+                <mat-card>
+                    <span class="font-medium">Comentarios:</span>
+                    <mat-list>
+                     <div   *ngFor="let comments of taskComments">
+                        <div class="p-10">                                                
+                                <span class="d-flex m-r-10" style="align-items:center"> <i class="material-icons">
+                                    account_circle                                    
+                                </i>{{comments.name}} {{comments.lastname}}</span>   
+                                    <div><p style="white-space: initial;">{{comments.text}}                              
+                                    </p></div>
+                            <!-- <img class="img-circle" width="50" src="assets/images/users/1.jpg" alt="Image">-->
+                         </div>
+
+                            
+
+                           <mat-divider></mat-divider>
+
+                        </div>
+                        <mat-divider></mat-divider>
+                        <mat-list-item>Item 2</mat-list-item>
+                        <mat-divider></mat-divider>
+                        <mat-list-item>Item 3</mat-list-item>
+                      </mat-list>
+                      
+                </mat-card>
+                    <mat-form-field>
+                        <textarea cols="1" rows="3" placeholder="Escribe tu comentario..." matInput [(ngModel)]="commentText" [readonly]="isReadOnly"></textarea>
+                        <!-- aqui button -->
+                    </mat-form-field>
+                    <span>Archivo: acta_de_constitución.pdf(1) </span>
+                    <mat-card-actions>
+                        <button mat-raised-button color="primary" >
+                            <span class="material-icons">send
+                                </span>    enviar</button>
+                                
+                                <button mat-raised-button style="margin-left: 5px;" color="primary" type="submit">
+                            <i class="material-icons">publish</i>
+                             Importar PDF</button>
+                      </mat-card-actions>
                     
-                    <button mat-button mat-flat-button color="primary" (click)="allowEdition()" >Editar Tarea</button>
-                    <button mat-button mat-flat-button color="warn" (click)="deleteAnnouncement()" >Eliminar Tarea</button>
-                    <button mat-button mat-flat-button color="success" (click)="editAnnouncement()" >Finalizar Tarea</button>
-                  </mat-card-actions>
+                
         </mat-card>
         </div>
     <!-- </div> -->

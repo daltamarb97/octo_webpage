@@ -12,6 +12,7 @@ import { Subject } from 'rxjs';
 import { HoldDataService } from '../../core/services/hold-data.service';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { Router, ActivatedRoute } from '@angular/router';
+import { FormControl } from '@angular/forms';
 
 export class currentRoomData {
   name:string;
@@ -52,6 +53,10 @@ export class ComunicationsComponent implements OnInit {
   showRoomChats:boolean=false;
   chat:any;
   privateChat:any;
+  newChat:any;
+  oldChat:any;
+  // showSearchBar:boolean = false;
+
   constructor(
     private fetchData: FecthDataService,
     private setData: SetDataService,
@@ -80,6 +85,24 @@ export class ComunicationsComponent implements OnInit {
         
       }
     });
+     //show old chat from directory
+     this.route.queryParams.subscribe(() => {
+      if (this.router.getCurrentNavigation().extras.state) {
+        this.oldChat = this.router.getCurrentNavigation().extras.state.oldChat;
+        console.log(this.oldChat);
+        this.getMessagesFromPrivateChat(this.oldChat);
+      }
+    });
+
+     //create new chat and show it
+    this.route.queryParams.subscribe(() => {
+      if (this.router.getCurrentNavigation().extras.state) {
+        this.newChat = this.router.getCurrentNavigation().extras.state.newChat;
+        console.log(this.newChat);
+        this.getMessagesFromPrivateChat(this.newChat);
+
+      }
+    });
   }
 
 
@@ -96,7 +119,10 @@ export class ComunicationsComponent implements OnInit {
     this.destroy$.next();
     this.destroy$.complete();
   }
+  createChat(){
+    this.router.navigate(['directorio']);
 
+  }
   /*******************
   ROOM CHAT
   *******************/
@@ -339,17 +365,24 @@ getPrivateMessages(){
       chatId: data.chatId,
       lastname: data.lastname,
     }
+    console.log(data);
+    
     this.showRoomChats=false;
     this.showPrivateChats=true;
     this.chatMessages = []; //clear the array on click
     this.privateChats = []; //clear the array on click
     // get messages from room in firestore
     this.getPrivateMessagesFirebase(data);
+    
+
   }
 
-
+  
 
   private getPrivateMessagesFirebase(data) {
+    console.log(data);
+    // this.showPrivateChats=true;
+
     // get messages from room in firestore
     let timestamp;
     const limit = 20;
@@ -367,6 +400,9 @@ getPrivateMessages(){
      takeUntil(this.destroy$)
    )
    .subscribe(res => {  
+     console.log(res);
+     this.showPrivateChats=true;
+
      if (this.privateChats.length !== 0) {
        const holdMessages = [];
        holdMessages.push(...this.privateChats);
@@ -380,6 +416,7 @@ getPrivateMessages(){
          this.privateChats.unshift(singleMessage);
        });
        this.privateChats.push(...holdMessages);
+
      }else {
        res.map(msg => {
          const response = msg.payload.doc.data();
@@ -388,6 +425,7 @@ getPrivateMessages(){
            timestamp: response.timestamp.toDate(),
          }
          this.privateChats.unshift(singleMessage);
+
        });
      } 
    })
