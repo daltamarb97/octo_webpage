@@ -5,7 +5,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { ComunicationsRoutingModule } from './comunications-routing.module';
 import { ComunicationsComponent } from './comunications/comunications.component';
 import { DemoMaterialModule } from '../demo-material-module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [ComunicationsComponent],
@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
     FlexLayoutModule,
     ComunicationsRoutingModule,
     FormsModule,
+    
   ]
 })
 export class ComunicationsModule { }

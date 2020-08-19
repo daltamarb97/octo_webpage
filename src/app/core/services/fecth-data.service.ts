@@ -134,7 +134,7 @@ export class FecthDataService {
     .doc(companyId)
     .collection('tasks', ref => ref.orderBy('timestamp', 'desc'))
     
-    return ref.valueChanges();
+    return ref.stateChanges(['added', 'removed', 'modified']);
   }
 
   async getFileFromTask(data){
@@ -161,7 +161,44 @@ export class FecthDataService {
     return rta;
   }
 
+  async getFileFromComment(data){
+    // get file from specific task
+    let rta = {
+      contentType: '',
+      url: '',
+    };
+    const storage = firebase.storage();
+    let ref =  storage.ref(`/tasks/${data.companyId}/${data.taskId}/comments/${data.commentId}/${data.fileId}`);
+    const metadata = await ref.getMetadata();
+    const url = await ref.getDownloadURL();
+    if (metadata.contentType.includes('image')) {
+      rta = {
+        contentType: 'image',
+        url: url,
+      }
+    } else{
+      rta = {
+        contentType: 'file',
+        url: url,
+      }
+    }
+    return rta;
+  }
+
+  getComments(companyId,taskId){
+    // get all the announcements for a building
+    let ref = this.db.collection('board')
+    .doc(companyId)
+    .collection('tasks')
+    .doc(taskId)
+    .collection('comments', ref => ref.orderBy('timestamp'))
+    
+    return ref.stateChanges(['added']);
+  }
+
   // END OF TASK SERVICES
+ 
+  // END OF BOARD SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 

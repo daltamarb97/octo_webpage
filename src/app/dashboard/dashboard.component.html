@@ -10,25 +10,23 @@
             </div>
             <mat-tab-group mat-align-tabs="center"> 
                 <!-- Tab 1 -->
-     <mat-tab label="Chats Grupales">    
-        <mat-list >
-            <mat-list-item  *ngFor="let room of chatRooms; index as i" (click)="goToChat(room,i)">
-                 <span class="material-icons m-r-15 b-b">
-                groups
-                </span > #{{room.roomName}}  
-             </mat-list-item>
-             
-        </mat-list>
-     </mat-tab> 
-
+                <mat-tab label="Chats Grupales">   
+                    <mat-list >
+                        <mat-list-item  *ngFor="let room of chatRooms; index as i" (click)="goToChat(room,i)">
+                            <span class="material-icons m-r-15 b-b">
+                            groups
+                            </span > #{{room.roomName}}  
+                        </mat-list-item>
+                        
+                    </mat-list>
+                </mat-tab> 
                 <!-- End Tab 1 -->
                 <!-- Tab 2 -->
-
                 <mat-tab label="Mensajes Directos">
                         <!-- ============================================================== -->
                         <!-- column -->
                         <!-- ============================================================== -->
-                       
+                        
                         <mat-list >
                             <mat-list-item *ngFor="let privateChat of privateChatsNames; index as i"  
                             (click)="goToPrivateChat(privateChat,i)"> 
@@ -67,9 +65,9 @@
 
                                 </span>
                                 
-                                <div style="display: flex;"><small class="text-muted font-12">Fecha de Entrega: {{item.timestamp.toDate() | date }}</small>
+                                <div style="display: flex;"><small class="text-muted font-12">Fecha de Entrega: {{item.timestamp | date }}</small>
                                  
-                                    <div style="margin-left: auto;margin-left: 10px;" class="m-l-15">
+                                    <div style="margin-left: auto;margin-left: 10px;" class="m-l-15" *ngIf="item.fileId">
                                         <span class="material-icons" >
                                             picture_as_pdf
                                             </span>
@@ -100,13 +98,12 @@
                                 <!-- <img class="img-circle" width="50" src="assets/images/users/1.jpg" alt="Image">-->
                              </div> 
                             <div class="p-b-10 b-b m-b-30">
-                                <span class="m-0 font-14 font-medium">{{item.title | titlecase}}
+                                <span class="m-0 font-14 font-medium">{{item.title | titlecase}}</span>
+                                <p class="m-0 font-12">Para: <span class="text-muted"> {{item.assignedTo}}</span></p>
 
-                                </span>
-                                
-                                <div style="display: flex;"><small class="text-muted font-12">Fecha de Entrega: {{item.timestamp.toDate() | date }}</small>
+                                <div style="display: flex;"><small class="text-muted font-12">Fecha de Entrega: {{item.timestamp | date }}</small>
                                  
-                                    <div style="margin-left: auto;margin-left: 10px;" class="m-l-15">
+                                    <div style="margin-left: auto;margin-left: 10px;" class="m-l-15" *ngIf="item.fileId">
                                         <span class="material-icons" >
                                             picture_as_pdf
                                             </span>

@@ -42,7 +42,7 @@ export class DashboardComponent implements OnInit {
 
     taskList: Array<any> = []; // array of tasks used in the html
     taskListPersonal: Array<any> = []; // array of personal tasks used in the html 
-      // chat variables
+    // chat variables
     userId:string;
     chatRooms:Array<any> = [];  // list of names of rooms
     privateChats:Array<any> = [];  // private chats messages
@@ -65,22 +65,15 @@ export class DashboardComponent implements OnInit {
     ){ }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      console.log(this.holdData.userInfo.userId);
-    console.log(this.holdData.userInfo.userId);
-
-    this.userId = this.holdData.userId;
-    console.log(this.holdData.userInfo.userId);
-    
-    this.companyId = this.holdData.userInfo.companyId;
-    this.getChatRoomNames();
-    this.getPrivateMessages();
-    this.getTasks();
-    }, 2000); 
+      this.userId = this.holdData.userId;
+      this.companyId = this.holdData.userInfo.companyId;
+      this.getChatRoomNames();
+      this.getPrivateMessages();
+      this.getTasks(); 
   }
 
-    /*******************
-  ROOM CHAT
+  /*******************
+  CHAT ROOMS
   *******************/
    getChatRoomNames(){
     // get chat rooms names
@@ -94,7 +87,6 @@ export class DashboardComponent implements OnInit {
           const data= a.payload.doc.data(); 
           this.chatRooms.push(data);
           console.log(data);
-          
         }else if( a.type === 'removed'){
           for(let i in this.chatRooms){
             if(this.chatRooms[i].roomId === this.currentRoomData.roomId){
@@ -106,10 +98,10 @@ export class DashboardComponent implements OnInit {
       });  
     })
   }
+
+
   goToChat(room,i){
     let chat ={roomId:room.roomId,index:i};
-    console.log(chat);
-    
     let navigationExtras: NavigationExtras = {
       state: {
         room: chat
@@ -117,9 +109,10 @@ export class DashboardComponent implements OnInit {
     };
     this.router.navigate(['canales-comunicacion'], navigationExtras);
   }
-/*******************
-PRIVATE CHAT
-*******************/
+
+  /*******************
+  PRIVATE CHAT
+  *******************/
   getPrivateMessages(){
     // get names from private messages 
     this.fetchData.getPrivateChats(this.userId)
@@ -140,11 +133,10 @@ PRIVATE CHAT
       });
     })
   }
+
+
   goToPrivateChat(privateChat,i){
     let chat ={chatId:privateChat.chatId,index:i};
-    console.log(chat);
-    console.log(privateChat);
-
     let navigationExtras: NavigationExtras = {
       state: {
         privateChat: chat
@@ -152,10 +144,11 @@ PRIVATE CHAT
     };
     this.router.navigate(['canales-comunicacion'], navigationExtras);
   }
-/*******************
-      TASKS
-*******************/
 
+
+  /*******************
+        TASKS
+  *******************/
   private getTasks(){
     // get announcements of building
     this.taskList = [];
@@ -163,15 +156,47 @@ PRIVATE CHAT
     .pipe(
       takeUntil(this.destroy$)
     )
-    .subscribe((announcements)=>{
-      announcements.map(a => {
-        const announcement = a.payload.doc.data();
-        //Push all tasks
-        this.taskList.push(announcement);
-        console.log(this.taskList);
-        //Push only personal tasks
-        if (announcement.assignedTo === this.holdData.userId) {
-          this.taskListPersonal.push(announcement);
+    .subscribe((tasks)=>{
+      tasks.map(res => {
+        const task = res.payload.doc.data();
+        if (res.payload.type === 'added') {
+          if(task.finished !== true) {
+            const taskToPush = {
+              ...task,
+              timestamp: task.timestamp.toDate()
+            };
+            (task.assignedTo === this.holdData.userInfo.email) 
+              ? this.taskListPersonal.push(taskToPush) 
+              : console.log('');
+            this.taskList.push(taskToPush);
+          }
+        } else if (res.payload.type === 'modified') {
+          const data = res.payload.doc.data();
+          const taskToPush = {
+            ...data,
+            timestamp: task.timestamp.toDate()
+          };
+          const taskId = res.payload.doc.id;
+          for (let i = 0; i<this.taskList.length; i++) {
+            if (this.taskList[i].taskId === taskId) {
+              this.taskList.splice(i, 1)
+              this.taskList.push(taskToPush)
+            }
+          } 
+          for (let i = 0; i<this.taskListPersonal.length; i++) {
+            if (this.taskListPersonal[i].taskId === taskId) {
+              this.taskListPersonal.splice(i, 1)
+              this.taskListPersonal.push(taskToPush)
+            }
+          } 
+        } else if (res.payload.type === 'removed') {
+          const taskId = res.payload.doc.id;
+          for (let i = 0; i<this.taskList.length; i++) {
+            if (this.taskList[i].taskId === taskId) return this.taskList.splice(i, 1)
+          } 
+          for (let i = 0; i<this.taskListPersonal.length; i++) {
+            if (this.taskListPersonal[i].taskId === taskId) return this.taskListPersonal.splice(i, 1) 
+          }
         }
       })
     });
@@ -179,7 +204,6 @@ PRIVATE CHAT
 
   goToTask(item,i){
     let task ={index:i,info:item};
-   
 
     let navigationExtras: NavigationExtras = {
       state: {
@@ -188,6 +212,8 @@ PRIVATE CHAT
     };
     this.router.navigate(['pizarra'], navigationExtras);
   }
+
+  
   goToPersonalTask(item,i){
     let personalTask ={index:i,info:item}; 
     console.log(personalTask);
@@ -199,21 +225,12 @@ PRIVATE CHAT
     };
     this.router.navigate(['pizarra'], navigationExtras);
   }
+
+
     ngOnDestroy(){
       this.destroy$.next();
       this.destroy$.complete();
       console.log('me destrui');
     }
-
-    // private router: Router,
-    
-
-    
-
-
-
-
-
-     
 }
 

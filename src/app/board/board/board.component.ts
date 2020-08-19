@@ -7,8 +7,6 @@ import {
   MatTabGroup,
   MatSnackBar
 } from '@angular/material';
-import { formatDate } from '@angular/common';
-
 
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -46,6 +44,9 @@ export class BoardComponent implements OnInit {
   currentTask:any;
   fileData:any;
   editing: boolean = false;
+  taskComments: Array<any> = [];
+  commentText: string;
+  fileDataComment: any = false;
   // snack bar variables
   horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
@@ -64,19 +65,15 @@ export class BoardComponent implements OnInit {
     //getting tasks from home link 
     this.route.queryParams.subscribe(() => {
       if (this.router.getCurrentNavigation().extras.state) {
-        this.taskLink = this.router.getCurrentNavigation().extras.state.task;
-        console.log(this.taskLink);
-
-        this.viewTaskBody(this.taskLink.info,this.taskLink.index)    
-      }
-    });
-
-    //getting personal tasks from home link 
-    this.route.queryParams.subscribe(() => {
-      if (this.router.getCurrentNavigation().extras.state) {
-        this.personalTaskLink = this.router.getCurrentNavigation().extras.state.personalTask;
-        console.log(this.personalTaskLink.info);
-        this.viewTaskBody(this.personalTaskLink.info,this.personalTaskLink.index)
+        const currentNav = this.router.getCurrentNavigation().extras.state
+        if (currentNav.task) {
+          this.taskLink = currentNav.task
+          console.log(this.taskLink);
+          this.viewTaskBody(this.taskLink.info,this.taskLink.index)    
+        } else if (currentNav.personalTask) {
+          this.personalTaskLink = currentNav.personalTask
+          this.viewTaskBody(this.personalTaskLink.info,this.personalTaskLink.index)
+        }
       }
     });
   }
@@ -102,23 +99,50 @@ export class BoardComponent implements OnInit {
       takeUntil(this.destroy$)
     )
     .subscribe((tasks)=>{
-      this.taskList = [];
-      this.taskListPersonal = [];
-      tasks.map(t => {
-        if(t.finished !== true) {
+      tasks.map(res => {
+        const task = res.payload.doc.data();
+        if (res.payload.type === 'added') {
+          if(task.finished !== true) {
+            const taskToPush = {
+              ...task,
+              timestamp: task.timestamp.toDate()
+            };
+            (task.assignedTo === this.holdData.userInfo.email) 
+              ? this.taskListPersonal.push(taskToPush) 
+              : console.log('');
+            this.taskList.push(taskToPush);
+          }
+        } else if (res.payload.type === 'modified') {
+          const data = res.payload.doc.data();
           const taskToPush = {
-            ...t,
-            timestamp: t.timestamp.toDate()
+            ...data,
+            timestamp: task.timestamp.toDate()
           };
-          (t.assignedTo === this.holdData.userInfo.email) 
-            ? this.taskListPersonal.push(taskToPush) 
-            : console.log('');
-          this.taskList.push(taskToPush);
+          const taskId = res.payload.doc.id;
+          for (let i = 0; i<this.taskList.length; i++) {
+            if (this.taskList[i].taskId === taskId) {
+              this.taskList.splice(i, 1)
+              this.taskList.push(taskToPush)
+            }
+          } 
+          for (let i = 0; i<this.taskListPersonal.length; i++) {
+            if (this.taskListPersonal[i].taskId === taskId) {
+              this.taskListPersonal.splice(i, 1)
+              this.taskListPersonal.push(taskToPush)
+            }
+          } 
+        } else if (res.payload.type === 'removed') {
+          const taskId = res.payload.doc.id;
+          for (let i = 0; i<this.taskList.length; i++) {
+            if (this.taskList[i].taskId === taskId) return this.taskList.splice(i, 1)
+          } 
+          for (let i = 0; i<this.taskListPersonal.length; i++) {
+            if (this.taskListPersonal[i].taskId === taskId) return this.taskListPersonal.splice(i, 1) 
+          }
         }
       })
     });
   }
-
 
   private getEmployees () {
     // get employees to assign tasks
@@ -130,7 +154,6 @@ export class BoardComponent implements OnInit {
         })
       })
   }
-
 
   createTask(){
     const dialogRef = this.dialog.open(BoardDialogComponent);
@@ -173,6 +196,7 @@ export class BoardComponent implements OnInit {
   async viewTaskBody(item, i){
     this.currentTask = null;
     this.fileData = null;
+    this.taskComments = [];
     if (item.fileId) {
       const data = {
         companyId: this.holdData.companyInfo.companyId,
@@ -183,6 +207,18 @@ export class BoardComponent implements OnInit {
     }
     this.currentTask = { ...item};
     this.showTask = true;
+
+    // get the coments each time user select on a task
+    this.fetchData.getComments(this.holdData.userInfo.companyId, item.taskId)
+    .pipe(
+      takeUntil(this.destroy$)
+    )
+    .subscribe((comments)=>{
+      comments.map(c => {
+        const data = c.payload.doc.data();
+        this.taskComments.push(data);
+      })
+    })
   }
 
 
@@ -194,6 +230,65 @@ export class BoardComponent implements OnInit {
     })
   }
 
+  private getFileComment(data) {
+    // get file for specific task
+    return this.fetchData.getFileFromComment(data);
+  }
+
+  sendComment(){
+    if (this.fileDataComment !== false) {
+      console.log('me debo estar ejecutabndo');
+      
+      const comment = {
+        name: this.holdData.userInfo.name,
+        lastname: this.holdData.userInfo.lastname,
+        text: this.commentText,
+        timestamp: this.holdData.convertJSDateIntoFirestoreTimestamp(),
+        userId: this.userId,
+        file: true,
+        fileInfo: this.fileDataComment,
+      }
+      this.setData.sendComments(this.holdData.companyInfo.companyId, this.currentTask.taskId, comment)
+        .then(() => {
+          this.commentText = ''
+          this.fileDataComment = '';
+        })
+    }else {
+      const comment = {
+        name: this.holdData.userInfo.name,
+        lastname: this.holdData.userInfo.lastname,
+        text: this.commentText,
+        timestamp: this.holdData.convertJSDateIntoFirestoreTimestamp(),
+        userId: this.userId,
+        file: false,
+      }
+      this.setData.sendComments(this.holdData.companyInfo.companyId, this.currentTask.taskId, comment)
+        .then(() => {
+          this.commentText = ''
+          this.fileDataComment = '';
+        })
+    }
+  }
+
+  addfile(event){
+    if(event.target.files.length > 0) {
+      this.fileDataComment = event.target.files[0];
+    }
+  }
+
+  downloadFileComment(comment) {
+    const data = {
+      companyId: this.holdData.companyInfo.companyId,
+      taskId: this.currentTask.taskId,
+      commentId: comment.commentId,
+      fileId: comment.fileId
+    }
+
+    this.getFileComment(data)
+      .then((rta)=> {
+        this.downloadFile(rta.url);
+      })
+  }
 
   downloadFile(url) {
     window.open(url, "_blank");
@@ -208,7 +303,6 @@ export class BoardComponent implements OnInit {
     // edition of task
     this.setData.updateTask(this.holdData.userInfo.companyId, data);
   }
-
 
   deleteTask(){
     // delete a task
@@ -237,6 +331,7 @@ export class BoardComponent implements OnInit {
     this.updateTask(taskUpdated);
   }
 
+
   finishTask() {
     const taskFinished = {
       ...this.currentTask,
@@ -259,7 +354,7 @@ export class BoardComponent implements OnInit {
         });
     })
   }
-  
+   
   checkTaskInArray(array: Array<any>, taskId: string) {
     const rta = array.filter(t => t.taskId !== taskId);
     return rta;

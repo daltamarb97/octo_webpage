@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
@@ -52,8 +52,15 @@ export class DirectoryComponent implements OnInit {
    this.fecthDataService.getPrivateChatKey(this.user.userId,person.userId)
     .subscribe( res => {
       if (res.data()) {
-        this.router.navigate(['/canales-comunicacion']);
+        console.log(res.data());
+        
+        let navigationExtras: NavigationExtras = {
+          state: {
+            oldChat: res.data()          }
+        };
+        this.router.navigate(['/canales-comunicacion'],navigationExtras);
       } else {
+        //if the person doesnt have a chat then create chat
         const localData = {
           userId: this.user.userId,
           name: this.user.name,
@@ -65,8 +72,17 @@ export class DirectoryComponent implements OnInit {
           lastname: person.lastname,
         }
         this.setData.createPrivateChat(localData, foreignData)
-          .then(() => {
-            this.router.navigate(['/canales-comunicacion']);
+          .then((res) => {
+            console.log(res);
+            
+            let navigationExtras: NavigationExtras = {
+              state: {
+                newChat: res
+              }
+
+            };
+            this.router.navigate(['/canales-comunicacion'],navigationExtras);
+
           })
       }
     });

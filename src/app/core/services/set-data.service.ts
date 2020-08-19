@@ -285,7 +285,7 @@ export class SetDataService {
   }
 
 
-  createPrivateChat(localData, foreignData) {
+  async createPrivateChat(localData, foreignData) {
     // first set keys in both sender and receiver
     const chatId = this.db.createId(); // create random chatId
     let ref = this.db.collection('users')
@@ -293,7 +293,7 @@ export class SetDataService {
     .collection('keyChats')
     .doc(foreignData.userId)
 
-    return ref.set({
+      await ref.set({
       chatId: chatId,
       name: foreignData.name,
       lastname: foreignData.lastname
@@ -310,6 +310,10 @@ export class SetDataService {
         lastname: localData.lastname
       })
     });
+    const newChat = {chatId: chatId,
+      name: foreignData.name,
+      lastname: foreignData.lastname} 
+      return newChat
   }
 
 
@@ -424,7 +428,53 @@ export class SetDataService {
       console.log('an error happened: ' +err);
     });
   }
+
   
+  sendComments(companyId: string, taskId: string, comment){
+    // send comment to a task
+    let ref = this.db.collection('board')
+    .doc(companyId)
+    .collection('tasks')
+    .doc(taskId)
+    .collection('comments')
+
+    return ref.add({
+      name: comment.name,
+      lastname: comment.lastname,
+      text: comment.text,
+      timestamp: comment.timestamp,
+      userId: comment.userId,
+      file: comment.file,
+      fileName: comment.fileInfo.name
+    })
+    .then(async (docRef)=>{
+      const commentId: string = docRef.id;
+      // update document with announcementId
+      ref.doc(commentId)
+      .update({
+        commentId: commentId
+      });
+      // if file, uploads it
+      if (comment.file !== false) {
+        const fileId = this.holdData.createRandomId();
+        ref.doc(commentId)
+        .update({
+          fileId: fileId
+        })
+        await this.uploadCommentFile(companyId, taskId, commentId, fileId, comment.fileInfo);
+        console.log('la imagen se subió');     
+      } else {
+        // do nothing
+      }
+    });
+  }
+
+
+  private uploadCommentFile(companyId: string, taskId: string, commentId: string, fileId: string, file:any) {
+    const storage = firebase.storage();
+    let ref =  storage.ref(`/tasks/${companyId}/${taskId}/comments/${commentId}/${fileId}`);
+    return ref.put(file);
+  }
   // END OF BOARD SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
