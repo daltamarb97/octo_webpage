@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBarHorizontalPosition, 
   MatSnackBarVerticalPosition, 
   MatSnackBar
-} from '@angular/material';
+} from '@angular/material/snack-bar';
 
 import { AuthService } from '../../core/services/auth.service';
 

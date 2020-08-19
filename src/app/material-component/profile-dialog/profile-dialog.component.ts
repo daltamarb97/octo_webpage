@@ -1,11 +1,12 @@
 import { Component, Inject } from '@angular/core';
 import {  MatDialogRef, 
           MAT_DIALOG_DATA, 
-          MatSnackBar, 
-          MatSnackBarHorizontalPosition, 
-          MatSnackBarVerticalPosition 
-} from '@angular/material';
-
+} from '@angular/material/dialog';
+import {
+  MatSnackBar, 
+  MatSnackBarHorizontalPosition, 
+  MatSnackBarVerticalPosition 
+} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-profile-dialog',

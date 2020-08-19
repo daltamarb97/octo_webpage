@@ -5,7 +5,9 @@ import { FecthDataService } from '../../core/services/fecth-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
 import { SetDataService } from '../../core/services/set-data.service';
 import { InviteDialogComponent } from '../../material-component/invite-dialog/invite-dialog.component';
-import { MatDialog, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition, MatSnackBar } from '@angular/material';
+import {  MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition, MatSnackBar } from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
+
 
 @Component({
   selector: 'app-directory',

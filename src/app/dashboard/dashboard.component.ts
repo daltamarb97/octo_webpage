@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  MatTableDataSource, 
+import { 
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
-} from '@angular/material';
+} from '@angular/material/snack-bar';
 import { Router, NavigationExtras } from '@angular/router';
 
 import { FecthDataService } from '../core/services/fecth-data.service';
@@ -116,6 +115,9 @@ export class DashboardComponent implements OnInit {
   getPrivateMessages(){
     // get names from private messages 
     this.fetchData.getPrivateChats(this.userId)
+    .pipe(
+      takeUntil(this.destroy$)
+    )
     .subscribe(data => {
       data.map(a=>{
         if(a.type === 'added'){

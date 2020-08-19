@@ -1,16 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { 
-  MatDialog, 
-  MatSnackBarHorizontalPosition, 
-  MatSnackBarVerticalPosition, 
-  //MatSnackBar,
-  MatTabGroup,
-  MatSnackBar
-} from '@angular/material';
-
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-
+import {MatTabGroup} from '@angular/material/tabs';
+import {MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition, MatSnackBar} from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
 // services
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { SetDataService } from '../../core/services/set-data.service';

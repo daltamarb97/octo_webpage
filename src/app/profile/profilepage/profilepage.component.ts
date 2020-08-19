@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog, 
+import { 
         MatSnackBarHorizontalPosition, 
         MatSnackBarVerticalPosition, 
         MatSnackBar
-      } from '@angular/material';
+      } from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
 
 import { ProfileDialogComponent } from '../../material-component/profile-dialog/profile-dialog.component';
 

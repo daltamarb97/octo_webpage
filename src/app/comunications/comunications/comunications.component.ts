@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { Component, OnInit, ViewChild, NgZone, ChangeDetectionStrategy } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { SetDataService } from '../../core/services/set-data.service';
@@ -135,8 +135,6 @@ getMessagesFromRoom(data){
     roomId: data.roomId,
     description: data.roomDescription,
   }
-  console.log(data);
-  
   this.showRoomChats=true;
   this.showPrivateChats=false;
   this.chatMessages = []; //clear the array on click
@@ -249,11 +247,11 @@ sendMessage(){
     timestamp: new Date,
     userId: this.userId
   }
-  console.log(this.currentRoomData);
-  
   this.chatMessages.push(tempData);
   this.setData.sendChatMessage(this.companyId, this.currentRoomData.roomId, messageData);
   this.currentMessage = '';
+  var objDiv = document.getElementById("content-messages");
+  objDiv.scrollTop = objDiv.scrollHeight; 
 }
 
 deleteChatRoom(){
@@ -401,6 +399,8 @@ sendPrivateMessage(){
   this.privateChats.push(tempPrivateMessage);
   this.setData.sendPrivateChatMessage(this.currentPrivateChat.chatId, privateMessageData);
   this.currentMessage = '';
+  var objDivPriv = document.getElementById("content-messages-private");
+  objDivPriv.scrollTop = objDivPriv.scrollHeight; 
 }
 /*******************
 END OF PRIVATE CHAT
