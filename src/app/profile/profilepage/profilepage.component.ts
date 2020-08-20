@@ -16,6 +16,7 @@ import { DeleteDataService } from '../../core/services/delete-data.service';
 
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 
 
@@ -44,7 +45,10 @@ export class ProfilepageComponent implements OnInit {
     private holdData: HoldDataService,
     private fetchData: FecthDataService,
     private deleteData: DeleteDataService,
-    private authData: AuthService
+    private authData: AuthService,
+    private router: Router,
+
+
   ) { }
 
 
@@ -64,6 +68,14 @@ export class ProfilepageComponent implements OnInit {
   changeProfilePic(){
     console.log('hice click');
     
+  }
+
+  logOut(){
+    // logging out and redirecting to login
+    this.authData.logOut()
+    .then(()=>{
+      this.router.navigate(['/auth/login']);
+    });
   }
 
   deleteDoormanAccount(data){

@@ -1,6 +1,6 @@
         <!-- left side menu -->
         <div style="display: flex;">
-                <div style="width: 25%; " >
+                <div style="width: 25%; height: 100%; " >
                     <mat-card >
                         <div class="p-20  position-relative">
                             <h4 class="card-title  m-0 font-20 font-medium">Chats</h4>
@@ -48,26 +48,31 @@
                     </mat-card>
                 </div>
                     <mat-card *ngIf="showRoomChats" style="height: auto; width: 75%;">
-
-                        <mat-toolbar  class="background-room" style="height: 8%; background-color: #2C3B4D !important;">
+                        
+                        <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
                             <span class="toolbar-msg"  ># {{currentRoomData.name}}</span>
                             <span class="example-spacer"></span>
                             <button  mat-raised-button color="primary" class="example-icon" (click)="showDetails()">Detalles</button>
-                            <button mat-icon-button [matMenuTriggerFor]="profile"  class="example-icon"  aria-label="Example icon-button with share icon">
+                            <!-- <button mat-icon-button [matMenuTriggerFor]="profile"  class="example-icon"  aria-label="Example icon-button with share icon">
                                 <mat-icon>more_vert</mat-icon>
-                            </button>
+                            </button> -->
                             <!-- drop down menu of 3 dot button -->
-                            <mat-menu #profile="matMenu" class="mymegamenu">
+                            <!-- <mat-menu #profile="matMenu" class="mymegamenu">
                                 <button mat-menu-item (click)="moreMessages()">
                                     <mat-icon>hourglass_bottom</mat-icon> Cargar más mensajes 
                                 </button>
-                            </mat-menu>
+                            </mat-menu> -->
                         </mat-toolbar>
-                        <mat-card-content id="content-messages" style="max-height: 550px; overflow-y: scroll;">
+                        <mat-card-content id="content-messages" style="max-height: 380px; overflow-y: auto;">
+                            <div style="display: flex; justify-content: center;" >
+                            <button (click)="moreMessages()" mat-mini-fab color="primary" aria-label="Example icon button with a menu icon">
+                              <mat-icon>refresh</mat-icon>
+                            </button>
+                          </div>
                             <div class="chat"  *ngFor="let message of chatMessages" >
                                 <div class="me"  *ngIf="userId == message.userId">          
                                     <span style="word-wrap: break-word;">{{message.message}} </span>     
-                                    <p class="time-left">{{message.timestamp | date: 'hh:mm'}}</p> 
+                                    <p class="time-left">{{message.timestamp | date: 'short'}}</p> 
                                 </div>
                                 <div class="otherMessage"   *ngIf="userId !== message.userId">
                                     <span class="name"  >
@@ -88,7 +93,7 @@
                                 </mat-card>
                             </div>
                         </mat-card-content>
-                        <mat-card-footer>
+                        <footer>
                             <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;">
                                 <div style="display: flex;">
                                     <textarea matInput
@@ -96,7 +101,7 @@
                                     #autosize="cdkTextareaAutosize"
                                     cdkAutosizeMinRows="1"
                                     cdkAutosizeMaxRows="9"
-                                    [(ngModel)]="currentMessage" placeholder="Envía un mensaje"></textarea>
+                                    [(ngModel)]="currentMessage" placeholder="Envía un mensaje" (keydown.enter)="sendMessage()"></textarea>
                                     
                                     <div class="example-button-container">
                                         <button mat-mini-fab>
@@ -106,7 +111,7 @@
                                     </div>
                                 </div>
                             </mat-form-field>
-                        </mat-card-footer>
+                        </footer>
                     </mat-card>
             
                 <!-- right side menu -->
@@ -140,29 +145,27 @@
             <!-- /*******************
             PRIVATE CHAT
             *******************/ -->    
-            <mat-card *ngIf="showPrivateChats" style="height: max-content;min-height: 100%; width: 75%;">
-                <mat-toolbar  class="background-room" style="height: 8%; background-color: #2C3B4D !important;">
+            <mat-card *ngIf="showPrivateChats" style="height: auto; width: 75%;" >
+                <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
+                    
                     <span class="toolbar-msg"  >{{currentPrivateChat.name}} {{currentPrivateChat.lastname}}</span>
-                    <span class="example-spacer"></span>
-                    <button mat-icon-button [matMenuTriggerFor]="profile"  class="example-icon"  aria-label="Example icon-button with share icon">
-                        <mat-icon>more_vert</mat-icon>
-                    </button>
-                    <!-- drop down menu of 3 dot button -->
-                    <mat-menu #profile="matMenu" class="mymegamenu">
-                        <button mat-menu-item (click)="morePrivateMessages()">
-                            <mat-icon>hourglass_bottom</mat-icon> Cargar más mensajes 
-                        </button>
-                    </mat-menu>
+                    
+                  
                 </mat-toolbar>
-                <mat-card-content id="content-messages-private" style="max-height: 550px; overflow-y: scroll;">
+                <mat-card-content id="content-messages-private" style="max-height: 380px; overflow-y: auto;">
+                    <div style="display: flex; justify-content: center;" >
+                        <button (click)="morePrivateMessages()" mat-mini-fab color="primary" aria-label="Example icon button with a menu icon">
+                          <mat-icon>refresh</mat-icon>
+                        </button>
+                      </div>
                     <div class="chat"  *ngFor="let message of privateChats" >
                         <div class="me"  *ngIf="userId == message.userId">          
                             <span style="word-wrap: break-word;">{{message.message}} </span>     
-                            <p class="time-left">{{message.timestamp | date: 'hh:mm'}}</p> 
+                            <p class="time-left">{{message.timestamp | date: 'short'}}</p> 
                         </div>
                         <div class="otherMessage"   *ngIf="userId !== message.userId">
                             <span class="name"  >
-                                {{message.name}} {{message.lastname}}<p class="time-right" style="margin-left:10px;">{{message.timestamp | date: 'hh:mm'}}</p> 
+                                {{message.name}} {{message.lastname}}<p class="time-right" style="margin-left:10px;">{{message.timestamp | date: 'short'}}</p> 
                             </span> <br>
                             <span style="word-wrap: break-word;">{{message.message}}</span>   
    
@@ -179,7 +182,7 @@
                         </mat-card>
                     </div>
                 </mat-card-content>
-                <mat-card-footer>
+                <footer>
                     <mat-form-field style="background-color: white; border-top: gray;    padding-left: 20px;">
                         <div style="display: flex;">
                             <textarea matInput
@@ -187,7 +190,7 @@
                             #autosize="cdkTextareaAutosize"
                             cdkAutosizeMinRows="1"
                             cdkAutosizeMaxRows="9"
-                            [(ngModel)]="currentMessage" placeholder="Envía un mensaje"></textarea>
+                            [(ngModel)]="currentMessage" placeholder="Envía un mensaje" (keydown.enter)="sendPrivateMessage()"></textarea>
                             
                             <div class="example-button-container">
                                 <button mat-mini-fab>
@@ -197,7 +200,7 @@
                             </div>
                         </div>
                     </mat-form-field>
-                </mat-card-footer>
+                </footer>
              </mat-card>
         </div>
            

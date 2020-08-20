@@ -1,37 +1,57 @@
 <!-- ============================================================== -->
 <!-- Main wrapper - style you can find in pages.scss -->
 <!-- ============================================================== -->
-<div class="main-container"> 
+<div class="main-container" > 
     <!-- ============================================================== -->
     <!-- Topbar - style you can find in header.scss -->
     <!-- ============================================================== -->
-    <mat-toolbar  class="topbar telative">
+    <!-- <mat-toolbar   > -->
+        <!-- ============================================================== -->
+        <!-- Logo - style you can find in header.scss -->
+        <!-- ============================================================== -->
+        <!-- <div class="navbar-header" >
+            <a class="navbar-brand" class="topbar telative"> -->
+                <!-- Logo icon -->
+                    <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
+                    <!-- Dark Logo icon -->
+                   
+                <!-- </a>
+        </div> -->
+        <!-- ============================================================== -->
+        <!-- sidebar toggle -->
+        <!-- ============================================================== -->
+        
+        <!-- <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed" style="color:white">
+            <mat-icon>menu</mat-icon>
+        </button> -->
+        <!-- <span fxFlex></span> -->
+        <!-- ============================================================== -->
+        <!-- app header component - style you can find in header.scss / header.component.ts-->
+        <!-- ============================================================== -->
+        <!-- <app-header ></app-header>
+    </mat-toolbar> -->
+    <mat-toolbar  class="topbar telative" href="index.html">
         <!-- ============================================================== -->
         <!-- Logo - style you can find in header.scss -->
         <!-- ============================================================== -->
         <div class="navbar-header">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" >
                 <!-- Logo icon --><b>
                     <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
                     <!-- Dark Logo icon -->
-                    <img src="assets/images/logo-icon.png" alt="homepage" class="dark-logo">
                     <!-- Light Logo icon -->
-                    <img src="assets/images/logo-light-icon.png" alt="homepage" class="light-logo">
+                    <img src="assets/images/octo-letter.png" style="    height: 50px;
+                    margin-left: 18px;" alt="homepage" class="light-logo">
                 </b>
                 <!--End Logo icon -->
                 <!-- Logo text -->
-                <span fxShow="false" fxShow.gt-xs>
-                 <!-- dark Logo text -->
-                 <img src="assets/images/logo-text.png" alt="homepage" class="dark-logo">
-                 <!-- Light Logo text -->    
-                 <img src="assets/images/logo-light-text.png" class="light-logo" alt="homepage">
-                </span> </a>
+               </a>
         </div>
         <!-- ============================================================== -->
         <!-- sidebar toggle -->
         <!-- ============================================================== -->
         
-        <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed">
+        <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed" style="color: white;">
             <mat-icon>menu</mat-icon>
         </button>
         <span fxFlex></span>

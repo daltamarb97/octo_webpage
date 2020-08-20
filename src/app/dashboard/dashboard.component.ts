@@ -212,7 +212,7 @@ export class DashboardComponent implements OnInit {
         task: task
       }
     };
-    this.router.navigate(['pizarra'], navigationExtras);
+    this.router.navigate(['tareas'], navigationExtras);
   }
 
   
@@ -225,7 +225,7 @@ export class DashboardComponent implements OnInit {
         personalTask: personalTask
       }
     };
-    this.router.navigate(['pizarra'], navigationExtras);
+    this.router.navigate(['tareas'], navigationExtras);
   }
 
 

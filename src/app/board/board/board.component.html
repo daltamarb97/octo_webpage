@@ -4,7 +4,7 @@
 
         <div style="display: flex;">
         <!-- left Side -->
-        <mat-card style="width: 35%;">
+        <mat-card style="width: 35%; height: 100% ;">
             <div class="p-20 create_task">
                 <h4 class="card-title font-16 m-0">Tareas</h4>
                 <button mat-raised-button color="primary" (click)="createTask()">
@@ -56,15 +56,13 @@
         <!-- End of left Side -->
         
         <mat-card style="width: 63%;height: 100%;padding: 25px !important;" *ngIf="showTask">
-            <div class=" position-relative">
-                <h4 class="card-title font-16 m-0 m-b-20">Detalles de la tareas</h4>
-            </div>
-            <mat-form-field>
+            
+            <mat-form-field style="font-size: 16px; " class="font-medium">
                 <input type="text" placeholder="Título" matInput [(ngModel)]="currentTask.title" [readonly]="!editing">
             </mat-form-field>
     
             <mat-form-field>
-                <textarea cols="1" rows="10" placeholder="Detalles de la Tarea" matInput [(ngModel)]="currentTask.body" [readonly]="!editing"></textarea>
+                <textarea cols="1" rows="5" placeholder="Detalles de la Tarea" matInput [(ngModel)]="currentTask.body" [readonly]="!editing"></textarea>
             </mat-form-field>
     
             <mat-form-field *ngIf="!editing">
@@ -96,25 +94,29 @@
                 </mat-select>
             </mat-form-field>
 
+            <ng-container  *ngIf= "fileData && fileData.contentType === 'image'">
+                <span class="m-r-10 font-12"> Esta tarea contiene una imagen: </span>
+                <button 
+                    mat-button 
+                    mat-stroked-button                   
+                    color="accent" 
+                    (click)="downloadImage(fileData.url)">
+                    <span class="material-icons">cloud_download</span>
+                    Descargar Imagen
+                </button>
+            </ng-container>
+        <ng-container  *ngIf= "fileData && fileData.contentType === 'file'">
+            <span class="m-r-10 font-12"> Esta tarea contiene un archivo: </span>
             <button 
                 mat-button 
-                mat-flat-button
-                *ngIf= "fileData && fileData.contentType === 'image'"
-                color="warn" 
-                (click)="downloadImage(fileData.url)">
-                <span class="material-icons">cloud_download</span>
-                Descargar Imagen
-            </button>
-
-            <button 
-                mat-button 
-                mat-flat-button
-                *ngIf= "fileData && fileData.contentType === 'file'"
-                color="primary" 
+                mat-stroked-button
+                
+                color="accent" 
                 (click)="downloadFile(fileData.url)">
                 <span class="material-icons">cloud_download</span>
                 Descargar Archivo
             </button>
+        </ng-container>
 
             <mat-card class="comment-box">
                 <span class="font-medium">Comentarios:</span>
@@ -131,9 +133,9 @@
                             <div class="d-flex" style="justify-content: flex-end;">
                                 <button 
                                     mat-button 
-                                    mat-flat-button
+                                    mat-stroked-button
                                     *ngIf= "comments.file === true"
-                                    color="primary" 
+                                    color="accent" 
                                     (click)="downloadFileComment(comments)">
                                     <span class="material-icons">cloud_download</span>
                                     Descargar Archivo
@@ -148,15 +150,15 @@
                   
             </mat-card>
             <mat-form-field>
-                <textarea cols="1" rows="3" placeholder="Escribe tu comentario..." matInput [(ngModel)]="commentText" [readonly]="isReadOnly"></textarea>
+                <textarea cols="1" rows="3" placeholder="Escribe tu comentario..." (keydown.enter)="sendMessage()" matInput [(ngModel)]="commentText" [readonly]="isReadOnly"></textarea>
                 <!-- aqui button -->
                 <div>
-                    <button mat-raised-button color="primary" (click)="sendComment()">
+                    <button mat-raised-button color="primary"  (keydown.enter)="sendMessage()">
                         <span class="material-icons">send</span>enviar
                     </button>    
-                    <button mat-raised-button style="margin-left: 5px;" style="color: #FB4B76; margin-left: 5px;" (click)="fileInput.click()">
+                    <button mat-button mat-stroked-button style="margin-left: 5px;" style=" margin-left: 5px;" (click)="fileInput.click()">
                         <i class="material-icons">publish</i>
-                        Subir archivo
+                        Importar archivo
                     </button>
                     <p *ngIf="fileDataComment">{{fileDataComment.name}}</p>
                     <input
@@ -170,9 +172,9 @@
             </mat-form-field>
             <!-- <span>Archivo: acta_de_constitución.pdf(1) </span> -->
             <mat-card-actions>    
-                <button mat-button mat-flat-button color="primary" (click)="allowEdition()" *ngIf="!editing">Editar Tarea</button>
-                <button mat-button mat-flat-button color="warn" (click)="deleteTask()" *ngIf="!editing">Eliminar Tarea</button>
-                <button mat-button mat-flat-button color="success" (click)="finishTask()" *ngIf="!editing">Finalizar Tarea</button>
+                <button mat-stroked-button mat-flat-button  (click)="allowEdition()" *ngIf="!editing">Editar Tarea</button>
+                <button mat-stroked-button color="warn" (click)="deleteTask()" *ngIf="!editing">Eliminar Tarea</button>
+                <button mat-stroked-button mat-flat-button color="primary" (click)="finishTask()" *ngIf="!editing">Finalizar Tarea</button>
                 <button mat-button mat-flat-button color="primary" (click)="finishEditing()" *ngIf="editing">Confirmar</button>
             </mat-card-actions>
         </mat-card>

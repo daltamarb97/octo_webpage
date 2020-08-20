@@ -50,7 +50,7 @@ export const AppRoutes: Routes = [
           () => import('./comunications/comunications.module').then(m => m.ComunicationsModule)
       },
       {
-        path: 'pizarra',
+        path: 'tareas',
         canActivate: [
           CurrentUserGuard,
           EmailVerifiedGuardService,
