@@ -150,10 +150,10 @@
                   
             </mat-card>
             <mat-form-field>
-                <textarea cols="1" rows="3" placeholder="Escribe tu comentario..." (keydown.enter)="sendMessage()" matInput [(ngModel)]="commentText" [readonly]="isReadOnly"></textarea>
+                <textarea cols="1" rows="3" placeholder="Escribe tu comentario..." (keydown.enter)="sendComment()" matInput [(ngModel)]="commentText"></textarea>
                 <!-- aqui button -->
                 <div>
-                    <button mat-raised-button color="primary"  (keydown.enter)="sendMessage()">
+                    <button mat-raised-button color="primary"  (click)="sendComment()">
                         <span class="material-icons">send</span>enviar
                     </button>    
                     <button mat-button mat-stroked-button style="margin-left: 5px;" style=" margin-left: 5px;" (click)="fileInput.click()">

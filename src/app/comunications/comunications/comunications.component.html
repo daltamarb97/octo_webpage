@@ -5,23 +5,23 @@
                         <div class="p-20  position-relative">
                             <h4 class="card-title  m-0 font-20 font-medium">Chats</h4>
                         </div>
-                 <mat-tab-group  mat-align-tabs="center"> 
-                                <!-- Tab 1 -->
-                     <mat-tab   label="Grupos">   
-                        <div style="display: flex; justify-content: center; margin-top: 20px;">
-                            <button mat-raised-button (click)="addChatRoom()" color="primary" >Crear Grupo </button>
-                        </div>
-                        <mat-list >
-        
-                            <mat-list-item  *ngFor="let room of chatRooms; index as i" (click)="getMessagesFromRoom(room)">
-                                 <span class="material-icons m-r-15 b-b">
-                                groups
-                                </span > #{{room.roomName}}  
-                             </mat-list-item>
-                             
-                        </mat-list>
-                     </mat-tab> 
+                        <mat-tab-group  mat-align-tabs="center"> 
+                                        <!-- Tab 1 -->
+                            <mat-tab   label="Grupos">   
+                                <div style="display: flex; justify-content: center; margin-top: 20px;">
+                                    <button mat-raised-button (click)="addChatRoom()" color="primary" >Crear Grupo </button>
+                                </div>
+                                <mat-list >
                 
+                                    <mat-list-item  *ngFor="let room of chatRooms; index as i" (click)="getMessagesFromRoom(room)">
+                                        <span class="material-icons m-r-15 b-b">
+                                        groups
+                                        </span > #{{room.roomName}}  
+                                    </mat-list-item>
+                                    
+                                </mat-list>
+                            </mat-tab> 
+                        
                                 <!-- End Tab 1 -->
                                 <!-- Tab 2 -->
                 
@@ -43,8 +43,6 @@
                                         </mat-list>
                                 </mat-tab>
                             </mat-tab-group>
-        
-                        
                     </mat-card>
                 </div>
                     <mat-card *ngIf="showRoomChats" style="height: auto; width: 75%;">

@@ -7,8 +7,8 @@ import * as nodemailer from 'nodemailer';
 admin.initializeApp(functions.config().firebase);
 
 
-const SENDER_EMAIL= '***************';
-const SENDER_PASSWORD= '*****************;'
+const SENDER_EMAIL= '**********';
+const SENDER_PASSWORD= '**********';
 
 
 // function that sends invite email in response of an event triggered by host user
@@ -36,13 +36,15 @@ exports.sendInviteEmail = functions.firestore
             // text: `Para registrarte solo debes ingresar el siguiente código de invitación en el campo 'código de invitación' el cual está en el formulario de registro de nuestra plataforma web. CODIGO DE INVITACIÓN: ${inviteId}. RECUERDA NO COMPARTIR ESTE CÓDIGO CON NADIE`,
             html: `<h1>¡Únete al espacio de trabajo de ${data.company} en Octo!</h1>
                     <br>
-                    <h3>Para registrarte solo debes ingresar el siguiente código de invitación en el campo 'código de invitación' el cual está en el formulario de registro de nuestra plataforma web. 
+                    <h3>Para registrarte solo debes ingresar el siguiente código de invitación en el campo 'código de invitación' el cual está en el formulario de registro de Octo Web. 
                         <br>
                         <br>
-                        CODIGO DE INVITACIÓN: <span style="color: red;">${inviteId}</span>. 
+                        CODIGO DE INVITACIÓN: <span style="color: red;">${inviteId}</span>  
                         <br>
                         <br>
                         RECUERDA NO COMPARTIR ESTE CÓDIGO CON NADIE
+                        <br>
+                        Página web: https://admos-enterprise.web.app
                     </h3>`
         }).then((res)=>{
             console.log('successfully sent email:' + res);

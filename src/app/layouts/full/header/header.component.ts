@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 
 import { AuthService } from '../../../core/services/auth.service';
+import { SetDataService } from '../../../core/services/set-data.service';
+import { HelpDialogComponent } from '../../../material-component/help-dialog/help-dialog.component';
+import { HoldDataService } from '../../../core/services/hold-data.service';
 
 @Component({
   selector: 'app-header',
@@ -12,22 +16,27 @@ export class AppHeaderComponent {
 
   constructor(
     private router: Router,
+    private dialog: MatDialog,
     // services
-    private authService: AuthService
+    private authService: AuthService,
+    private setData: SetDataService,
+    private holdData: HoldDataService,
   ){}
 
+  sendSuggestion() {
+    const dialogRef = this.dialog.open(HelpDialogComponent);
 
-  logOut(){
-    // logging out and redirecting to login
-    this.authService.logOut()
-    .then(()=>{
-      this.router.navigate(['/auth/login']);
-    });
-  }
-
-
-  goToProfile(){
-    // take user to their profile page
-    this.router.navigate(['perfil']);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.event !== 'close') {
+        // send support message
+        const data = {
+          companyId: this.holdData.companyInfo.companyId,
+          userId: this.holdData.userId,
+          name: `${this.holdData.userInfo.name} ${this.holdData.userInfo.lastname}`,
+        }
+        const message: string = result.data;
+        this.setData.sendSupportMessage(data, message);
+      }
+    })
   }
 }

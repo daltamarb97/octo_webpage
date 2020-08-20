@@ -438,24 +438,24 @@ export class SetDataService {
     .doc(taskId)
     .collection('comments')
 
-    return ref.add({
-      name: comment.name,
-      lastname: comment.lastname,
-      text: comment.text,
-      timestamp: comment.timestamp,
-      userId: comment.userId,
-      file: comment.file,
-      fileName: comment.fileInfo.name
-    })
-    .then(async (docRef)=>{
-      const commentId: string = docRef.id;
-      // update document with announcementId
-      ref.doc(commentId)
-      .update({
-        commentId: commentId
-      });
-      // if file, uploads it
-      if (comment.file !== false) {
+    if (comment.file !== false) {
+      return ref.add({
+        name: comment.name,
+        lastname: comment.lastname,
+        text: comment.text,
+        timestamp: comment.timestamp,
+        userId: comment.userId,
+        file: comment.file,
+        fileName: comment.fileInfo.name
+      })
+      .then(async (docRef)=>{
+        const commentId: string = docRef.id;
+        // update document with announcementId
+        ref.doc(commentId)
+        .update({
+          commentId: commentId
+        });
+        // if file, uploads it
         const fileId = this.holdData.createRandomId();
         ref.doc(commentId)
         .update({
@@ -463,10 +463,25 @@ export class SetDataService {
         })
         await this.uploadCommentFile(companyId, taskId, commentId, fileId, comment.fileInfo);
         console.log('la imagen se subió');     
-      } else {
-        // do nothing
-      }
-    });
+      });
+    } else {
+      return ref.add({
+        name: comment.name,
+        lastname: comment.lastname,
+        text: comment.text,
+        timestamp: comment.timestamp,
+        userId: comment.userId,
+        file: comment.file,
+      })
+      .then(async (docRef)=>{
+        const commentId: string = docRef.id;
+        // update document with announcementId
+        ref.doc(commentId)
+        .update({
+          commentId: commentId
+        });     
+      });
+    }
   }
 
 
@@ -479,5 +494,24 @@ export class SetDataService {
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 
-  
+  // OTHER SERVICES
+
+  sendSupportMessage(data, messsage: string) {
+    let ref = this.db.collection('support')
+    .doc(data.companyId)
+    .collection('tickets')
+
+    return ref.add({
+      message: messsage,
+      name: data.name,
+      userId: data.userId
+    })
+    .then(docRef => {
+      const ticketId: string = docRef.id;
+      ref.doc(ticketId)
+      .update({
+        ticketId: ticketId
+      })
+    })
+  }
 }

@@ -231,27 +231,29 @@ addChatRoom(){
 
 sendMessage(){
   // send message in specific room
-  const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
-  const messageData = {
-    name: this.holdData.userInfo.name,
-    lastname: this.holdData.userInfo.lastname,
-    message: this.currentMessage,
-    timestamp: timestamp,
-    userId: this.userId
+  if(this.currentMessage && this.currentMessage.length !== 0) {
+    const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
+    const messageData = {
+      name: this.holdData.userInfo.name,
+      lastname: this.holdData.userInfo.lastname,
+      message: this.currentMessage,
+      timestamp: timestamp,
+      userId: this.userId
+    }
+  
+    const tempData = {
+      name: this.holdData.userInfo.name,
+      lastname: this.holdData.userInfo.lastname,
+      message: this.currentMessage,
+      timestamp: new Date,
+      userId: this.userId
+    }
+    this.chatMessages.push(tempData);
+    this.setData.sendChatMessage(this.companyId, this.currentRoomData.roomId, messageData);
+    this.currentMessage = '';
+    var objDiv = document.getElementById("content-messages");
+    objDiv.scrollTop = objDiv.scrollHeight; 
   }
-
-  const tempData = {
-    name: this.holdData.userInfo.name,
-    lastname: this.holdData.userInfo.lastname,
-    message: this.currentMessage,
-    timestamp: new Date,
-    userId: this.userId
-  }
-  this.chatMessages.push(tempData);
-  this.setData.sendChatMessage(this.companyId, this.currentRoomData.roomId, messageData);
-  this.currentMessage = '';
-  var objDiv = document.getElementById("content-messages");
-  objDiv.scrollTop = objDiv.scrollHeight; 
 }
 
 deleteChatRoom(){
@@ -379,28 +381,30 @@ morePrivateMessages(){
 }
 
 sendPrivateMessage(){
-  // send message in private chat
-  const privateMessageData = {
-    name: this.holdData.userInfo.name,
-    lastname: this.holdData.userInfo.lastname,
-    message: this.currentMessage,
-    timestamp: this.holdData.convertJSDateIntoFirestoreTimestamp(),
-    userId: this.userId
+  if (this.currentMessage && this.currentMessage.length !== 0) {
+    // send message in private chat
+    const privateMessageData = {
+      name: this.holdData.userInfo.name,
+      lastname: this.holdData.userInfo.lastname,
+      message: this.currentMessage,
+      timestamp: this.holdData.convertJSDateIntoFirestoreTimestamp(),
+      userId: this.userId
+    }
+  
+    const tempPrivateMessage = {
+      name: this.holdData.userInfo.name,
+      lastname: this.holdData.userInfo.lastname,
+      message: this.currentMessage,
+      timestamp: new Date,
+      userId: this.userId
+    }
+  
+    this.privateChats.push(tempPrivateMessage);
+    this.setData.sendPrivateChatMessage(this.currentPrivateChat.chatId, privateMessageData);
+    this.currentMessage = '';
+    var objDivPriv = document.getElementById("content-messages-private");
+    objDivPriv.scrollTop = objDivPriv.scrollHeight; 
   }
-
-  const tempPrivateMessage = {
-    name: this.holdData.userInfo.name,
-    lastname: this.holdData.userInfo.lastname,
-    message: this.currentMessage,
-    timestamp: new Date,
-    userId: this.userId
-  }
-
-  this.privateChats.push(tempPrivateMessage);
-  this.setData.sendPrivateChatMessage(this.currentPrivateChat.chatId, privateMessageData);
-  this.currentMessage = '';
-  var objDivPriv = document.getElementById("content-messages-private");
-  objDivPriv.scrollTop = objDivPriv.scrollHeight; 
 }
 /*******************
 END OF PRIVATE CHAT

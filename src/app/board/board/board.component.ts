@@ -221,6 +221,7 @@ export class BoardComponent implements OnInit {
     .then(data => {
       this.fileData = data;
     })
+    .catch(error => console.error(`hubo un error trayendo foto: ${error.message}`))
   }
 
   private getFileComment(data) {
@@ -229,9 +230,7 @@ export class BoardComponent implements OnInit {
   }
 
   sendComment(){
-    if (this.fileDataComment !== false) {
-      console.log('me debo estar ejecutabndo');
-      
+    if (this.fileDataComment !== false) {      
       const comment = {
         name: this.holdData.userInfo.name,
         lastname: this.holdData.userInfo.lastname,
@@ -246,6 +245,9 @@ export class BoardComponent implements OnInit {
           this.commentText = ''
           this.fileDataComment = '';
         })
+        .catch(error => {
+          console.error(`there was a problem sending comment: ${error.message}`)
+        })
     }else {
       const comment = {
         name: this.holdData.userInfo.name,
@@ -257,8 +259,13 @@ export class BoardComponent implements OnInit {
       }
       this.setData.sendComments(this.holdData.companyInfo.companyId, this.currentTask.taskId, comment)
         .then(() => {
+          console.log('commend sent');
+          
           this.commentText = ''
           this.fileDataComment = '';
+        })
+        .catch(error => {
+          console.error(`there was a problem sending comment: ${error.message}`)
         })
     }
   }
