@@ -82,9 +82,29 @@ export class FecthDataService {
     .doc(roomId)
     .collection('messages', ref => ref.orderBy('timestamp', "desc").where("timestamp", "<", timestamp).limit(limit))
 
+    return ref.get();
+  }
+
+  getMessagesFromSpecificRoomOnView(companyId: string, roomId: string){
+    // get messages from specific room on view (realtime)
+    let ref = this.db.collection('chats')
+    .doc(companyId)
+    .collection('rooms')
+    .doc(roomId)
+    .collection('messages', ref => ref.orderBy('timestamp', 'desc').limit(20))
+
     return ref.stateChanges(['added']);
   }
 
+
+  getMessagesFromSpecificRoomPrivateOnView(chatId: string ){
+    // get messages from specific room on view (realtime)
+    let ref = this.db.collection('privatechat')
+    .doc(chatId)
+    .collection('messages', ref => ref.orderBy('timestamp', "desc").limit(20))
+
+    return ref.stateChanges(['added']);
+  }
 
   getSpecificChat(chatId: string, timestamp, limit: number){
     // get messages from specific room
@@ -92,7 +112,7 @@ export class FecthDataService {
     .doc(chatId)
     .collection('messages', ref => ref.orderBy('timestamp', "desc").where("timestamp", "<", timestamp).limit(limit))
 
-    return ref.stateChanges(['added']);
+    return ref.get();
   }
 
   getParticipantsFromSpecificRoom(buildingId, roomId){

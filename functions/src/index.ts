@@ -7,8 +7,8 @@ import * as nodemailer from 'nodemailer';
 admin.initializeApp(functions.config().firebase);
 
 
-const SENDER_EMAIL= '**********';
-const SENDER_PASSWORD= '**********';
+const SENDER_EMAIL= '*****';
+const SENDER_PASSWORD= '******';
 
 
 // function that sends invite email in response of an event triggered by host user
@@ -44,7 +44,7 @@ exports.sendInviteEmail = functions.firestore
                         <br>
                         RECUERDA NO COMPARTIR ESTE CÓDIGO CON NADIE
                         <br>
-                        Página web: https://admos-enterprise.web.app
+                        Página web: https://octo-work.web.app/
                     </h3>`
         }).then((res)=>{
             console.log('successfully sent email:' + res);

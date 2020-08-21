@@ -54,6 +54,8 @@ export class ComunicationsComponent implements OnInit {
   privateChat:any;
   newChat:any;
   oldChat:any;
+  firstTimeMsgLoad: boolean = false;
+  firstTimePrivateMsgLoad: boolean = false;
   // showSearchBar:boolean = false;
 
   constructor(
@@ -143,6 +145,34 @@ getMessagesFromRoom(data){
   this.getParticipantsFromRoom();
 }
 
+
+getMessagesFromRoomOnclick(data) {
+  this.firstTimeMsgLoad = true;
+  this.currentRoomData = {
+    name: data.roomName,
+    roomId: data.roomId,
+    description: data.roomDescription,
+  }
+  this.showRoomChats=true;
+  this.showPrivateChats=false;
+  this.fetchData.getMessagesFromSpecificRoomOnView(
+    this.companyId, 
+    data.roomId
+).subscribe((data) => {
+    data.map(d => {
+      console.log(d.payload.doc.data());
+
+      if (this.firstTimeMsgLoad === true) {
+        this.chatMessages.unshift({...d.payload.doc.data(), timestamp: d.payload.doc.data().timestamp.toDate()});
+      } else{
+        this.chatMessages.push({...d.payload.doc.data(), timestamp: d.payload.doc.data().timestamp.toDate()});
+      }
+    })
+    this.firstTimeMsgLoad = false;
+  })
+  
+}
+
 moreMessages(){
   this.getMessagesFirebase(this.currentRoomData)
 }
@@ -165,13 +195,13 @@ private getMessagesFirebase(data) {
   .pipe(
     takeUntil(this.destroy$)
   )
-  .subscribe(res => {  
+  .subscribe(res => { 
     if (this.chatMessages.length !== 0) {
       const holdMessages = [];
       holdMessages.push(...this.chatMessages);
       this.chatMessages = [];
-      res.map(msg => {
-        const response = msg.payload.doc.data();
+      res.forEach(msg => {
+        const response = msg.data();
         const singleMessage = {
           ...response,
           timestamp: response.timestamp.toDate(),
@@ -180,8 +210,8 @@ private getMessagesFirebase(data) {
       });
       this.chatMessages.push(...holdMessages);
     }else {
-      res.map(msg => {
-        const response = msg.payload.doc.data();
+      res.forEach(msg => {
+        const response = msg.data();
         const singleMessage = {
           ...response,
           timestamp: response.timestamp.toDate(),
@@ -327,6 +357,30 @@ getMessagesFromPrivateChat(data){
   this.getPrivateMessagesFirebase(data);
 }
 
+
+getMessagesFromPrivateChatOnclick(data) {
+  this.firstTimePrivateMsgLoad = true;
+  this.currentPrivateChat = {
+    name: data.name,
+    chatId: data.chatId,
+    lastname: data.lastname,
+  }
+  this.showRoomChats=false;
+  this.showPrivateChats=true;
+  this.fetchData.getMessagesFromSpecificRoomPrivateOnView(
+    data.chatId
+  ).subscribe((data) => {
+    data.map(d => {
+      if (this.firstTimePrivateMsgLoad === true) {
+        this.privateChats.unshift({...d.payload.doc.data(), timestamp: d.payload.doc.data().timestamp.toDate()});
+      } else{
+        this.privateChats.push({...d.payload.doc.data(), timestamp: d.payload.doc.data().timestamp.toDate()});
+      }
+    })
+    this.firstTimePrivateMsgLoad = false;
+  })
+}
+
 private getPrivateMessagesFirebase(data) {
   // get messages from room in firestore
   let timestamp;
@@ -345,15 +399,14 @@ private getPrivateMessagesFirebase(data) {
     takeUntil(this.destroy$)
   )
   .subscribe(res => {  
-    console.log(res);
     this.showPrivateChats=true;
 
     if (this.privateChats.length !== 0) {
       const holdMessages = [];
       holdMessages.push(...this.privateChats);
       this.privateChats = [];
-      res.map(msg => {
-        const response = msg.payload.doc.data();
+      res.forEach(msg => {
+        const response = msg.data();
         const singleMessage = {
           ...response,
           timestamp: response.timestamp.toDate(),
@@ -363,8 +416,8 @@ private getPrivateMessagesFirebase(data) {
       this.privateChats.push(...holdMessages);
 
     }else {
-      res.map(msg => {
-        const response = msg.payload.doc.data();
+      res.forEach(msg => {
+        const response = msg.data();
         const singleMessage = {
           ...response,
           timestamp: response.timestamp.toDate(),
