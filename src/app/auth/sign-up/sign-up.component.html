@@ -35,7 +35,10 @@
                         <mat-hint *ngIf="!form0.get('password').valid" style="color: red;">Contraseña de <strong>mínimo 6 caracteres</strong></mat-hint>
                     </mat-form-field>
         
-                    <button mat-stroked-button [disabled]="form0.invalid" color="accent" class="btn-block">Resgitrarme</button>
+                    <button mat-stroked-button  *ngIf="buttonInvalid" [disabled]="form0.invalid" color="accent" class="btn-block">Resgitrarme</button>
+                    <div *ngIf="!buttonInvalid" style="display: flex; justify-content: center;">
+                        <mat-spinner ></mat-spinner>
+                    </div>
                 </form>
             </mat-card-content>
         </mat-tab>
@@ -70,7 +73,10 @@
                         <input matInput type="numbtexter" formControlName="inviteCode">
                     </mat-form-field>
 
-                    <button mat-stroked-button [disabled]="form1.invalid" color="accent" class="btn-block">Resgitrarme</button>
+                    <button mat-stroked-button *ngIf="buttonInvalid" [disabled]="form1.invalid" color="accent" class="btn-block">Resgitrarme</button>
+                    <div *ngIf="!buttonInvalid" style="display: flex; justify-content: center;">
+                        <mat-spinner ></mat-spinner>
+                    </div>
                 </form>
             </mat-card-content>
         </mat-tab>

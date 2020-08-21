@@ -23,6 +23,7 @@ export class SignUpComponent implements OnInit {
 
   form0: FormGroup;
   form1: FormGroup;
+  buttonInvalid: boolean = true;
   passwordsFirebaseCompany: Array<any> = [];
 
   constructor(
@@ -46,6 +47,7 @@ export class SignUpComponent implements OnInit {
 
   
   signUp0(event: Event){
+    this.buttonInvalid = false;
     // Create user in Firebase Authentication database 
     if(this.form0.valid){
       const formValue = this.form0.value;
@@ -76,8 +78,14 @@ export class SignUpComponent implements OnInit {
     } 
   }
 
+  // disableButton(){
+  //   console.log('hola');
+    
+  //   this.buttonInvalid = false;
+  // }
 
   signUp1(event: Event){
+    this.buttonInvalid = false;
     // Create user in Firebase Authentication database 
     if(this.form1.valid){
       const formValue = this.form1.value;
