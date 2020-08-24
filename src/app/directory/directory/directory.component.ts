@@ -55,7 +55,6 @@ export class DirectoryComponent implements OnInit {
    this.fecthDataService.getPrivateChatKey(this.user.userId,person.userId)
     .subscribe( res => {
       if (res.data()) {
-        console.log(res.data())
         let navigationExtras: NavigationExtras = {
           state: {
             dirChat: res.data()          }

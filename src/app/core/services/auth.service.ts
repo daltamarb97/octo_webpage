@@ -24,8 +24,6 @@ export class AuthService {
       .then(()=>{
         console.log('email verification sent');
       }) 
-    }).catch(error => {
-      console.log(error);
     })
   }
 

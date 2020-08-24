@@ -150,6 +150,7 @@ getMessagesFromRoom(data){
 
 getMessagesFromRoomOnclick(data) {
   this.firstTimeMsgLoad = true;
+  this.chatMessages = [];
   this.currentRoomData = {
     name: data.roomName,
     roomId: data.roomId,

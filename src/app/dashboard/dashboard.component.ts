@@ -85,7 +85,6 @@ export class DashboardComponent implements OnInit {
         if(a.type === 'added'){
           const data= a.payload.doc.data(); 
           this.chatRooms.push(data);
-          console.log(data);
         }else if( a.type === 'removed'){
           for(let i in this.chatRooms){
             if(this.chatRooms[i].roomId === this.currentRoomData.roomId){
@@ -218,8 +217,6 @@ export class DashboardComponent implements OnInit {
   
   goToPersonalTask(item,i){
     let personalTask ={index:i,info:item}; 
-    console.log(personalTask);
-    
     let navigationExtras: NavigationExtras = {
       state: {
         personalTask: personalTask
@@ -232,7 +229,6 @@ export class DashboardComponent implements OnInit {
     ngOnDestroy(){
       this.destroy$.next();
       this.destroy$.complete();
-      console.log('me destrui');
     }
 }
 

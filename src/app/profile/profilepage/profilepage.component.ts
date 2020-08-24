@@ -65,11 +65,6 @@ export class ProfilepageComponent implements OnInit {
     this.destroy$.complete();
   }
 
-  changeProfilePic(){
-    console.log('hice click');
-    
-  }
-
   logOut(){
     // logging out and redirecting to login
     this.authData.logOut()

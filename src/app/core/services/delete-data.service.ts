@@ -18,9 +18,7 @@ export class DeleteDataService {
     .collection('rows_data')
     .doc(rowId)
 
-    return ref.delete().then(()=>{
-      console.log('removed successfully');
-    })
+    return ref.delete()
   }
 
 
@@ -60,11 +58,7 @@ export class DeleteDataService {
             pullRequest: false
           });
         }
-        
-
-        console.log('pullRequest resolved');
       })
-      .catch(e => console.error(`error deleting image: ${e}`))
   }
 
   // END PAYMENTS TABLE SERVICES
@@ -94,9 +88,7 @@ export class DeleteDataService {
     .collection('chatRooms')
     .doc(roomId)
 
-    return ref.delete().then(()=>{
-      console.log(' chat removed successfully');
-    })
+    return ref.delete()
   }
 
 
@@ -114,11 +106,6 @@ export class DeleteDataService {
     .doc(taskId)
 
     return ref.delete()
-    .then(()=>{
-      console.log('announcement deleted');
-    }).catch(err => {
-      console.log('an error happened: ' +err);
-    });
   }
 
   deleteFileOfTask(companyId: string, taskId: string, fileId: string) {
@@ -147,8 +134,6 @@ disableDoormanAccountFromDB(buildingId:string, doormanId:string){
   .then(()=>{
     refUsers.update({
       disabled: true
-    }).then(()=>{
-      console.log('doorman disabled')
     })
   })
 }

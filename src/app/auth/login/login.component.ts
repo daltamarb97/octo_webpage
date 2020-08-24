@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit {
   ngOnDestroy(){
     this.destroy$.next();
     this.destroy$.complete();
-    console.log('me destrui');
   }
 
 
@@ -63,8 +62,7 @@ export class LoginComponent implements OnInit {
             this.authService.logOut();
           }else{
             // allow user to login
-            this.router.navigate(['/'])
-            console.log(result.user);  
+            this.router.navigate(['/'])  
           }
         })
       }).catch(error =>{
@@ -76,8 +74,7 @@ export class LoginComponent implements OnInit {
         ){
           alert('email o contraseña incorrectos');
         }else{
-          console.log(error);
-          alert('ocurrió un problema, contáctanos a xxxxx@gmail.com');
+          alert('ocurrió un problema, contáctanos a waypooltec@gmail.com');
         }
       })
     }

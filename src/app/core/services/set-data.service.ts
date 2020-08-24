@@ -111,8 +111,6 @@ export class SetDataService {
 
             companyRef.set(data)
         })
-    }).catch(err =>{
-      console.log(err);
     })
   }
 
@@ -141,8 +139,6 @@ export class SetDataService {
             this.stepIntoChatRoom(chatRooms[i], data.userId);
           }
         }) 
-    }).catch(err =>{
-      console.log(err);
     })
   }
 
@@ -174,12 +170,8 @@ export class SetDataService {
           buildingId: buildingId,
           userId: doormanId
         })
-        .then(()=>console.log('doorman created in users node'))
-        .catch(err => console.log(err))
     })
-      .catch(err => console.log(err))
     })   
-    .catch(err => console.log(err))
   }
 
 
@@ -422,11 +414,6 @@ export class SetDataService {
     .doc(data.taskId)
 
     return ref.update(data)
-    .then(()=>{
-      console.log('announcement updated');
-    }).catch(err => {
-      console.log('an error happened: ' +err);
-    });
   }
 
   
@@ -461,8 +448,7 @@ export class SetDataService {
         .update({
           fileId: fileId
         })
-        await this.uploadCommentFile(companyId, taskId, commentId, fileId, comment.fileInfo);
-        console.log('la imagen se subió');     
+        await this.uploadCommentFile(companyId, taskId, commentId, fileId, comment.fileInfo);     
       });
     } else {
       return ref.add({

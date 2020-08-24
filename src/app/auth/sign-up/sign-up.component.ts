@@ -53,6 +53,7 @@ export class SignUpComponent implements OnInit {
       const formValue = this.form0.value;
       this.authService.signUp(formValue.email, formValue.password)
       .then(()=>{
+        this.buttonInvalid = true;
         // get last registered user from firebase Auth
         this.afa.onAuthStateChanged((user)=>{
           if(user){
@@ -72,17 +73,12 @@ export class SignUpComponent implements OnInit {
           }
         })
       }).catch(e => {
-        console.error(e);
-        alert('tuvimos problemas creando tu cuenta, intentalo más tarde')
+        this.buttonInvalid = true;
+        alert('Tuvimos problemas creando tu cuenta, intentalo con credenciales diferentes');
       })
     } 
   }
 
-  // disableButton(){
-  //   console.log('hola');
-    
-  //   this.buttonInvalid = false;
-  // }
 
   signUp1(event: Event){
     this.buttonInvalid = false;
@@ -93,6 +89,7 @@ export class SignUpComponent implements OnInit {
       const emailCheck = this.form1.get('email').value;
       this.inviteCodeCheck(inviteCode, emailCheck)
         .then(data => {
+          this.buttonInvalid = true;
           const companyData: any = data;
           this.authService.signUp(formValue.email, formValue.password)
             .then(()=>{
@@ -110,8 +107,6 @@ export class SignUpComponent implements OnInit {
                     .subscribe(data => {
                       const rta = data.docs.map(r => r.data());
                       const filteredData = rta.filter(d => d.isDefault === true);
-                      console.log(filteredData);
-                      
                       this.setDataService.createNewUserAfterCompany(personData, companyData, filteredData );
                       this.router.navigate(['/auth/login']);
                     })
@@ -119,8 +114,8 @@ export class SignUpComponent implements OnInit {
               })
             })
             .catch(e => {
-              console.error(e);
-              alert('tuvimos problemas creando tu cuenta, intentalo más tarde')
+              this.buttonInvalid = true;
+              alert('Tuvimos problemas creando tu cuenta, intentalo con credenciales diferentes')
             })
         })
         .catch(e => {
