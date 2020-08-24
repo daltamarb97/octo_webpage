@@ -49,16 +49,16 @@ export class DirectoryComponent implements OnInit {
       })
   }
   
+  
   chat(person){ 
     // verifying the user already have a conversation with the person
    this.fecthDataService.getPrivateChatKey(this.user.userId,person.userId)
     .subscribe( res => {
       if (res.data()) {
-        console.log(res.data());
-        
+        console.log(res.data())
         let navigationExtras: NavigationExtras = {
           state: {
-            oldChat: res.data()          }
+            dirChat: res.data()          }
         };
         this.router.navigate(['/canales-comunicacion'],navigationExtras);
       } else {
@@ -75,20 +75,17 @@ export class DirectoryComponent implements OnInit {
         }
         this.setData.createPrivateChat(localData, foreignData)
           .then((res) => {
-            console.log(res);
-            
             let navigationExtras: NavigationExtras = {
               state: {
-                newChat: res
+                dirChat: res
               }
-
             };
             this.router.navigate(['/canales-comunicacion'],navigationExtras);
-
           })
       }
     });
  }
+
 
  invitePeople(){
   const dialogRef = this.dialog.open(InviteDialogComponent);

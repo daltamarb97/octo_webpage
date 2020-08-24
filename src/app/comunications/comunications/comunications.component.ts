@@ -74,10 +74,12 @@ export class ComunicationsComponent implements OnInit {
       if (this.router.getCurrentNavigation().extras.state) {
         const currentNav = this.router.getCurrentNavigation().extras.state
         if (currentNav.room) {
-          this.chat = currentNav.room
+          this.chat = currentNav.room;
         } else if (currentNav.privateChat) {
-          this.privateChat = currentNav.privateChat
-        } 
+          this.privateChat = currentNav.privateChat;
+        } else if (currentNav.dirChat) {
+          this.getMessagesFromPrivateChatOnclick(currentNav.dirChat);
+        }
       }
     });
   }
@@ -158,10 +160,8 @@ getMessagesFromRoomOnclick(data) {
   this.fetchData.getMessagesFromSpecificRoomOnView(
     this.companyId, 
     data.roomId
-).subscribe((data) => {
+  ).subscribe((data) => {
     data.map(d => {
-      console.log(d.payload.doc.data());
-
       if (this.firstTimeMsgLoad === true) {
         this.chatMessages.unshift({...d.payload.doc.data(), timestamp: d.payload.doc.data().timestamp.toDate()});
       } else{
@@ -360,6 +360,7 @@ getMessagesFromPrivateChat(data){
 
 getMessagesFromPrivateChatOnclick(data) {
   this.firstTimePrivateMsgLoad = true;
+  this.privateChats = [];
   this.currentPrivateChat = {
     name: data.name,
     chatId: data.chatId,
