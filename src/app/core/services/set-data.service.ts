@@ -65,7 +65,8 @@ export class SetDataService {
       roomDescription: 'Sala de chat dónde todos los miembros del edificio estan automáticamente'
       }, 
       [userData],
-    );  
+    );
+    await this.setCompanyInfoInUserNode(userData.userId, {name: companyData.name, companyId: companyId});  
   }
 
   createNewUser(data){
@@ -76,11 +77,11 @@ export class SetDataService {
     return ref.set(data);
   }
 
-  async setUserInfoInCompany(userData, companyId: any){
-    // use this function when user entered invite code  
+  async setUserInfoInCompany(userData, companyData: any){
+    // use this function when user enters invite code  
     // set info of user in employees subcollection of company
     let companyRef = this.db.collection('company')
-      .doc(companyId)
+      .doc(companyData.companyId)
       .collection('employees')
       .doc(userData.userId);
 
@@ -89,8 +90,12 @@ export class SetDataService {
     await this.db.collection('users')
       .doc(userData.userId)
       .update({
-        companyId: companyId
+        companyId: companyData.companyId
       })
+    await this.setCompanyInfoInUserNode(userData.userId, {
+      name: companyData.company, 
+      companyId: companyData.companyId
+    });  
   }
 
   setInviteEmails(data) {
@@ -106,16 +111,38 @@ export class SetDataService {
     })
   }
 
+  private async setCompanyInfoInUserNode(userId: string, companyData: any) {
+    let ref = this.db.collection('users')
+    .doc(userId)
+    .collection('companies')
+    .doc(companyData.companyId)
+
+    return await ref.set({
+      name: companyData.name,
+      companyId: companyData.companyId
+    })
+  }
+
+  updateCompanyIdInUser(userId: string, companyId: string) {
+    let ref = this.db.collection('users')
+    .doc(userId)
+    
+    return ref.update({
+      companyId: companyId
+    })
+  }
   // END USER CREATION SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 
   // CHATS AND COMUNICATIONS SERVICES
 
-  async stepIntoChatRoom(data, userdata, companyId: string) {
+  async stepIntoChatRoom(data, userdata, companyId) {
     let ref = this.db.collection('users')
     .doc(userdata.userId)
     .collection('chatRooms')
+    .doc(companyId)
+    .collection('rooms')
     .doc(data.roomId)
 
     await  ref.set({
@@ -123,10 +150,13 @@ export class SetDataService {
       roomId: data.roomId,
       roomName: data.roomName
     })
+  }
+
+  private async setEmplKeyInChatOnCreate(companyId: string, roomId: string, userdata: any) {
     await this.db.collection('chats')
       .doc(companyId)
       .collection('rooms')
-      .doc(data.roomId)
+      .doc(roomId)
       .collection('participants')
       .doc(userdata.userId)
       .set({
@@ -138,42 +168,48 @@ export class SetDataService {
 
 
   async createChatRoom(companyId:string, roomData:any, participants:Array<any>){ 
+    const roomId: string = this.holdData.createRandomId();
+    participants.forEach(async (p)=>{
+      // push room info into user node
+      await this.stepIntoChatRoom(
+        {
+          ...roomData,
+          roomId: roomId, 
+        },
+        p,
+        companyId
+      )
+    }) 
     // creates new Chat room
-      let ref = this.db.collection('chats')
-      .doc(companyId)
+    await this.db.collection('chats')
+    .doc(companyId)
+    .collection('rooms')
+    .doc(roomId)
+    .set({
+      roomName: roomData.roomName,
+      roomDescription: roomData.roomDescription,
+      roomId: roomId
+    })
 
-      const r = await ref.collection('rooms')
-        .add({
-          roomName: roomData.roomName,
-          roomDescription: roomData.roomDescription,
-        })
-      const roomId = r.id;
-      await ref.collection('rooms')
-        .doc(roomId)
-        .update({
-          roomId: roomId
-      })
-      // each participant is pushed into specific chat room
-      participants.forEach(async (p)=>{
-        // push room infor into user node
-        await this.stepIntoChatRoom(
-          {
-            ...roomData,
-            roomId: roomId, 
-          },
-          p,
-          companyId,  
-        )
-      }) 
+    participants.forEach(async (p)=>{
+      // push participants info in chat room
+      await this.setEmplKeyInChatOnCreate(
+        companyId,
+        roomId,
+        p
+      )
+    }) 
   }
 
 
-  async createPrivateChat(localData, foreignData) {
+  async createPrivateChat(localData, foreignData, companyId) {
     // first set keys in both sender and receiver
     const chatId = this.db.createId(); // create random chatId
     let ref = this.db.collection('users')
     .doc(localData.userId)
     .collection('keyChats')
+    .doc(companyId)
+    .collection('chats')
     .doc(foreignData.userId)
 
       await ref.set({
@@ -185,6 +221,8 @@ export class SetDataService {
       let refForeign = this.db.collection('users')
       .doc(foreignData.userId)
       .collection('keyChats')
+      .doc(companyId)
+      .collection('chats')
       .doc(localData.userId)
 
       refForeign.set({

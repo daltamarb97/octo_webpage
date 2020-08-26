@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { HoldDataService } from '../../core/services/hold-data.service';
 import { SetDataService } from '../../core/services/set-data.service';
@@ -25,12 +25,26 @@ export class HomeComponent implements OnInit {
     private deleteData: DeleteDataService,
     // angular
     private router: Router,
-  ) { }
+    private route: ActivatedRoute,
+  ) { 
+    this.route.queryParams.subscribe(() => {
+      if (this.router.getCurrentNavigation().extras.state) {
+        const currentNav = this.router.getCurrentNavigation().extras.state
+        if (currentNav.new) {
+        } else {
+          if (this.holdData.companyInfo) {
+            this.router.navigate(['inicio']);
+          }
+        }
+      } else{
+        if (this.holdData.companyInfo) {
+          this.router.navigate(['inicio']);
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
-    if (this.holdData.companyInfo) {
-      this.router.navigate(['inicio']);
-    }
   }
 
   createCompany() {
@@ -73,7 +87,7 @@ export class HomeComponent implements OnInit {
           if (rta[i].inviteId === this.inviteCode && rta[i].guestEmail === this.holdData.userInfo.email) {
             // delete invite if found one
             this.deleteData.deleteInviteAfterSignup(rta[i].inviteId);
-            resolve(rta[i].companyId);
+            resolve({companyId: rta[i].companyId, name: rta[i].company});
             break;
           }
         }

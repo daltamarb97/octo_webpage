@@ -79,7 +79,7 @@ export class DashboardComponent implements OnInit {
   *******************/
    getChatRoomNames(){
     // get chat rooms names
-    this.fetchData.getChatRooms(this.userId)
+    this.fetchData.getChatRooms(this.userId, this.companyId)
     .pipe(
       takeUntil(this.destroy$)
     )
@@ -116,7 +116,7 @@ export class DashboardComponent implements OnInit {
   *******************/
   getPrivateMessages(){
     // get names from private messages 
-    this.fetchData.getPrivateChats(this.userId)
+    this.fetchData.getPrivateChats(this.userId, this.companyId)
     .pipe(
       takeUntil(this.destroy$)
     )

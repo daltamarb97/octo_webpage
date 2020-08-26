@@ -55,7 +55,7 @@ export class DirectoryComponent implements OnInit {
   
   chat(person){ 
     // verifying the user already have a conversation with the person
-   this.fecthDataService.getPrivateChatKey(this.user.userId,person.userId)
+   this.fecthDataService.getPrivateChatKey(this.user.userId,person.userId, this.holdData.userInfo.companyId)
     .subscribe( res => {
       if (res.data()) {
         let navigationExtras: NavigationExtras = {
@@ -75,7 +75,7 @@ export class DirectoryComponent implements OnInit {
           name: person.name,
           lastname: person.lastname,
         }
-        this.setData.createPrivateChat(localData, foreignData)
+        this.setData.createPrivateChat(localData, foreignData,this.holdData.userInfo.companyId)
           .then((res) => {
             let navigationExtras: NavigationExtras = {
               state: {

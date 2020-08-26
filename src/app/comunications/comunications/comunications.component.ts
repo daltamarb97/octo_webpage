@@ -108,7 +108,7 @@ ROOM CHAT
 *******************/
 getChatRoomNames(){
   // get chat rooms names
-  this.fetchData.getChatRooms(this.userId)
+  this.fetchData.getChatRooms(this.userId, this.companyId)
   .pipe(
     takeUntil(this.destroy$)
   )
@@ -321,7 +321,7 @@ PRIVATE CHAT
  
 getPrivateMessages(){
   // get names from private messages 
-  this.fetchData.getPrivateChats(this.userId)
+  this.fetchData.getPrivateChats(this.userId, this.companyId)
   .subscribe(data => {
     data.map(a=>{
       if(a.type === 'added'){

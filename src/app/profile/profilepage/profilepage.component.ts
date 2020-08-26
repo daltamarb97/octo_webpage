@@ -16,7 +16,7 @@ import { DeleteDataService } from '../../core/services/delete-data.service';
 
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 
 
 
@@ -34,21 +34,18 @@ export class ProfilepageComponent implements OnInit {
   showAddDoormanButton:boolean = true;
   user:any; 
   companyInfo:any;
+  proyects: Array<any> = [];
   // snackbar variables
   horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
   constructor(
     private dialog: MatDialog,
-    private _snackBar: MatSnackBar,
     // services
     private setData: SetDataService,
     private holdData: HoldDataService,
     private fetchData: FecthDataService,
-    private deleteData: DeleteDataService,
     private authData: AuthService,
     private router: Router,
-
-
   ) { }
 
 
@@ -59,7 +56,7 @@ export class ProfilepageComponent implements OnInit {
     this.user = this.holdData.userInfo;
     this.companyInfo = this.holdData.companyInfo;
     this.paymentLink = this.holdData.companyInfo.paymentLink;
-    this.companyPassword = this.holdData.companyInfo.companyPassword;
+    this.getProyects();
   }
 
 
@@ -75,14 +72,6 @@ export class ProfilepageComponent implements OnInit {
       this.router.navigate(['/auth/login']);
     });
   }
-
-  deleteDoormanAccount(data){
-    // disable doorman account
-    this.deleteData.disableDoormanAccountFromDB(this.holdData.companyInfo.companyId, data.doormanId);
-    this.doormanList.pop();
-    this.showAddDoormanButton = true;
-  }
-
 
   copyMessage(){
     // logiv to copy the building password
@@ -109,4 +98,26 @@ export class ProfilepageComponent implements OnInit {
     const dialogRef = this.dialog.open(ProfileDialogComponent, {data: data})
   }
 
+  private async getProyects () {
+    // get all proyects of user
+    await this.fetchData.getProyects(this.holdData.userId)
+      .subscribe(data => {
+        data.forEach(d => {
+          this.proyects.push(d.data())
+        })
+      })
+  }
+
+  async changeProyect(companyId){
+    //   change companyId and refresh site
+    await this.setData.updateCompanyIdInUser(this.holdData.userId, companyId);
+    this.router.navigate(['inicio']);
+  }
+
+  addProyect(){
+    let navigationExtras: NavigationExtras = {
+      state: {new: true}
+    };
+    this.router.navigate(['no-comp'], navigationExtras);
+  }
 }

@@ -1,5 +1,5 @@
-<div id="container">
-    <mat-card class="card-admin">
+<div class="general-conatiner">
+    <mat-card class="card-admin1">
         <mat-card-header>
             <mat-card-title>¡Hola, {{user.name}}!</mat-card-title>
             <mat-card-subtitle>{{user.email}}</mat-card-subtitle>
@@ -8,14 +8,53 @@
             <h2>Tu empresa: {{companyInfo.name | titlecase}}</h2>
         </mat-card-content>
         <mat-card-actions>
-            <button mat-button (click)="goToPaymentLink()">Mi Suscripción</button>
+            <button 
+                mat-raised-button 
+                style="background-color: #3197F3; color: white; margin-bottom: 20px;" 
+                (click)="goToPaymentLink()">
+                Mi Suscripción
+            </button>
         </mat-card-actions>
-        <div style="display: flex;justify-content: center;">
+        <div style="display: flex;justify-content: center; margin-top: 10px;  margin-bottom: 20px;">
             <button mat-raised-button 
-             color="danger" (click)="logOut()">
-                <mat-icon>exit_to_app</mat-icon> Cerrar Sesión </button>
+                color="danger" (click)="logOut()">
+            <mat-icon>exit_to_app</mat-icon> Cerrar Sesión </button>
         </div>
-    </mat-card>
+    </mat-card>   
     
-    
+    <mat-card class="card-admin2">
+        <mat-card-header>
+            <mat-card-title>Tus espacios de trabajo</mat-card-title>
+            <mat-card-subtitle>Proyecto actual: {{companyInfo.name | titlecase}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content style="display: flex; flex-direction: column; align-items: flex-start; overflow-y: auto;">
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Cambia de proyecto actual
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <!--  -->
+                <div *ngFor="let p of proyects" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 7px;">
+                    <p>{{p.name}}</p>
+                    <button 
+                        mat-raised-button 
+                        matTooltip="Cambiarás de proyecto a {{p.name}}"
+                        matTooltipClass="tooltip-red"
+                        (click)="changeProyect(p.companyId)">Seleccionar</button>
+                </div>
+            </mat-expansion-panel>
+        </mat-card-content>
+        <div style="display: flex;justify-content: center; margin-top: 10px;">
+            <button 
+                mat-raised-button 
+                style="background-color: #3197F3; color: white; margin-bottom: 20px;"
+                (click)="addProyect()">
+                <mat-icon>add</mat-icon> 
+                Nuevo proyecto
+            </button>
+        </div>
+    </mat-card>   
 </div>
+
+    

@@ -49,27 +49,39 @@ export class FecthDataService {
     return ref.get();
   }
 
-  // END BUIDLING SERVICES
+  getProyects(userId: string) {
+    let ref = this.db.collection('users')
+    .doc(userId)
+    .collection('companies')
+    
+    return ref.get();
+  }
+
+  // END COMPANY SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 
   // CHATS AND COMUNICATIONS SERVICES
 
-  getChatRooms(userId){
+  getChatRooms(userId, companyId){
     // getting chatrooms info
     let ref = this.db.collection('users')
     .doc(userId)
     .collection('chatRooms')
+    .doc(companyId)
+    .collection('rooms');
 
     return ref.stateChanges(['added', 'removed']);
   }
 
   
-  getPrivateChats(userId){
+  getPrivateChats(userId, companyId){
     // getting chatrooms info
     let ref = this.db.collection('users')
     .doc(userId)
     .collection('keyChats')
+    .doc(companyId)
+    .collection('chats')
 
     return ref.stateChanges(['added', 'removed']);
   }
@@ -224,10 +236,12 @@ export class FecthDataService {
 
    // DIRECTORY SERVICES
  
-   getPrivateChatKey(userId,receiverId){
+   getPrivateChatKey(userId,receiverId, companyId){
     let ref = this.db.collection('users')
     .doc(userId)
     .collection('keyChats')
+    .doc(companyId)
+    .collection('chats')
     .doc(receiverId)
 
     return  ref.get();
