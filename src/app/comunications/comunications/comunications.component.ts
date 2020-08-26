@@ -85,6 +85,9 @@ export class ComunicationsComponent implements OnInit {
   }
 
 ngOnInit(): void {
+  if (!this.holdData.companyInfo) {
+    this.router.navigate(['no-comp'])
+  }
   this.userId = this.holdData.userId;
   this.companyId = this.holdData.userInfo.companyId;
   this.getChatRoomNames();
@@ -254,7 +257,6 @@ addChatRoom(){
     this.setData.createChatRoom(
       this.companyId, 
       roomData, 
-      this.userId,
       participants
     );  
   })  

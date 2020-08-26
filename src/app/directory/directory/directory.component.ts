@@ -34,6 +34,9 @@ export class DirectoryComponent implements OnInit {
     ) {}
 
   ngOnInit(): void {
+    if (!this.holdData.companyInfo) {
+      this.router.navigate(['no-comp'])
+    }
     this.user= this.holdData.userInfo;
     this.companyInfo = this.holdData.companyInfo;
     this.getInfoDirectory();

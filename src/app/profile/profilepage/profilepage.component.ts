@@ -52,7 +52,10 @@ export class ProfilepageComponent implements OnInit {
   ) { }
 
 
-  ngOnInit(): void {    
+  ngOnInit(): void {   
+    if (!this.holdData.companyInfo) {
+      this.router.navigate(['no-comp'])
+    } 
     this.user = this.holdData.userInfo;
     this.companyInfo = this.holdData.companyInfo;
     this.paymentLink = this.holdData.companyInfo.paymentLink;
@@ -106,14 +109,4 @@ export class ProfilepageComponent implements OnInit {
     const dialogRef = this.dialog.open(ProfileDialogComponent, {data: data})
   }
 
-  
-  private createDoormanAccount(data){
-    // call firebase function of doorman account creation
-    const doormanData: object = {
-      email: data.email,
-      password: data.password,
-      name: `Portería ${this.holdData.companyInfo.name}`,
-    }
-    this.setData.doormanCreationTrigger(this.holdData.companyInfo.companyId, doormanData);
-  }
 }

@@ -1,0 +1,18 @@
+.card-comp {
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: #EEF5F9;
+}
+
+.form-comp {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    button {
+        margin-left: 10px;
+        max-height: 50px;
+    }
+}

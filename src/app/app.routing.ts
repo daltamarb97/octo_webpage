@@ -10,7 +10,6 @@ import { CurrentUserGuard } from './core/guards/current-user-guard.service';
 import { UserinfoGuard } from './core/guards/userinfo.guard';
 
 
-
 export const AppRoutes: Routes = [
   {
     path: '',
@@ -34,17 +33,28 @@ export const AppRoutes: Routes = [
         canActivate: [
           CurrentUserGuard,
           EmailVerifiedGuardService,
-          UserinfoGuard
+          UserinfoGuard,
         ],
         loadChildren:
           () => import('./dashboard/dashboard.module').then(m => m.DashboardModule)
+      },
+      {
+        path: 'no-comp',
+        canActivate: [
+          CurrentUserGuard,
+          EmailVerifiedGuardService,
+          UserinfoGuard,
+        ],
+        loadChildren:
+          () => import('./no-comp/no-comp.module').then(m => m.NoCompModule)
       },
       {
         path: 'canales-comunicacion',
         canActivate: [
           CurrentUserGuard,
           EmailVerifiedGuardService,
-          UserinfoGuard
+          UserinfoGuard,
+          
         ],
         loadChildren:
           () => import('./comunications/comunications.module').then(m => m.ComunicationsModule)
@@ -54,7 +64,8 @@ export const AppRoutes: Routes = [
         canActivate: [
           CurrentUserGuard,
           EmailVerifiedGuardService,
-          UserinfoGuard
+          UserinfoGuard,
+          
         ],
         loadChildren:
           () => import('./board/board.module').then(m => m.BoardModule)
@@ -64,7 +75,8 @@ export const AppRoutes: Routes = [
         canActivate: [
           CurrentUserGuard,
           EmailVerifiedGuardService,
-          UserinfoGuard
+          UserinfoGuard,
+          
         ],
         loadChildren:
           () => import('./directory/directory.module').then(m => m.DirectoryModule)
@@ -74,7 +86,8 @@ export const AppRoutes: Routes = [
         canActivate: [
           CurrentUserGuard,
           EmailVerifiedGuardService,
-          UserinfoGuard
+          UserinfoGuard,
+          
         ],
         loadChildren:
           () => import('./profile/profile.module').then(m => m.ProfileModule)

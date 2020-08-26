@@ -11,14 +11,15 @@
             <mat-tab-group mat-align-tabs="center"> 
                 <!-- Tab 1 -->
                 <mat-tab label="Chats Grupales">   
-                    <mat-list >
+                    <mat-list *ngIf="chatRooms.length !== 0">
                         <mat-list-item  *ngFor="let room of chatRooms; index as i" (click)="goToChat(room,i)">
-                            <span class="material-icons m-r-15 b-b">
+                            <span class="material-icons m-r-15 b-b" >
                             groups
                             </span > #{{room.roomName}}  
                         </mat-list-item>
                         
                     </mat-list>
+                    <p *ngIf="chatRooms.length === 0">No estás en ninguna sala de chat</p>
                 </mat-tab> 
                 <!-- End Tab 1 -->
                 <!-- Tab 2 -->
@@ -27,7 +28,7 @@
                         <!-- column -->
                         <!-- ============================================================== -->
                         
-                        <mat-list >
+                        <mat-list *ngIf="privateChatsNames.length !== 0">
                             <mat-list-item *ngFor="let privateChat of privateChatsNames; index as i"  
                             (click)="goToPrivateChat(privateChat,i)"> 
                             <span class="material-icons m-r-15">
@@ -35,6 +36,7 @@
                                 </span>{{privateChat.name}} {{privateChat.lastname}}  
                             </mat-list-item>
                         </mat-list>
+                        <p *ngIf="privateChatsNames.length === 0">No tienes ningún chat privado activo</p>
                 </mat-tab>
             </mat-tab-group>
         </mat-card>
@@ -52,7 +54,7 @@
                 <!-- Tab 1 -->
 
                  <mat-tab label="Mis Tareas">
-                    <mat-card-content>
+                    <mat-card-content *ngIf="taskListPersonal.length !== 0">
                         <div class="d-flex no-blcok"  *ngFor="let item of taskListPersonal;index as i" (click)="goToPersonalTask(item,i)">
                             <div class="m-r-20">
                                 <span class="material-icons">
@@ -83,13 +85,14 @@
                         </div>
                         
                     </mat-card-content>
+                    <p *ngIf="taskListPersonal.length === 0">No tienes tareas asignadas</p>
                 </mat-tab> 
 
                 <!-- End Tab 1 -->
                 <!-- Tab 2 -->
 
                 <mat-tab label="Todas las tareas">
-                    <mat-card-content>
+                    <mat-card-content *ngIf="taskList.length !== 0">
                         <div class="d-flex no-blcok" (click)="goToTask(item,i)" *ngFor="let item of taskList; i as index">
                             <div class="m-r-20">
                                 <span class="material-icons">
@@ -119,6 +122,7 @@
                         </div>
                         
                     </mat-card-content>
+                    <p *ngIf="taskList.length === 0">No hay tareas en el proyecto</p>
                 </mat-tab>
             </mat-tab-group>
         </mat-card>

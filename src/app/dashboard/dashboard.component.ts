@@ -64,6 +64,9 @@ export class DashboardComponent implements OnInit {
     ){ }
 
   ngOnInit(): void {
+      if (!this.holdData.companyInfo) {
+        this.router.navigate(['no-comp'])
+      }
       this.userId = this.holdData.userId;
       this.companyId = this.holdData.userInfo.companyId;
       this.getChatRoomNames();

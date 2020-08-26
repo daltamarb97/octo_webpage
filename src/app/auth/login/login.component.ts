@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
   destroy$: Subject<void> = new Subject();
-
+  buttonInvalid: boolean = true;
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
@@ -44,6 +44,7 @@ export class LoginComponent implements OnInit {
 
 
   logIn(event: Event){
+    this.buttonInvalid = false;
     // logging in with email and password
     if(this.loginForm.valid){
       const formValue = this.loginForm.value;
@@ -57,15 +58,18 @@ export class LoginComponent implements OnInit {
         .subscribe((user)=>{
           this.holdData.userInfo = user;
           if(result.user.emailVerified !== true){
+            this.buttonInvalid = true;
             // email verification required
             alert('por favor verifica tu email para ingresar');
             this.authService.logOut();
           }else{
+            this.buttonInvalid = true;
             // allow user to login
-            this.router.navigate(['/'])  
+            this.router.navigate(['/no-comp'])  
           }
         })
       }).catch(error =>{
+        this.buttonInvalid = true;
         // incorrect credentials
         if(
           error.code === "auth/wrong-password" || 

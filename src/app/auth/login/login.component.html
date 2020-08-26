@@ -18,6 +18,9 @@
               </mat-form-field>
               
               <button mat-stroked-button [disabled]="loginForm.invalid" color="accent" class="btn-block">Ingresar</button>
+              <div *ngIf="!buttonInvalid" style="display: flex; justify-content: center;">
+                  <mat-spinner ></mat-spinner>
+              </div>
             </form>
           </mat-card-content>
             

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot, UrlTree} from '@angular/router';
+import { CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot, UrlTree, Router} from '@angular/router';
 
 import { HoldDataService } from '../services/hold-data.service';
 import { FecthDataService } from '../services/fecth-data.service';
@@ -13,13 +13,14 @@ export class UserinfoGuard implements CanActivate {
     private holdData: HoldDataService,
     private fetchData: FecthDataService,
     private authService: AuthService,
+    private router: Router,
   ) {} 
   async canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot) {
+    state: RouterStateSnapshot): Promise<any> {
     if (!this.holdData.userId || !this.holdData.userInfo || !this.holdData.companyInfo){
       try {
-        await this.getCompanyInfo();
+        await this.getCompanyInfo()  
         return true;
       }catch (error) {
         return false;
@@ -61,6 +62,10 @@ export class UserinfoGuard implements CanActivate {
   private async getCompanyInfo(){
     const userInfo:any = await this.getUserInfo();
     return new Promise((resolve, reject) => {
+      if(!userInfo.companyId) {
+        this.holdData.hideSpinner = true;
+        return resolve('no company')
+      }
       // get company Info to be used
       this.fetchData.getCompanyInfo(userInfo.companyId)
       .subscribe(company => {
@@ -70,7 +75,7 @@ export class UserinfoGuard implements CanActivate {
           this.holdData.hideSpinner = true; 
           resolve(this.holdData.companyInfo);
         } 
-        reject('company info not found');
+        reject('Internal server error');
       })
     })
   }

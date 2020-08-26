@@ -1,88 +1,37 @@
 <div class="login-wrapper" fxLayout="row" fxLayoutAlign="center center">
-
     <mat-card class="box">
-      <mat-card-header>
-        <mat-card-title>Registrate</mat-card-title>
-      </mat-card-header>
-      
-      <mat-tab-group mat-align-tabs="center"> 
-        <mat-tab label="Nueva Empresa">
-            <mat-card-content>
-                <form class="example-form" [formGroup]="form0" (ngSubmit)="signUp0($event)">
-                    <mat-form-field class="example-full-width">
-                        <mat-label>Nombre de la empresa</mat-label>
-                        <input matInput type="text" formControlName="company">
-                    </mat-form-field>
-                    
-                    <mat-form-field class="example-full-width">
-                        <mat-label>Tu nombre</mat-label>
-                        <input matInput type="text" formControlName="name">
-                    </mat-form-field>
-        
-                    <mat-form-field class="example-full-width">
-                        <mat-label>Tu apellido</mat-label>
-                        <input matInput type="numbtexter" formControlName="lastname">
-                    </mat-form-field>
-        
-                    <mat-form-field class="example-full-width">
-                        <mat-label>Tu email</mat-label>
-                        <input matInput type="email" formControlName="email">
-                    </mat-form-field>
-          
-                    <mat-form-field class="example-full-width">
-                        <mat-label>Tu contraseña</mat-label>
-                        <input matInput type="password" formControlName="password">
-                        <mat-hint *ngIf="!form0.get('password').valid" style="color: red;">Contraseña de <strong>mínimo 6 caracteres</strong></mat-hint>
-                    </mat-form-field>
-        
-                    <button mat-stroked-button  *ngIf="buttonInvalid" [disabled]="form0.invalid" color="accent" class="btn-block">Resgitrarme</button>
-                    <div *ngIf="!buttonInvalid" style="display: flex; justify-content: center;">
-                        <mat-spinner ></mat-spinner>
-                    </div>
-                </form>
-            </mat-card-content>
-        </mat-tab>
-        <mat-tab label="Ingresar en empresa existente">
-             
-            <mat-card-content>
-                <form class="example-form" [formGroup]="form1" (ngSubmit)="signUp1($event)">
+        <mat-card-header>
+            <mat-card-title>Registrate</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <form class="example-form" [formGroup]="form" (ngSubmit)="signUp($event)">
+                <mat-form-field class="example-full-width">
+                    <mat-label>Tu nombre</mat-label>
+                    <input matInput type="text" formControlName="name">
+                </mat-form-field>
 
-                    <mat-form-field class="example-full-width">
-                        <mat-label>Tu nombre</mat-label>
-                        <input matInput type="text" formControlName="name">
-                    </mat-form-field>
-        
-                    <mat-form-field class="example-full-width">
-                        <mat-label>Tu apellido</mat-label>
-                        <input matInput type="numbtexter" formControlName="lastname">
-                    </mat-form-field>
-        
-                    <mat-form-field class="example-full-width">
-                        <mat-label>Tu email</mat-label>
-                        <input matInput type="email" formControlName="email">
-                    </mat-form-field>
-          
-                    <mat-form-field class="example-full-width">
-                        <mat-label>Tu contraseña</mat-label>
-                        <input matInput type="password" formControlName="password">
-                        <mat-hint *ngIf="!form1.get('password').valid" style="color: red;">Contraseña de <strong>mínimo 6 caracteres</strong></mat-hint>
-                    </mat-form-field>
+                <mat-form-field class="example-full-width">
+                    <mat-label>Tu apellido</mat-label>
+                    <input matInput type="numbtexter" formControlName="lastname">
+                </mat-form-field>
 
-                    <mat-form-field class="example-full-width">
-                        <mat-label>Código de Invitación</mat-label>
-                        <input matInput type="numbtexter" formControlName="inviteCode">
-                    </mat-form-field>
+                <mat-form-field class="example-full-width">
+                    <mat-label>Tu email</mat-label>
+                    <input matInput type="email" formControlName="email">
+                </mat-form-field>
+        
+                <mat-form-field class="example-full-width">
+                    <mat-label>Tu contraseña</mat-label>
+                    <input matInput type="password" formControlName="password">
+                    <mat-hint *ngIf="!form.get('password').valid" style="color: red;">Contraseña de <strong>mínimo 6 caracteres</strong></mat-hint>
+                </mat-form-field>
 
-                    <button mat-stroked-button *ngIf="buttonInvalid" [disabled]="form1.invalid" color="accent" class="btn-block">Resgitrarme</button>
-                    <div *ngIf="!buttonInvalid" style="display: flex; justify-content: center;">
-                        <mat-spinner ></mat-spinner>
-                    </div>
-                </form>
-            </mat-card-content>
-        </mat-tab>
-      </mat-tab-group>
+                <button mat-stroked-button  *ngIf="buttonInvalid" [disabled]="form.invalid" color="accent" class="btn-block" style="margin-top: 20px;">Resgitrarme</button>
+                <div *ngIf="!buttonInvalid" style="display: flex; justify-content: center;">
+                    <mat-spinner ></mat-spinner>
+                </div>
+            </form>
+        </mat-card-content>
       <p>¿Ya tienes cuenta? <a [routerLink]="['/auth', 'login']"><span style="color:primary">Inicia Sesión</span></a></p>
-
     </mat-card>
-  
   </div>
