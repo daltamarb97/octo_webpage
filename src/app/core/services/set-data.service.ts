@@ -11,7 +11,7 @@ export class SetDataService {
   constructor(
     private db: AngularFirestore,
     private holdData: HoldDataService,
-  ) { }
+  ) {}
 
 
   sendPrivateMessage(data){

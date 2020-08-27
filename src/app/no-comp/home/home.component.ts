@@ -5,6 +5,7 @@ import { HoldDataService } from '../../core/services/hold-data.service';
 import { SetDataService } from '../../core/services/set-data.service';
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { DeleteDataService } from '../../core/services/delete-data.service';
+import { MessagingService } from '../../core/services/messaging.service';
 
 
 @Component({
@@ -23,6 +24,7 @@ export class HomeComponent implements OnInit {
     private setData: SetDataService,
     private fetchData: FecthDataService,
     private deleteData: DeleteDataService,
+    private messagingService: MessagingService,
     // angular
     private router: Router,
     private route: ActivatedRoute,
@@ -45,6 +47,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+     this.messagingService.getPermissions();
   }
 
   createCompany() {

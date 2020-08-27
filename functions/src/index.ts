@@ -11,6 +11,7 @@ const SENDER_EMAIL= '*****';
 const SENDER_PASSWORD= '******';
 
 
+
 // function that sends invite email in response of an event triggered by host user
 exports.sendInviteEmail = functions.firestore
     .document('invites/{inviteId}')
@@ -51,5 +52,40 @@ exports.sendInviteEmail = functions.firestore
         }).catch(error =>{
             console.log('error has raised and it is: ' + error); 
         });
+
+    })
+
+
+exports.sendPushNot = functions.firestore
+    .document('chats/{companyId}/rooms/{roomId}/messages/{messageId}')
+    .onCreate(async (snapshot, context) => {
+        const message: any = snapshot.data();
+        const roomId = context.params.roomId;
+        const companyId = context.params.companyId;  
+
+        const payload = {
+            notification: {
+                title: 'Nuevo Mensaje en Octo',
+                body: message.message
+            }
+        }
+  
+        const participants = await admin.firestore()
+            .collection('chats')
+            .doc(companyId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('participants')
+            .get();
+
+            participants.forEach(async (p) => {
+                try {
+                    const dataUser: any = await admin.firestore().collection('users').doc(p.id).get();
+                    const token = dataUser.data().token;
+                    await admin.messaging().sendToDevice(token, payload)
+                } catch(error) {
+                    console.error('error sending push not: ', error);
+                }
+            })
 
     })
