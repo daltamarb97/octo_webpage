@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth'
 import { AngularFirestore } from '@angular/fire/firestore';
 import * as firebase from 'firebase/app';
 import { HoldDataService } from './hold-data.service';
@@ -30,13 +29,8 @@ export class MessagingService {
     this.messaging.requestPermission()
       .then(async () => {
         const token = await this.messaging.getToken();
-        console.log(token);
         this.updateToken(token);
       })
-      // .then(token => {
-      //   console.log(token);
-      //   this.updateToken(token);
-      // })
       .catch(e => {
         console.error('unable to get permissions', e);
       })
