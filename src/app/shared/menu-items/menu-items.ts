@@ -10,6 +10,8 @@ export interface Menu {
 const MENUITEMS = [
   // { state: 'tabla-pagos', name: 'Tabla de pagos', type: 'link', icon: 'payment' },
   { state: 'inicio', type: 'link', name: 'Inicio', icon: 'home' },
+  { state: 'whatsapp', type: 'link', name: 'WhatsApp', icon: 'chat' },
+
   { state: 'canales-comunicacion', type: 'link', name: 'chats', icon: 'message' },
   { state: 'tareas', type: 'link', name: 'Tareas', icon: 'fact_check' },
   { state: 'directorio', type: 'link', name: 'Directorio', icon: 'book' },

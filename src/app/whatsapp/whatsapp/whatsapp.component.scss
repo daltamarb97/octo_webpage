@@ -1,0 +1,155 @@
+.chat-sidebar-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+// .background-img{
+//   background-image: url("C:/Users/danie\Documents\octo\web\latest\octo_webpage\src\assets\images\background-img-chat.png");
+
+// }
+.chip{
+  min-height: 23px;
+  font-size: 13px;
+  margin-left: 20px;
+}
+mat-tab{
+  min-width: 30px !important;
+}
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+mat-drawer-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.butoon-refresh {
+  align-items: center
+}
+
+.footer-chat {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.message-card {
+  max-width: 700px;
+}
+
+.highlighted {
+  background-color: #2196f3;
+}
+.toolbar-msg{
+  FONT-SIZE:14px;
+  LINE-HEIGHT:32px;
+  TEXT-ALIGN:start;
+  LETTER-SPACING:normal; 
+  color:white;
+}
+.background-room{
+background-color: themecolor-alt !important;
+}
+.chat{
+  display:flex;
+  flex-direction: column;
+  .me{
+      position: relative;
+      margin: 3px 5px 0px;
+      max-width:80%;
+      align-self: flex-end;
+      padding:  9px 10px 9px 16px;
+      border-radius: 15px 15px 0;
+      box-shadow: 0 4px 8px 0 rgba (0,0,0,0.2);
+      font-size: 12px;
+      background:#DCF8C6;
+
+      line-height: 1.1;
+      z-index: 2;
+  }
+  .otherMessage{
+      position: relative;
+      margin: 15px;
+      max-width: 80%;
+      align-self: flex-start;
+      background: white;
+
+      z-index: 2;
+
+      padding: 6px 10px 7px;
+      border-radius:15px 15px 15px 0;
+      box-shadow: 0 4px 8px 0 rgba (0,0,0,0.2);
+      font-size: 12px;
+      line-height: 1.1;
+      .name{
+          font-size: medium;
+          font-weight: bolder;
+      }
+
+
+  }
+  #autosize {
+      width: calc(100% - 10px);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      min-height: 40px;
+      min-width: 80%;
+
+  }
+  .time-left{
+      color:darkgray;
+      display: inline-grid;
+      margin-left: 7px;  
+      margin-bottom: 0;
+      margin-top: 0;
+      font-size: small;
+
+  }
+  .time-right{
+      color:darkgray;
+      display: inline-grid;
+      margin-right: 10px;  
+      margin-bottom: 0;
+      margin-top: 0;
+      font-size: small;
+  }
+}
+.background{
+  z-index: 1;
+  position: fixed;
+}
+.send-button{
+  background-color: #128C7E;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  color: white;
+}
+.example-button-container {
+  display: flex;
+  justify-content: center;
+  width: 120px;
+  button {
+    margin-right: 130px;
+  }
+}
+
+footer{
+  position: fixed;
+  bottom: 0;
+  width: 65%;
+  z-index: 2;
+}
+
+.viewport-messages {
+  border: 1px solid red;
+  height: 50%;
+  width: 100%;
+}

@@ -60,6 +60,17 @@ export const AppRoutes: Routes = [
           () => import('./comunications/comunications.module').then(m => m.ComunicationsModule)
       },
       {
+        path: 'whatsapp',
+        canActivate: [
+          CurrentUserGuard,
+          EmailVerifiedGuardService,
+          UserinfoGuard,
+          
+        ],
+        loadChildren:
+          () => import('./whatsapp/whatsapp.module').then(m => m.WhatsappComponentModule)
+      },
+      {
         path: 'tareas',
         canActivate: [
           CurrentUserGuard,
