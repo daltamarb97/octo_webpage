@@ -65,22 +65,10 @@ export const AppRoutes: Routes = [
           CurrentUserGuard,
           EmailVerifiedGuardService,
           UserinfoGuard,
-          
         ],
         loadChildren:
           () => import('./whatsapp/whatsapp.module').then(m => m.WhatsappComponentModule)
       },
-      {
-        path: 'tareas',
-        canActivate: [
-          CurrentUserGuard,
-          EmailVerifiedGuardService,
-          UserinfoGuard,
-          
-        ],
-        loadChildren:
-          () => import('./board/board.module').then(m => m.BoardModule)
-      }, 
       {
         path: 'directorio',
         canActivate: [

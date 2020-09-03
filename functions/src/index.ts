@@ -7,8 +7,8 @@ import * as nodemailer from 'nodemailer';
 admin.initializeApp(functions.config().firebase);
 
 
-const SENDER_EMAIL= '*****';
-const SENDER_PASSWORD= '******';
+const SENDER_EMAIL= 'waypooltec@gmail.com';
+const SENDER_PASSWORD= 'Waypooltec2020';
 
 
 
@@ -89,3 +89,74 @@ exports.sendPushNot = functions.firestore
             })
 
     })
+
+
+exports.sendTestRequestLanding = functions.https
+.onRequest(async (req, res) => {
+    const data = {
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone
+    }
+
+     // email Logic stated here
+     const authData = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: SENDER_EMAIL,
+            pass: SENDER_PASSWORD
+        }
+    });
+
+    authData.sendMail({
+        from: 'landing@octo.com',
+        to: 'octo-work@criptext.com',
+        subject: `Requerimiento de prueba desde la landing page`,
+        text: `Información del solicitante: nombre: ${data.name} / email: ${data.email} / telefono: ${data.phone}`,
+    }).then((response)=>{
+        console.log('successfully sent email:' + response);
+        res.end();
+    }).catch(error =>{
+        console.log('error has raised and it is: ' + error); 
+        res.end();
+    });
+
+})
+
+
+exports.sendTestRequestLandingContact = functions.https
+.onRequest(async (req, res) => {
+    const data = {
+        name: `${req.body.name} ${req.body.lastname}`,
+        email: req.body.email,
+        phone: req.body.phone,
+        message: req.body.message
+    }
+
+     // email Logic stated here
+     const authData = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: SENDER_EMAIL,
+            pass: SENDER_PASSWORD
+        }
+    });
+
+    authData.sendMail({
+        from: 'landing@octo.com',
+        to: 'octo-work@criptext.com',
+        subject: `Contacto desde landing page - contact page`,
+        text: `Información del solicitante: nombre: ${data.name} / email: ${data.email} / telefono: ${data.phone} / mensaje: ${data.message}`,
+    }).then((response)=>{
+        console.log('successfully sent email:' + response);
+        res.end();
+    }).catch(error =>{
+        console.log('error has raised and it is: ' + error); 
+        res.end();
+    });
+
+})

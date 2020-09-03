@@ -9,10 +9,11 @@
         </mat-card-content>
         <mat-card-actions>
             <button 
+                *ngIf="isAdmin"
                 mat-raised-button 
                 style="background-color: #3197F3; color: white; margin-bottom: 20px;" 
                 (click)="goToPaymentLink()">
-                Mi Suscripción
+                Facturación y Saldo
             </button>
         </mat-card-actions>
         <div style="display: flex;justify-content: center; margin-top: 10px;  margin-bottom: 20px;">

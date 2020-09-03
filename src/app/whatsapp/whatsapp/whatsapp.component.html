@@ -1,26 +1,17 @@
 
-        <mat-card>
+        <mat-card *ngIf="isAdmin">
             <mat-expansion-panel >
-        <mat-expansion-panel-header>
-        <mat-panel-title>
-        Información de tu plan
-        </mat-panel-title>
-        <mat-panel-description>
-        <mat-chip-list>
-                                    
-        Plan: <mat-chip color="accent" class="chip" selected> Popular</mat-chip>
-        </mat-chip-list>
-        </mat-panel-description>
-        </mat-expansion-panel-header>
-        <p>Mensajes restantes: 1000</p>
-        <p>Conversaciones Iniciadas restantes: 500</p>
-        <!-- <a href="http://"></a> -->
-        <p> ¿Tienes preguntas? Entra aquí <a href="http://localhost:4200/inicio"><u>http://localhost:4200/inicio</u></a></p>
-
-        <p>¿Necesitas mas mensajes? entra aquí <a href="http://localhost:4200/inicio"><u>http://localhost:4200/inicio</u></a></p>
-
-
-        </mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                    Información de la cuota de tu empresa
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <p>Mensajes enviados/recibidos: {{WMessages}}</p>
+                <p>Conversaciones Iniciadas: {{WSenders}}</p>
+                <!-- <a href="http://"></a> -->
+                <p> ¿Tienes preguntas? Entra aquí <a href="https://weareocto.web.app"><u>https://weareocto.web.app</u></a></p>
+                <p>¿Necesitas recargar saldo? entra aquí <a href="http://localhost:4200/inicio"><u>http://localhost:4200/inicio</u></a></p>
+            </mat-expansion-panel>
         </mat-card>
         
     
@@ -29,19 +20,19 @@
                 <div style="width: 35%; height: 100%; " >
                     <mat-card >
                         <div class="p-20  position-relative">
-                            <h4 class="card-title  m-0 font-20 font-medium">Clientes de WhatsApp</h4>
+                            <h4 class="card-title  m-0 font-20 font-medium">Chats de WhatsApp</h4>
                         </div>
                         <mat-tab-group  mat-align-tabs="center"> 
-                                        <!-- Tab 1 -->
+                            <!-- Tab 1 -->
                             <mat-tab   label="Mis chats" >   
                                
                                 <mat-selection-list  [multiple]="false">
                                             
-                                    <mat-list-option *ngFor="let room of chatRooms; index as i" (click)="getMessagesFromRoomOnclick(room)">
+                                    <mat-list-option *ngFor="let chat of chatWhatsapp; index as i" (click)="getMessagesFromChatOnclick(chat)">
                                         <mat-list-item>
                                             <span class="material-icons m-r-15 b-b">
                                                 account_circle
-                                            </span > {{room.roomName}} 
+                                            </span > {{chat.number}} 
                                             <mat-chip-list  style="margin-left: auto;" >
                                                 
                                                 <mat-chip color="accent" class="chip" selected>Daniel</mat-chip>
@@ -64,11 +55,11 @@
                                         <!-- ============================================================== -->
                                         <mat-selection-list  [multiple]="false">
                                             
-                                            <mat-list-option *ngFor="let room of chatRooms; index as i" (click)="getMessagesFromRoomOnclick(room)">
+                                            <mat-list-option *ngFor="let chat of chatWhatsapp; index as i" (click)="getMessagesFromChatOnclick(chat)">
                                                 <mat-list-item>
                                                     <span class="material-icons m-r-15 b-b">
                                                         account_circle
-                                                    </span > {{room.roomName}} 
+                                                    </span > {{chat.number}} 
                                                     <mat-chip-list  style="margin-left: auto;" >
                                                 
                                                         <mat-chip color="accent" class="chip" selected>Daniel</mat-chip>
@@ -84,22 +75,13 @@
                             </mat-tab-group>
                     </mat-card>
                 </div>
-                    <mat-card *ngIf="showRoomChats" style="height: auto; width: 65%;">
+
+                    <mat-card *ngIf="showGeneralChats" style="height: auto; width: 65%;">
                         
                         <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
-                            <span class="toolbar-msg"  ># {{currentRoomData.name}}</span>
+                            <span class="toolbar-msg"  ># {{currentChatData.phoneNumber}}</span>
                             <span class="example-spacer"></span>
                             <button  mat-raised-button color="accent" class="example-icon" (click)="assignToMe()" >Asignarme el cliente</button>
-
-                            <!-- <button mat-icon-button [matMenuTriggerFor]="profile"  class="example-icon"  aria-label="Example icon-button with share icon">
-                                <mat-icon>more_vert</mat-icon>
-                            </button> -->
-                            <!-- drop down menu of 3 dot button -->
-                            <!-- <mat-menu #profile="matMenu" class="mymegamenu">
-                                <button mat-menu-item (click)="moreMessages()">
-                                    <mat-icon>hourglass_bottom</mat-icon> Cargar más mensajes 
-                                </button>
-                            </mat-menu> -->
                         </mat-toolbar>
                         <div style="display: flex; justify-content: center; padding-left: 15px;padding-top:10px ;" >
                             <mat-form-field class="example-chip-list">
@@ -127,19 +109,12 @@
                                   </mat-option>
                                 </mat-autocomplete>
                               </mat-form-field>
-                      </div>
+                        </div>
                         <mat-card-content class="backgroun-img" id="content-messages" style="background-color: ghostwhite;max-height: 320px; min-height: 320px; overflow-y: auto;">
                            
                             <div class="chat"  *ngFor="let message of chatMessages" >
-                                <div class="me"  *ngIf="userId == message.userId">          
+                                <div class="me">          
                                     <span style="word-wrap: break-word;">{{message.message}} </span>     
-                                    <p class="time-left">{{message.timestamp | date: 'short'}}</p> 
-                                </div>
-                                <div class="otherMessage"   *ngIf="userId !== message.userId">
-                                    <span class="name"  >
-                                        {{message.name}} {{message.lastname}}<p class="time-right" style="margin-left:10px;">{{message.timestamp | date: 'short'}}</p> 
-                                    </span> <br>
-                                    <span style="word-wrap: break-word;">{{message.message}}</span>   
                                 </div>
                             </div>  
                         
@@ -166,8 +141,8 @@
                                     
                                     <div class="example-button-container">
                                         <button mat-mini-fab>
-                                            <mat-icon *ngIf="showRoomChats" (click)="sendMessage()">send</mat-icon>
-                                            <mat-icon *ngIf="showPrivateChats" (click)="sendPrivateMessage()">send</mat-icon>
+                                            <mat-icon *ngIf="showGeneralChats" (click)="sendMessage()">send</mat-icon>
+                                            <!-- <mat-icon *ngIf="showAssignedChats" (click)="sendPrivateMessage()">send</mat-icon> -->
                                         </button>
                                     </div>
                                 </div>
@@ -206,36 +181,31 @@
                <!-- /*******************
             PRIVATE CHAT
             *******************/ -->    
-            <mat-card *ngIf="showPrivateChats" style="height: auto; width: 65%;" >
+            <mat-card *ngIf="showAssignedChats" style="height: auto; width: 65%;" >
                 <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
                     
-                    <span class="toolbar-msg"  >{{currentPrivateChat.name}} {{currentPrivateChat.lastname}}</span>
+                    <span class="toolbar-msg"  >{{currentChatData.phoneNumber}}</span>
                     
                   
                 </mat-toolbar>
                 <mat-card-content id="content-messages-private" style="max-height: 380px; min-height: 380px; overflow-y: auto;">
-                    <div style="display: flex; justify-content: center;" >
-                        <button (click)="morePrivateMessages()" mat-mini-fab color="primary" aria-label="Example icon button with a menu icon">
-                          <mat-icon>refresh</mat-icon>
-                        </button>
-                      </div>
-                    <div class="chat"  *ngFor="let message of privateChats" >
-                        <div class="me"  *ngIf="userId == message.userId">          
+    
+                    <div class="chat"  *ngFor="let message of chatMessages" >
+                        <div class="me">          
                             <span style="word-wrap: break-word;">
-                                {{message.name}} {{message.lastname}} <br>
+                                 
                                 {{message.message}} </span>     
-                            <p class="time-left">{{message.timestamp | date: 'short'}}</p> 
+                            <!-- <p class="time-left">{{message.timestamp | date: 'short'}}</p>  -->
                         </div>
-                        <div class="otherMessage"   *ngIf="userId !== message.userId">
-                            <span class="name"  >
+                        <div class="otherMessage" >
+                            <!-- <span class="name"  >
                                 {{message.name}} {{message.lastname}}<p class="time-right" style="margin-left:10px;">{{message.timestamp | date: 'short'}}</p> 
-                            </span> <br>
+                            </span> <br> -->
                             <span style="word-wrap: break-word;">{{message.message}}</span>   
-   
                         </div>            
                     </div>  
                     <!-- if no messages show this card -->
-                    <div *ngIf="privateChats.length === 0">
+                    <div *ngIf="chatMessages.length === 0">
                         <mat-card class="message-card">
                             <mat-card-content>
                                 <p>
@@ -257,8 +227,8 @@
                             
                             <div class="example-button-container">
                                 <button mat-mini-fab>
-                                    <mat-icon *ngIf="showRoomChats" (click)="sendMessage()">send</mat-icon>
-                                    <mat-icon *ngIf="showPrivateChats" (click)="sendPrivateMessage()">send</mat-icon>
+                                    <mat-icon *ngIf="showGeneralChats" (click)="sendMessage()">send</mat-icon>
+                                    <!-- <mat-icon *ngIf="showAssignedChats" (click)="sendPrivateMessage()">send</mat-icon> -->
                                 </button>
                             </div>
                         </div>

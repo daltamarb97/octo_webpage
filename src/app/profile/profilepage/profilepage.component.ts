@@ -1,9 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { 
-        MatSnackBarHorizontalPosition, 
-        MatSnackBarVerticalPosition, 
-        MatSnackBar
-      } from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
 
 import { ProfileDialogComponent } from '../../material-component/profile-dialog/profile-dialog.component';
@@ -12,9 +7,7 @@ import { SetDataService } from '../../core/services/set-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { AuthService } from '../../core/services/auth.service';
-import { DeleteDataService } from '../../core/services/delete-data.service';
 
-import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Router, NavigationExtras } from '@angular/router';
 
@@ -35,9 +28,7 @@ export class ProfilepageComponent implements OnInit {
   user:any; 
   companyInfo:any;
   proyects: Array<any> = [];
-  // snackbar variables
-  horizontalPosition: MatSnackBarHorizontalPosition = 'center';
-  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  isAdmin: boolean = false;
   constructor(
     private dialog: MatDialog,
     // services
@@ -55,6 +46,7 @@ export class ProfilepageComponent implements OnInit {
     } 
     this.user = this.holdData.userInfo;
     this.companyInfo = this.holdData.companyInfo;
+    (this.companyInfo.admin !== this.user.userId) ? this.isAdmin = false : this.isAdmin = true;
     this.paymentLink = this.holdData.companyInfo.paymentLink;
     this.getProyects();
   }

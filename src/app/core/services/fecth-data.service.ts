@@ -154,6 +154,39 @@ export class FecthDataService {
     return ref.get();
   }
 
+  getWhatsappQuota(companyId: string) {
+    let ref = this.db.collection('company')
+    .doc(companyId)
+    .collection('quotas')
+    .doc('whatsapp')
+
+    return ref.valueChanges();
+  }
+
+
+  // WHATSAPP
+
+  getWhatsappChats(companyId){
+    // getting chatrooms info
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+
+    return ref.stateChanges(['added']);
+  }
+
+  getMessagesFromSpecificWChat(companyId: string, phoneNumber: string){
+    // get messages from specific whatsapp chat
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(phoneNumber)
+    .collection('messages')
+
+    return ref.stateChanges(['added']);
+  }
+  // END OF WHATSAPP
+
   // END OF CHATS AND COMUNICATIONS SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
