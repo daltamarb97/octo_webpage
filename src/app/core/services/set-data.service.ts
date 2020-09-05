@@ -322,7 +322,9 @@ export class SetDataService {
     const api_url = "http://localhost:3000/message/sendFromOcto"
     const finalData = {
       message: data.message,
-      number: data.number
+      number: data.number,
+      template: data.template, 
+      companyId: data.companyId
     }
     let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
     const req = this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});

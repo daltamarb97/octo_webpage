@@ -35,13 +35,14 @@ export class WhatsappComponent implements OnInit {
   @ViewChild('autosize') autosize: CdkTextareaAutosize;
 
   destroy$: Subject<void> = new Subject();
+  destroyMsgSubs$: Subject<void> = new Subject();
 
   userId:string;
   companyId:string;
   chatWhatsapp:Array<any> = [];  // list of names of rooms
   chatWhatsappAssigned:Array<any> = [];  // list of names of rooms
   chatMessages: Array<any> = []; // array of messages of specific room
-  currentMessage:string; // message to be send
+  currentMessage:string = null; // message to be send
   currentChatData: currentChatData;  // information of selected room chat
   showDetail: boolean = false;
   showAssignedChats:boolean=false;
@@ -52,7 +53,9 @@ export class WhatsappComponent implements OnInit {
   employeesList:Array<any> = [];
   templatesArray:Array<any> = [];
   templatesActivated: boolean = false;
-  selectOption: any;
+  templatesActivatedOptions: boolean = false;
+
+  // showTextareaTemplate: boolean = false;
   // privateChat:any;
   // newChat:any;
   // oldChat:any;
@@ -70,7 +73,7 @@ export class WhatsappComponent implements OnInit {
   filteredFruits: Observable<string[]>;
   fruits: string[] = ['Lemon'];
   allFruits: string[] = ['Bugs', 'ventas', 'problema registro', 'pedido incompleto/malo', 'No llego a tiempo'];
-
+  testing:any;
   @ViewChild('fruitInput') fruitInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto') matAutocomplete: MatAutocomplete;
 
@@ -183,29 +186,32 @@ getChatWhatsappNames(){
     this.chatWhatsapp = data;
     this.chatWhatsappAssigned = this.chatWhatsapp.filter(c => c.assignedTo === this.userId); 
     // info comes from home
-    if(this.chat){
-      this.getMessagesFromWChat(this.chatWhatsapp[this.chat.index]); 
-      this.chat = null;
-      this.showGeneralChats=true;
-      this.showAssignedChats=false;   
-      }  
+    // if(this.chat){
+    //   this.getMessagesFromWChat(this.chatWhatsapp[this.chat.index]); 
+    //   this.chat = null;
+    //   this.showGeneralChats=true;
+    //   this.showAssignedChats=false;   
+    //   }  
   });
 }
 
-getMessagesFromWChat(data){
-  this.currentChatData = {
-    phoneNumber: data.number,
-    assignedTo: (data.assignedTo) ? data.assignedTo : 'null'
-  }
-  this.showGeneralChats=true;
-  this.showAssignedChats=false;
-  this.chatMessages = []; //clear the array on click
-  // this.privateChats = []; //clear the array on click
-  this.getMessagesFirebase(data);
-}
+// getMessagesFromWChat(data){
+//   this.currentChatData = {
+//     phoneNumber: data.number,
+//     assignedTo: (data.assignedTo) ? data.assignedTo : 'null'
+//   }
+//   this.showGeneralChats=true;
+//   this.showAssignedChats=false;
+//   this.chatMessages = []; //clear the array on click
+//   // this.privateChats = []; //clear the array on click
+//   this.getMessagesFirebase(data);
+// }
 
 
-async getMessagesFromChatOnclick(data) {
+async getMessagesFromChatOnclick(data, assigned: boolean) {
+  if (this.testing) this.testing.unsubscribe();
+  this.templatesActivated = false;
+  this.templatesActivatedOptions = false;
   this.fetchData.checkWhatsapp24HourWindow({
     companyId: this.companyId,
     number: data.number
@@ -213,6 +219,7 @@ async getMessagesFromChatOnclick(data) {
   .then(dataSession => {
     if(dataSession === 'false') {
       this.templatesActivated = true;
+      this.templatesActivatedOptions = true;
     } 
     this.firstTimeMsgLoad = true;
     this.chatMessages = [];
@@ -220,12 +227,18 @@ async getMessagesFromChatOnclick(data) {
       phoneNumber: data.number,
       assignedTo: (data.assignedTo) ? data.assignedTo : 'null'
     }
-    this.showGeneralChats=true;
-    this.showAssignedChats=false;
-    this.fetchData.getMessagesFromSpecificWChat(
+    if (assigned === true) {
+      this.showAssignedChats=true;
+      this.showGeneralChats=false;
+    }else {
+      this.showGeneralChats=true;
+      this.showAssignedChats=false;
+    }
+    this.testing = this.fetchData.getMessagesFromSpecificWChat(
       this.companyId, 
       data.number
-    ).subscribe((data) => {
+    )
+    .subscribe((data) => {
       data.map(d => {
         if (this.firstTimeMsgLoad === true) {
           this.chatMessages.unshift({...d.payload.doc.data()});
@@ -238,57 +251,39 @@ async getMessagesFromChatOnclick(data) {
   })
 }
 
-getMessagesFromChatOnclickAssigned(data) {
-  this.fetchData.checkWhatsapp24HourWindow({
-    companyId: this.companyId,
-    number: data.number
-  }).toPromise()
-  .then(dataSession => {
-    if(dataSession === 'false') {
-      this.templatesActivated = true;
-    } 
-    this.firstTimeMsgLoad = true;
-    this.chatMessages = [];
-    this.currentChatData = {
-      phoneNumber: data.number,
-      assignedTo: (data.assignedTo) ? data.assignedTo : 'null'
-    }
-    this.showAssignedChats=true;
-    this.showGeneralChats=false;
-    this.fetchData.getMessagesFromSpecificWChat(
-      this.companyId, 
-      data.number
-    ).subscribe((data) => {
-      data.map(d => {
-        if (this.firstTimeMsgLoad === true) {
-          this.chatMessages.unshift({...d.payload.doc.data()});
-        } else{
-          this.chatMessages.push({...d.payload.doc.data()});
-        }
-      })
-      this.firstTimeMsgLoad = false;
-    })
-  })
-}
+// private unsubscribeFromMessagesOnClick() {
+//   this.destroyMsgSubs$.next();
+//   this.destroyMsgSubs$.complete();
+// }
 
-private getMessagesFirebase(data) {
-    // get messages from room in firestore
-    this.fetchData.getMessagesFromSpecificWChat(
-    this.companyId, 
-    data.number,
-  )
-  .pipe(
-    takeUntil(this.destroy$)
-  )
-  .subscribe(res => { 
-    res.map(r => {
-      const msg = r.payload.doc.data();
-      this.chatMessages.push(msg);
-    })
-  })
-}
+// private getMessagesFirebase(data) {
+//     // get messages from room in firestore
+//     this.fetchData.getMessagesFromSpecificWChat(
+//     this.companyId, 
+//     data.number,
+//   )
+//   .pipe(
+//     takeUntil(this.destroy$)
+//   )
+//   .subscribe(res => { 
+//     res.map(r => {
+//       const msg = r.payload.doc.data();
+//       this.chatMessages.push(msg);
+//     })
+//   })
+// }
 
 sendMessage(){
+  // check if chat is active
+  this.fetchData.checkWhatsapp24HourWindow({
+    companyId: this.companyId,
+    number: this.currentChatData.phoneNumber
+  }).toPromise()
+  .then(dataSession => {
+    if(dataSession === 'false') {
+      this.templatesActivated = true;
+      this.templatesActivatedOptions = true;
+    } 
     //send message in specific room
     if(this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {
       const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
@@ -297,19 +292,29 @@ sendMessage(){
         message: this.currentMessage,
         timestamp: timestamp,
       }
-    
-      this.setData.sendWhatsappMessage(this.companyId, this.currentChatData.phoneNumber, messageData);
       // uncomment in production
-      // this.setData.sendWhatsappMessageHttp({
-      //   message: this.currentMessage,
-      //   number: this.currentChatData.phoneNumber
-      // }).subscribe(data => console.log(data))
+      this.setData.sendWhatsappMessageHttp({
+        message: this.currentMessage,
+        number: this.currentChatData.phoneNumber,
+        template: this.templatesActivated,
+        companyId: this.companyId
+      }).toPromise()
+      .then((data) => {
+        console.log(data);
+        this.setData.sendWhatsappMessage(this.companyId, this.currentChatData.phoneNumber, messageData);
+      })
+      .catch(error => {
+        if(error.error = 'saldo insuficiente') {
+          alert('No se puede enviar mensaje porque la empresa no tiene saldo suficiente');
+        }
+      })
       this.currentMessage = null;
       var objDiv = document.getElementById("content-messages");
       objDiv.scrollTop = objDiv.scrollHeight; 
     } else {
       this.currentMessage = null;
     }
+  })
 }
 
 
@@ -385,6 +390,11 @@ END OF ROOM CHAT
   onTabChanged(){
     this.showAssignedChats = false;
     this.showGeneralChats = false;
+  }
+
+  templateSelected(template) {
+    this.currentMessage = template;
+    this.templatesActivated = false;
   }
 }
 

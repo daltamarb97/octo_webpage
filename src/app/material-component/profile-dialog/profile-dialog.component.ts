@@ -8,6 +8,8 @@ import {
   MatSnackBarVerticalPosition 
 } from '@angular/material/snack-bar';
 
+declare var Mercadopago: any;
+
 @Component({
   selector: 'app-profile-dialog',
   templateUrl: './profile-dialog.component.html',
@@ -19,6 +21,7 @@ export class ProfileDialogComponent{
   local_data:any;
   horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  identificationTypes:any; 
 
   constructor(
     public dialogRef: MatDialogRef<ProfileDialogComponent>,
@@ -27,7 +30,11 @@ export class ProfileDialogComponent{
   ) { 
     // local_data receives data from the component in which this dialog was called
     this.local_data = {... data};
-    this.action = this.local_data.action
+    this.action = this.local_data.action;
+    Mercadopago.setPublishableKey('TEST-ec744827-65a8-46dc-ba7b-a7f039113526');
+    this.identificationTypes = Mercadopago.getIdentificationTypes();
+    console.log(this.identificationTypes);
+    
   }
 
 

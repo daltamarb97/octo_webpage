@@ -17,7 +17,7 @@ export const AppRoutes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: '/inicio',
+        redirectTo: '/whatsapp',
         pathMatch: 'full'
       },
       {
@@ -29,15 +29,25 @@ export const AppRoutes: Routes = [
           () => import('./material-component/material.module').then(m => m.MaterialComponentsModule)
       },
       {
-        path: 'inicio',
+        path: 'whatsapp',
         canActivate: [
           CurrentUserGuard,
           EmailVerifiedGuardService,
           UserinfoGuard,
         ],
         loadChildren:
-          () => import('./dashboard/dashboard.module').then(m => m.DashboardModule)
+          () => import('./whatsapp/whatsapp.module').then(m => m.WhatsappComponentModule)
       },
+      // {
+      //   path: 'inicio',
+      //   canActivate: [
+      //     CurrentUserGuard,
+      //     EmailVerifiedGuardService,
+      //     UserinfoGuard,
+      //   ],
+      //   loadChildren:
+      //     () => import('./dashboard/dashboard.module').then(m => m.DashboardModule)
+      // },
       {
         path: 'no-comp',
         canActivate: [
@@ -58,16 +68,6 @@ export const AppRoutes: Routes = [
         ],
         loadChildren:
           () => import('./comunications/comunications.module').then(m => m.ComunicationsModule)
-      },
-      {
-        path: 'whatsapp',
-        canActivate: [
-          CurrentUserGuard,
-          EmailVerifiedGuardService,
-          UserinfoGuard,
-        ],
-        loadChildren:
-          () => import('./whatsapp/whatsapp.module').then(m => m.WhatsappComponentModule)
       },
       {
         path: 'directorio',

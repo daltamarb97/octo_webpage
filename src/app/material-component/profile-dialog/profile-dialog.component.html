@@ -1,31 +1,133 @@
-<div mat-dialog-content *ngIf="action == 'doorman'; else elseTemplate">
-
-    <mat-form-field>
-        <input type="email" placeholder="email para la cuenta portería" matInput [(ngModel)]="local_data.email">
-    </mat-form-field>
-
-    <mat-form-field>
-        <input type="text" placeholder="contraseña para la cuenta de portería" matInput [(ngModel)]="local_data.password">
-    </mat-form-field>
-
-  <div mat-dialog-actions>
-    <button mat-button (click)="onNoClick()">Cancelar</button>
-    <button mat-button mat-flat-button color="warn" (click)="createDoormanAccount()">Crear Cuenta de Portería</button>
-  </div>
+<div style="width: 800px;">
+    <form>
+        <h3>Detalles del comprador</h3>
+        <div>
+          <div>
+            <mat-form-field>
+                <mat-label>Email</mat-label>
+                <input matInput id="email" name="email" type="text">
+            </mat-form-field>
+            <!-- <label for="email">E-mail</label>
+            <input id="email" name="email" type="text" value="test@test.com"> -->
+          </div>
+          <div>
+            <mat-form-field>
+                <mat-label>Tipo de documento</mat-label>
+                <mat-select id="docType" name="docType" data-checkout="docType">
+                    <mat-option value="cc">Cédula</mat-option>
+                    <mat-option value="nit">Nit</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <!-- <label for="docType">Tipo de documento</label>
+            <select id="docType" name="docType" data-checkout="docType" type="text"></select> -->
+          </div>
+          <div>
+            <mat-form-field>
+                <mat-label>Número de documento</mat-label>
+                <input matInput id="docNumber" name="docNumber" data-checkout="docNumber" type="text">
+            </mat-form-field>
+            <!-- <label for="docNumber"></label>
+            <input id="docNumber" name="docNumber" data-checkout="docNumber" type="text"/> -->
+          </div>
+        </div>
+      <h3>Detalles de la tarjeta</h3>
+        <div>
+          <div>
+            <mat-form-field>
+                <mat-label>Titular de la tarjeta</mat-label>
+                <input matInput id="cardholderName" data-checkout="cardholderName" type="text">
+            </mat-form-field>
+            <!-- <label for="cardholderName">Titular de la tarjeta</label>
+            <input id="cardholderName" data-checkout="cardholderName" type="text"> -->
+          </div>
+          <h4>Fecha de vencimiento</h4>
+          <div style="display: flex; flex-direction: row; justify-content: space-between;">
+            <mat-form-field>
+                <input matInput type="number" placeholder="MM" id="cardExpirationMonth" data-checkout="cardExpirationMonth"
+                onselectstart="return false" onpaste="return false"
+                oncopy="return false" oncut="return false"
+                ondrag="return false" ondrop="return false" autocomplete=off maxlength="2">     
+            </mat-form-field>
+            <span class="date-separator" style="margin-right: 8px; margin-left: 8px;">/</span>  
+            <mat-form-field>
+                <input matInput type="number" placeholder="YY" id="cardExpirationYear" data-checkout="cardExpirationYear"
+                onselectstart="return false" onpaste="return false"
+                oncopy="return false" oncut="return false"
+                ondrag="return false" ondrop="return false" autocomplete=off maxlength="4"> 
+            </mat-form-field>
+            <!-- <label></label>
+            <div>
+              <input matInput type="text" placeholder="MM" id="cardExpirationMonth" data-checkout="cardExpirationMonth"
+                onselectstart="return false" onpaste="return false"
+                oncopy="return false" oncut="return false"
+                ondrag="return false" ondrop="return false" autocomplete=off>
+              <span class="date-separator">/</span>
+              <input type="text" placeholder="YY" id="cardExpirationYear" data-checkout="cardExpirationYear"
+                onselectstart="return false" onpaste="return false"
+                oncopy="return false" oncut="return false"
+                ondrag="return false" ondrop="return false" autocomplete=off>
+            </div> -->
+          </div>
+          <div>
+            <mat-form-field>
+                <mat-label>Número de la tarjeta</mat-label>
+                <input matInput type="text" id="cardNumber" data-checkout="cardNumber"
+                onselectstart="return false" onpaste="return false"
+                oncopy="return false" oncut="return false"
+                ondrag="return false" ondrop="return false" autocomplete=off>        
+            </mat-form-field>
+            <!-- <label for="cardNumber"></label>
+            <input matInput type="text" id="cardNumber" data-checkout="cardNumber"
+              onselectstart="return false" onpaste="return false"
+              oncopy="return false" oncut="return false"
+              ondrag="return false" ondrop="return false" autocomplete=off> -->
+          </div>
+          <div>
+            <mat-form-field>
+                <mat-label>Código de seguridad</mat-label>
+                <input matInput id="securityCode" data-checkout="securityCode" type="text"
+                onselectstart="return false" onpaste="return false"
+                oncopy="return false" oncut="return false"
+                ondrag="return false" ondrop="return false" autocomplete=off>        
+            </mat-form-field>
+            <!-- <label for="securityCode"></label>
+            <input id="securityCode" data-checkout="securityCode" type="text"
+              onselectstart="return false" onpaste="return false"
+              oncopy="return false" oncut="return false"
+              ondrag="return false" ondrop="return false" autocomplete=off> -->
+          </div>
+          <div id="issuerInput">
+            <mat-form-field>
+                <mat-label>Banco emisor</mat-label>
+                <mat-select id="issuer" name="issuer" data-checkout="issuer">
+                    <mat-option value="bancolombia">bancolombia</mat-option>
+                    <mat-option value="davivienda">davivienda</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <!-- <label for="issuer">Banco emisor</label>
+            <select id="issuer" name="issuer" data-checkout="issuer"></select> -->
+          </div>
+          <div>
+            <mat-form-field>
+                <mat-label>Cuotas</mat-label>
+                <mat-select type="text" id="installments" name="installments">
+                    <mat-option value="1">1</mat-option>
+                    <mat-option value="2">2</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <!-- <label for="installments"></label>
+            <select type="text" id="installments" name="installments"></select> -->
+          </div>
+          <div>
+            <input type="hidden" name="transactionAmount" id="transactionAmount" value="100" />
+            <input type="hidden" name="paymentMethodId" id="paymentMethodId" />
+            <input type="hidden" name="description" id="description" />
+            <br>
+            <button mat-raised-button color="primary" type="submit">Pagar</button>
+            <!-- <button type="submit">Pagar</button> -->
+            <br>
+          </div>
+      </div>
+    </form>
 </div>
 
-<ng-template #elseTemplate>
-  Copia y pega este link en tu navegador de internet para pagar la mensualidad de Octo.
-  Cada mes se actualiza el link.
-    <section class="payment-input">
-        <mat-form-field>
-            <mat-label>Link de Pago</mat-label>
-            <input [(ngModel)]="local_data.paymentLink" matInput readonly>
-        </mat-form-field>
-        
-        <button mat-stroked-button color='primary' (click)="copyMessage()">Copiar</button>
-    </section>
-    <div mat-dialog-actions>
-        <button mat-button (click)="onNoClick()">Salir</button>
-    </div>
-</ng-template>
