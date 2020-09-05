@@ -17,6 +17,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 
 export class currentChatData {
   phoneNumber:string;
+  assignedTo:string = 'null';
 }
 
 // export class currentPrivateChatData {
@@ -38,6 +39,7 @@ export class WhatsappComponent implements OnInit {
   userId:string;
   companyId:string;
   chatWhatsapp:Array<any> = [];  // list of names of rooms
+  chatWhatsappAssigned:Array<any> = [];  // list of names of rooms
   chatMessages: Array<any> = []; // array of messages of specific room
   currentMessage:string; // message to be send
   currentChatData: currentChatData;  // information of selected room chat
@@ -47,11 +49,15 @@ export class WhatsappComponent implements OnInit {
   WMessages: number;
   WSenders: number;
   chat:any;
-  privateChat:any;
-  newChat:any;
-  oldChat:any;
+  employeesList:Array<any> = [];
+  templatesArray:Array<any> = [];
+  templatesActivated: boolean = false;
+  selectOption: any;
+  // privateChat:any;
+  // newChat:any;
+  // oldChat:any;
   firstTimeMsgLoad: boolean = false;
-  firstTimePrivateMsgLoad: boolean = false;
+  // firstTimePrivateMsgLoad: boolean = false;
   isAdmin: boolean = false;
   typesOfShoes: string[] = ['Boots', 'Clogs', 'Loafers', 'Moccasins', 'Sneakers'];
 
@@ -86,7 +92,7 @@ export class WhatsappComponent implements OnInit {
         if (currentNav.room) {
           this.chat = currentNav.room;
         } else if (currentNav.privateChat) {
-          this.privateChat = currentNav.privateChat;
+          // this.privateChat = currentNav.privateChat;
         } else if (currentNav.dirChat) {
           // this.getMessagesFromPrivateChatOnclick(currentNav.dirChat);
         }
@@ -111,7 +117,8 @@ ngOnInit(): void {
     this.getWhatsappQuota();
   } 
   this.getChatWhatsappNames();
-  // this.getPrivateMessages();
+  this.getCompanyEmployees();
+  this.getWhatsappTemplateMessages();
 }
 
 ngOnDestroy(){
@@ -123,6 +130,33 @@ createChat(){
   this.router.navigate(['directorio']);
 }
 
+getCompanyEmployees() {
+  // get employees info on init
+  this.fetchData.getCompanyEmployees(this.companyId)
+    .subscribe(data => {
+      data.map(d => {
+        const rta = d.payload.doc.data();
+        const data = {
+          email: rta.email,
+          userId: rta.userId,
+          name: `${rta.name} ${rta.lastname}`
+        }
+        this.employeesList.push(data);
+      })
+    })
+}
+
+getWhatsappTemplateMessages() {
+  // get whatsapp approve templates
+  this.fetchData.getWhatsappTemplates()
+    .subscribe(data =>{
+      let obj = data.data();
+      Object.keys(obj).forEach(k => {
+        this.templatesArray.push(obj[k]);
+      })
+    })
+}
+
 getWhatsappQuota() {
   // get quota of whatsapp
   this.fetchData.getWhatsappQuota(this.companyId)
@@ -130,8 +164,6 @@ getWhatsappQuota() {
     takeUntil(this.destroy$)
   )
   .subscribe(data => {
-    console.log('active valuechanges');
-    
     const rta: any = data;
     this.WMessages = rta.messages;
     this.WSenders = rta.senders; 
@@ -148,12 +180,8 @@ getChatWhatsappNames(){
     takeUntil(this.destroy$)
   )
   .subscribe(data => {
-    data.map(a=>{
-      if(a.type === 'added'){
-        const data= a.payload.doc.data();
-        this.chatWhatsapp.push(data);
-      }
-    }); 
+    this.chatWhatsapp = data;
+    this.chatWhatsappAssigned = this.chatWhatsapp.filter(c => c.assignedTo === this.userId); 
     // info comes from home
     if(this.chat){
       this.getMessagesFromWChat(this.chatWhatsapp[this.chat.index]); 
@@ -166,38 +194,81 @@ getChatWhatsappNames(){
 
 getMessagesFromWChat(data){
   this.currentChatData = {
-    phoneNumber: data.number
+    phoneNumber: data.number,
+    assignedTo: (data.assignedTo) ? data.assignedTo : 'null'
   }
   this.showGeneralChats=true;
   this.showAssignedChats=false;
   this.chatMessages = []; //clear the array on click
-  this.privateChats = []; //clear the array on click
+  // this.privateChats = []; //clear the array on click
   this.getMessagesFirebase(data);
 }
 
 
-getMessagesFromChatOnclick(data) {
-  this.firstTimeMsgLoad = true;
-  this.chatMessages = [];
-  this.currentChatData = {
-    phoneNumber: data.number
-  }
-  this.showGeneralChats=true;
-  this.showAssignedChats=false;
-  this.fetchData.getMessagesFromSpecificWChat(
-    this.companyId, 
-    data.number
-  ).subscribe((data) => {
-    data.map(d => {
-      if (this.firstTimeMsgLoad === true) {
-        this.chatMessages.unshift({...d.payload.doc.data()});
-      } else{
-        this.chatMessages.push({...d.payload.doc.data()});
-      }
+async getMessagesFromChatOnclick(data) {
+  this.fetchData.checkWhatsapp24HourWindow({
+    companyId: this.companyId,
+    number: data.number
+  }).toPromise()
+  .then(dataSession => {
+    if(dataSession === 'false') {
+      this.templatesActivated = true;
+    } 
+    this.firstTimeMsgLoad = true;
+    this.chatMessages = [];
+    this.currentChatData = {
+      phoneNumber: data.number,
+      assignedTo: (data.assignedTo) ? data.assignedTo : 'null'
+    }
+    this.showGeneralChats=true;
+    this.showAssignedChats=false;
+    this.fetchData.getMessagesFromSpecificWChat(
+      this.companyId, 
+      data.number
+    ).subscribe((data) => {
+      data.map(d => {
+        if (this.firstTimeMsgLoad === true) {
+          this.chatMessages.unshift({...d.payload.doc.data()});
+        } else{
+          this.chatMessages.push({...d.payload.doc.data()});
+        }
+      })
+      this.firstTimeMsgLoad = false;
     })
-    this.firstTimeMsgLoad = false;
   })
-  
+}
+
+getMessagesFromChatOnclickAssigned(data) {
+  this.fetchData.checkWhatsapp24HourWindow({
+    companyId: this.companyId,
+    number: data.number
+  }).toPromise()
+  .then(dataSession => {
+    if(dataSession === 'false') {
+      this.templatesActivated = true;
+    } 
+    this.firstTimeMsgLoad = true;
+    this.chatMessages = [];
+    this.currentChatData = {
+      phoneNumber: data.number,
+      assignedTo: (data.assignedTo) ? data.assignedTo : 'null'
+    }
+    this.showAssignedChats=true;
+    this.showGeneralChats=false;
+    this.fetchData.getMessagesFromSpecificWChat(
+      this.companyId, 
+      data.number
+    ).subscribe((data) => {
+      data.map(d => {
+        if (this.firstTimeMsgLoad === true) {
+          this.chatMessages.unshift({...d.payload.doc.data()});
+        } else{
+          this.chatMessages.push({...d.payload.doc.data()});
+        }
+      })
+      this.firstTimeMsgLoad = false;
+    })
+  })
 }
 
 private getMessagesFirebase(data) {
@@ -218,44 +289,29 @@ private getMessagesFirebase(data) {
 }
 
 sendMessage(){
-  // send message in specific room
-  // if(this.currentMessage && this.currentMessage.length !== 0) {
-  //   const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
-  //   const messageData = {
-  //     name: this.holdData.userInfo.name,
-  //     lastname: this.holdData.userInfo.lastname,
-  //     message: this.currentMessage,
-  //     timestamp: timestamp,
-  //     userId: this.userId
-  //   }
-  
-  //   const tempData = {
-  //     name: this.holdData.userInfo.name,
-  //     lastname: this.holdData.userInfo.lastname,
-  //     message: this.currentMessage,
-  //     timestamp: new Date,
-  //     userId: this.userId
-  //   }
-  //   this.chatMessages.push(tempData);
-  //   this.setData.sendChatMessage(this.companyId, this.currentRoomData.roomId, messageData);
-  //   this.currentMessage = '';
-  //   var objDiv = document.getElementById("content-messages");
-  //   objDiv.scrollTop = objDiv.scrollHeight; 
-  // }
+    //send message in specific room
+    if(this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {
+      const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
+      const messageData = {
+        inbound: false,
+        message: this.currentMessage,
+        timestamp: timestamp,
+      }
+    
+      this.setData.sendWhatsappMessage(this.companyId, this.currentChatData.phoneNumber, messageData);
+      // uncomment in production
+      // this.setData.sendWhatsappMessageHttp({
+      //   message: this.currentMessage,
+      //   number: this.currentChatData.phoneNumber
+      // }).subscribe(data => console.log(data))
+      this.currentMessage = null;
+      var objDiv = document.getElementById("content-messages");
+      objDiv.scrollTop = objDiv.scrollHeight; 
+    } else {
+      this.currentMessage = null;
+    }
 }
 
-deleteChatRoom(){
-  // delete current chat room
-  // const dialogRef = this.dialog.open(ChatCreationDialogComponent,{data: 'delete'});
-  // dialogRef.afterClosed()
-  // .subscribe(result => {
-  //   if(result.data === 'delete'){
-  //     this.deleteData.deleteChatRoom(this.companyId, this.currentRoomData.roomId, this.userId);
-  //   }else{
-  //     // do nothing
-  //   }
-  // })
-}
 
 showDetails(){
   // if (this.showDetail) {
@@ -268,15 +324,6 @@ showDetails(){
 /*******************
 END OF ROOM CHAT
 *******************/
-
-
-/*******************
-PRIVATE CHAT
-*******************/
-
-/*******************
-END OF PRIVATE CHAT
-*******************/
  
   // ------------------------------------
   triggerResize() {
@@ -284,9 +331,20 @@ END OF PRIVATE CHAT
     this._ngZone.onStable.pipe(take(1))
         .subscribe(() => this.autosize.resizeToFitContent(true));
   }
-  assignToMe(){
-    //this show do something
+
+
+  assignChat(data){
+    //if chat is not assigned can be assigned    
+    this.setData.assignWhatsappChat(this.companyId, this.currentChatData.phoneNumber, {
+      userId: data.userId,
+      name: data.name
+    });
+    this.currentChatData.assignedTo = data.userId;
+    this.showAssignedChats = false;
+    this.showGeneralChats = false;
   }
+
+
   add(event: MatChipInputEvent): void {
     const input = event.input;
     const value = event.value;
@@ -322,6 +380,11 @@ END OF PRIVATE CHAT
     const filterValue = value.toLowerCase();
 
     return this.allFruits.filter(fruit => fruit.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  onTabChanged(){
+    this.showAssignedChats = false;
+    this.showGeneralChats = false;
   }
 }
 

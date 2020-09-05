@@ -22,134 +22,217 @@
                         <div class="p-20  position-relative">
                             <h4 class="card-title  m-0 font-20 font-medium">Chats de WhatsApp</h4>
                         </div>
-                        <mat-tab-group  mat-align-tabs="center"> 
+                        <mat-tab-group  mat-align-tabs="center" (selectedTabChange)="onTabChanged()"> 
                             <!-- Tab 1 -->
-                            <mat-tab   label="Mis chats" >   
-                               
-                                <mat-selection-list  [multiple]="false">
-                                            
-                                    <mat-list-option *ngFor="let chat of chatWhatsapp; index as i" (click)="getMessagesFromChatOnclick(chat)">
+                            <mat-tab  label="Mis chats" >   
+                                <mat-selection-list  [multiple]="false">            
+                                    <mat-list-option *ngFor="let chat of chatWhatsappAssigned; index as i" (click)="getMessagesFromChatOnclickAssigned(chat)">
                                         <mat-list-item>
                                             <span class="material-icons m-r-15 b-b">
                                                 account_circle
                                             </span > {{chat.number}} 
                                             <mat-chip-list  style="margin-left: auto;" >
-                                                
-                                                <mat-chip color="accent" class="chip" selected>Daniel</mat-chip>
+                                                <mat-chip color="accent" class="chip" selected *ngIf="chat.assignedName">{{chat.assignedName | slice:0:5}}</mat-chip>
                                             </mat-chip-list>
-
                                         </mat-list-item>
-                                           
-
                                     </mat-list-option>
-
                                   </mat-selection-list>
                             </mat-tab> 
-                        
-                                <!-- End Tab 1 -->
-                                <!-- Tab 2 -->
-                
-                                <mat-tab label="Todos los chats">
-                                        <!-- ============================================================== -->
-                                        <!-- column -->
-                                        <!-- ============================================================== -->
-                                        <mat-selection-list  [multiple]="false">
-                                            
-                                            <mat-list-option *ngFor="let chat of chatWhatsapp; index as i" (click)="getMessagesFromChatOnclick(chat)">
-                                                <mat-list-item>
-                                                    <span class="material-icons m-r-15 b-b">
-                                                        account_circle
-                                                    </span > {{chat.number}} 
-                                                    <mat-chip-list  style="margin-left: auto;" >
-                                                
-                                                        <mat-chip color="accent" class="chip" selected>Daniel</mat-chip>
-                                                    </mat-chip-list>
-                                                </mat-list-item>
-                                                   
-
-                                            </mat-list-option>
-        
-                                          </mat-selection-list>
-                                        
-                                </mat-tab>
-                            </mat-tab-group>
+                            <!-- End Tab 1 -->
+                            <!-- Tab 2 -->
+                            <mat-tab label="Todos los chats">
+                                    <mat-selection-list  [multiple]="false">
+                                        <mat-list-option *ngFor="let chat of chatWhatsapp; index as i" (click)="getMessagesFromChatOnclick(chat)">
+                                            <mat-list-item>
+                                                <span class="material-icons m-r-15 b-b">
+                                                    account_circle
+                                                </span > {{chat.number}} 
+                                                <mat-chip-list  style="margin-left: auto;" >
+                                                    <mat-chip color="accent" class="chip" selected *ngIf="chat.assignedName">{{chat.assignedName | slice:0:5}}</mat-chip>
+                                                    <mat-chip color="warn" class="chip" selected *ngIf="!chat.assignedName">N/A</mat-chip>
+                                                </mat-chip-list>
+                                            </mat-list-item>
+                                        </mat-list-option>
+                                    </mat-selection-list>
+                            </mat-tab>
+                        </mat-tab-group>
                     </mat-card>
                 </div>
 
-                    <mat-card *ngIf="showGeneralChats" style="height: auto; width: 65%;">
-                        
-                        <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
-                            <span class="toolbar-msg"  ># {{currentChatData.phoneNumber}}</span>
-                            <span class="example-spacer"></span>
-                            <button  mat-raised-button color="accent" class="example-icon" (click)="assignToMe()" >Asignarme el cliente</button>
-                        </mat-toolbar>
-                        <div style="display: flex; justify-content: center; padding-left: 15px;padding-top:10px ;" >
-                            <mat-form-field class="example-chip-list">
-                                <mat-chip-list #chipList aria-label="Fruit selection">
-                                  <mat-chip
-                                    *ngFor="let fruit of fruits"
-                                    [selectable]="selectable"
-                                    [removable]="removable"
-                                    (removed)="remove(fruit)">
-                                    {{fruit}}
-                                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                                  </mat-chip>
-                                  <input
-                                    placeholder="Categoría"
-                                    #fruitInput
-                                    
-                                    [matAutocomplete]="auto"
-                                    [matChipInputFor]="chipList"
-                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                    (matChipInputTokenEnd)="add($event)">
-                                </mat-chip-list>
-                                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-                                  <mat-option *ngFor="let fruit of filteredFruits | async" [value]="fruit">
-                                    {{fruit}}
-                                  </mat-option>
-                                </mat-autocomplete>
-                              </mat-form-field>
-                        </div>
-                        <mat-card-content class="backgroun-img" id="content-messages" style="background-color: ghostwhite;max-height: 320px; min-height: 320px; overflow-y: auto;">
-                           
-                            <div class="chat"  *ngFor="let message of chatMessages" >
-                                <div class="me">          
-                                    <span style="word-wrap: break-word;">{{message.message}} </span>     
-                                </div>
-                            </div>  
-                        
-                            <!-- if no messages show this card -->
-                            <div *ngIf="chatMessages.length === 0">
-                                <mat-card class="message-card">
-                                    <mat-card-content>
-                                        <p>
-                                        Aún no hay mensajes en esta sala
-                                        </p>
-                                    </mat-card-content>
-                                </mat-card>
-                            </div>
-                        </mat-card-content>
-                        <footer>
-                            <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;">
-                                <div style="display: flex;">
-                                    <textarea matInput
-                                    cdkTextareaAutosize
-                                    #autosize="cdkTextareaAutosize"
-                                    cdkAutosizeMinRows="1"
-                                    cdkAutosizeMaxRows="9"
-                                    [(ngModel)]="currentMessage" placeholder="Envía un mensaje" (keydown.enter)="sendMessage()"></textarea>
-                                    
-                                    <div class="example-button-container">
-                                        <button mat-mini-fab>
-                                            <mat-icon *ngIf="showGeneralChats" (click)="sendMessage()">send</mat-icon>
-                                            <!-- <mat-icon *ngIf="showAssignedChats" (click)="sendPrivateMessage()">send</mat-icon> -->
-                                        </button>
-                                    </div>
-                                </div>
+                <mat-card *ngIf="showGeneralChats" style="height: auto; width: 65%;">
+                    <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
+                        <span class="toolbar-msg"  ># {{currentChatData.phoneNumber}}</span>
+                        <span class="example-spacer"></span>
+                        <button *ngIf="currentChatData.assignedTo === 'null'" [matMenuTriggerFor]="assignment" mat-raised-button class="m-r-5">Asignar conversación</button>
+                        <mat-menu #assignment="matMenu" class="mymegamenu" style="overflow-y: auto;">
+                            <button mat-menu-item *ngFor="let e of employeesList" matTooltip="{{e.email}}" (click)="assignChat({userId: e.userId, name: e.name, number: currentChatData.phoneNumber})">
+                                {{e.name | titlecase}}
+                            </button>
+                        </mat-menu>
+                        <!-- <button  mat-raised-button color="accent" class="example-icon" (click)="assignChat()" >Asignar conversación</button> -->
+                    </mat-toolbar>
+                    <div style="display: flex; justify-content: center; padding-left: 15px;padding-top:10px ;" >
+                        <mat-form-field class="example-chip-list">
+                            <mat-chip-list #chipList aria-label="Fruit selection">
+                                <mat-chip
+                                *ngFor="let fruit of fruits"
+                                [selectable]="selectable"
+                                [removable]="removable"
+                                (removed)="remove(fruit)">
+                                {{fruit}}
+                                <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                                </mat-chip>
+                                <input
+                                placeholder="Categoría"
+                                #fruitInput
+                                
+                                [matAutocomplete]="auto"
+                                [matChipInputFor]="chipList"
+                                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                (matChipInputTokenEnd)="add($event)">
+                            </mat-chip-list>
+                            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                                <mat-option *ngFor="let fruit of filteredFruits | async" [value]="fruit">
+                                {{fruit}}
+                                </mat-option>
+                            </mat-autocomplete>
                             </mat-form-field>
-                        </footer>
-                    </mat-card>
-            
+                    </div>
+                    <mat-card-content class="backgroun-img" id="content-messages" style="background-color: ghostwhite;max-height: 320px; min-height: 320px; overflow-y: auto;">
+                        
+                        <div class="chat"  *ngFor="let message of chatMessages" >
+                            <div class="me" *ngIf="message.inbound === false">          
+                                <span style="word-wrap: break-word;">{{message.message}} </span>     
+                            </div>
+                            <div class="otherMessage" *ngIf="message.inbound === true">
+                                <span class="name"  >
+                                    Cliente
+                                </span> <br>
+                                <span style="word-wrap: break-word;">{{message.message}}</span>   
+                            </div>
+                        </div>  
+                    
+                        <!-- if no messages show this card -->
+                        <div *ngIf="chatMessages.length === 0">
+                            <mat-card class="message-card">
+                                <mat-card-content>
+                                    <p>
+                                    Aún no hay mensajes en esta sala
+                                    </p>
+                                </mat-card-content>
+                            </mat-card>
+                        </div>
+                    </mat-card-content>
+                    <footer>
+                        <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px; max-width: 760px;">
+                            <div style="display: flex;">
+                                <textarea matInput
+                                cdkTextareaAutosize
+                                #autosize="cdkTextareaAutosize"
+                                cdkAutosizeMinRows="1"
+                                cdkAutosizeMaxRows="9"
+                                [(ngModel)]="currentMessage" 
+                                placeholder="Envía un mensaje" 
+                                (keydown.enter)="sendMessage()"
+                                *ngIf="currentChatData.assignedTo === userId && templatesActivated !== true"></textarea>
+                                
+                                <div class="example-button-container" *ngIf="currentChatData.assignedTo === userId && templatesActivated !== true">
+                                    <button mat-mini-fab>
+                                        <mat-icon (click)="sendMessage()">send</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            <input *ngIf="currentChatData.assignedTo !== userId" matInput value="Asígnate el chat para responder" readonly>
+                            
+                            <mat-label *ngIf="templatesActivated === true  && currentChatData.assignedTo === userId">Mensajes template</mat-label>
+                            <mat-select *ngIf="templatesActivated === true && currentChatData.assignedTo === userId" [(ngModel)]="selectOption">
+                                <mat-option 
+                                *ngFor="let t of templatesArray" 
+                                [value]="t">{{t}}</mat-option>
+                            </mat-select>
+                            <mat-hint align="end" *ngIf="templatesActivated === true && currentChatData.assignedTo === userId">Este número no está activo en este momento, envía un template</mat-hint>
+                            <!-- <textarea matInput
+                                cdkTextareaAutosize
+                                #autosize="cdkTextareaAutosize"
+                                cdkAutosizeMinRows="1"
+                                cdkAutosizeMaxRows="9"
+                                [(ngModel)]="currentMessage" 
+                                placeholder="Envía un mensaje" 
+                                (keydown.enter)="sendMessage()"
+                                *ngIf="currentChatData.assignedTo === userId && templatesActivated !== true"></textarea> -->
+                        </mat-form-field>
+                    </footer>
+                </mat-card>
+
+               <!-- /*******************
+            ASSIGNED CHAT
+            *******************/ -->    
+            <mat-card *ngIf="showAssignedChats" style="height: auto; width: 65%;" >
+                <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
+                    
+                    <span class="toolbar-msg"  >{{currentChatData.phoneNumber}}</span>
+                    <button [matMenuTriggerFor]="assignment" mat-raised-button class="m-r-5">Reasignar conversación</button>
+                    <mat-menu #assignment="matMenu" class="mymegamenu" style="overflow-y: auto;">
+                        <button mat-menu-item *ngFor="let e of employeesList" matTooltip="{{e.email}}" (click)="assignChat({userId: e.userId, name: e.name, number: currentChatData.phoneNumber})">
+                            {{e.name | titlecase}}
+                        </button>
+                    </mat-menu>
+                  
+                </mat-toolbar>
+                <mat-card-content id="content-messages-private" style="max-height: 380px; min-height: 380px; overflow-y: auto;">
+    
+                    <div class="chat"  *ngFor="let message of chatMessages" >
+                        <div class="me"  *ngIf="message.inbound === false">          
+                            <span style="word-wrap: break-word;">                                 
+                                {{message.message}} </span>     
+                        </div>
+                        <div class="otherMessage" *ngIf="message.inbound === true">
+                            <span class="name"  >
+                                Cliente
+                            </span> <br>
+                            <span style="word-wrap: break-word;">{{message.message}}</span>   
+                        </div>            
+                    </div>  
+                    <!-- if no messages show this card -->
+                    <div *ngIf="chatMessages.length === 0">
+                        <mat-card class="message-card">
+                            <mat-card-content>
+                                <p>
+                                Aún no hay mensajes en esta sala
+                                </p>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </mat-card-content>
+                <footer>
+                    <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px; max-width: 760px;">
+                        <div style="display: flex;">
+                            <textarea matInput
+                            cdkTextareaAutosize
+                            #autosize="cdkTextareaAutosize"
+                            cdkAutosizeMinRows="1"
+                            cdkAutosizeMaxRows="9"
+                            [(ngModel)]="currentMessage" 
+                            placeholder="Envía un mensaje" 
+                            (keydown.enter)="sendMessage()"
+                            *ngIf="templatesActivated !== true"></textarea>
+                            
+                            <div class="example-button-container" *ngIf="templatesActivated !== true">
+                                <button mat-mini-fab>
+                                    <mat-icon (click)="sendMessage()">send</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <mat-label *ngIf="templatesActivated === true ">Mensajes template</mat-label>
+                        <mat-select *ngIf="templatesActivated === true">
+                            <mat-option *ngFor="let t of templatesArray" [value]="t">{{t}}</mat-option>
+                        </mat-select>
+                        <mat-hint align="end" *ngIf="templatesActivated === true">Este número no está activo en este momento, envía un template</mat-hint>
+                    </mat-form-field>
+                </footer>
+             </mat-card>
+
+
                 <!-- right side menu -->
                 <mat-card *ngIf="showDetail" style="width: 20%;">
                     <div  > 
@@ -177,63 +260,5 @@
                         </div>
                     </div>
                 </mat-card>
-
-               <!-- /*******************
-            PRIVATE CHAT
-            *******************/ -->    
-            <mat-card *ngIf="showAssignedChats" style="height: auto; width: 65%;" >
-                <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
-                    
-                    <span class="toolbar-msg"  >{{currentChatData.phoneNumber}}</span>
-                    
-                  
-                </mat-toolbar>
-                <mat-card-content id="content-messages-private" style="max-height: 380px; min-height: 380px; overflow-y: auto;">
-    
-                    <div class="chat"  *ngFor="let message of chatMessages" >
-                        <div class="me">          
-                            <span style="word-wrap: break-word;">
-                                 
-                                {{message.message}} </span>     
-                            <!-- <p class="time-left">{{message.timestamp | date: 'short'}}</p>  -->
-                        </div>
-                        <div class="otherMessage" >
-                            <!-- <span class="name"  >
-                                {{message.name}} {{message.lastname}}<p class="time-right" style="margin-left:10px;">{{message.timestamp | date: 'short'}}</p> 
-                            </span> <br> -->
-                            <span style="word-wrap: break-word;">{{message.message}}</span>   
-                        </div>            
-                    </div>  
-                    <!-- if no messages show this card -->
-                    <div *ngIf="chatMessages.length === 0">
-                        <mat-card class="message-card">
-                            <mat-card-content>
-                                <p>
-                                Aún no hay mensajes en esta sala
-                                </p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-                </mat-card-content>
-                <footer>
-                    <mat-form-field style="background-color: white; border-top: gray;    padding-left: 20px;">
-                        <div style="display: flex;">
-                            <textarea matInput
-                            cdkTextareaAutosize
-                            #autosize="cdkTextareaAutosize"
-                            cdkAutosizeMinRows="1"
-                            cdkAutosizeMaxRows="9"
-                            [(ngModel)]="currentMessage" placeholder="Envía un mensaje" (keydown.enter)="sendPrivateMessage()"></textarea>
-                            
-                            <div class="example-button-container">
-                                <button mat-mini-fab>
-                                    <mat-icon *ngIf="showGeneralChats" (click)="sendMessage()">send</mat-icon>
-                                    <!-- <mat-icon *ngIf="showAssignedChats" (click)="sendPrivateMessage()">send</mat-icon> -->
-                                </button>
-                            </div>
-                        </div>
-                    </mat-form-field>
-                </footer>
-             </mat-card>
         </div>
            

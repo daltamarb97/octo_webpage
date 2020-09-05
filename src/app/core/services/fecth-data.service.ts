@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import * as firebase from 'firebase';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ export class FecthDataService {
 
   constructor(
     private db: AngularFirestore,
+    private httpClient: HttpClient,
   ) {}
 
 
@@ -41,6 +43,13 @@ export class FecthDataService {
     return ref.stateChanges(['added']);
   }
 
+  getWhatsappTemplates(){
+    // get building residents
+    let ref = this.db.collection('whatsapp')
+    .doc('templates')
+
+    return ref.get();
+  }
 
   getInviteCodes() {
     // retreive all company pass
@@ -172,7 +181,7 @@ export class FecthDataService {
     .doc(companyId)
     .collection('chats')
 
-    return ref.stateChanges(['added']);
+    return ref.valueChanges();
   }
 
   getMessagesFromSpecificWChat(companyId: string, phoneNumber: string){
@@ -181,10 +190,23 @@ export class FecthDataService {
     .doc(companyId)
     .collection('chats')
     .doc(phoneNumber)
-    .collection('messages')
+    .collection('messages', ref => ref.orderBy('timestamp', 'desc'))
 
     return ref.stateChanges(['added']);
   }
+
+
+  checkWhatsapp24HourWindow(data) {
+      const api_url = "http://localhost:3000/message/check-user"
+      const finalData = {
+        companyId: data.companyId,
+        number: data.number
+      }
+      let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
+      const req = this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
+      return req;
+  }
+
   // END OF WHATSAPP
 
   // END OF CHATS AND COMUNICATIONS SERVICES

@@ -10,6 +10,14 @@
 //   background-image: url("C:/Users/danie\Documents\octo\web\latest\octo_webpage\src\assets\images\background-img-chat.png");
 
 // }
+.mat-select-panel mat-option.mat-option {
+  height: unset;
+}
+
+.mat-option-text.mat-option-text {
+  white-space: normal;
+}
+
 .chip{
   min-height: 23px;
   font-size: 13px;
@@ -53,8 +61,11 @@ mat-drawer-content {
   LETTER-SPACING:normal; 
   color:white;
 }
+
 .background-room{
-background-color: themecolor-alt !important;
+  display: flex;
+  justify-content: space-between;
+  background-color: themecolor-alt !important;
 }
 .chat{
   display:flex;

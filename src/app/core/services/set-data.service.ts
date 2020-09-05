@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import * as firebase  from "firebase"
 import { HoldDataService } from './hold-data.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class SetDataService {
   constructor(
     private db: AngularFirestore,
     private holdData: HoldDataService,
+    private httpClient: HttpClient,
   ) {}
 
 
@@ -281,6 +283,52 @@ export class SetDataService {
       userId: messageData.userId
     })
   }
+
+  assignWhatsappChat(companyId: string, phoneNumber: string, assignedData) {
+    let ref=  this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(phoneNumber)
+
+    return ref.update({
+      assignedTo: assignedData.userId,
+      assignedName: assignedData.name
+    })
+  }
+
+  sendWhatsappMessage(companyId: string, number: string, messageData){
+    // send chat message to firestore
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(number)
+    .collection('messages')
+
+    return ref.add({
+      inbound: messageData.inbound,
+      message: messageData.message,
+      timestamp: messageData.timestamp
+    })
+    .then(docRef => {
+      ref.doc(docRef.id)
+      .update({
+        messageId: docRef.id
+      })
+    })
+  }
+
+  
+  sendWhatsappMessageHttp(data){
+    const api_url = "http://localhost:3000/message/sendFromOcto"
+    const finalData = {
+      message: data.message,
+      number: data.number
+    }
+    let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
+    const req = this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
+    return req;
+  }
+
   // END OF CHATS AND COMUNICATIONS SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
