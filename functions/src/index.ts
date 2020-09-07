@@ -7,8 +7,8 @@ const cors = require('cors')({origin: true});
 
 admin.initializeApp(functions.config().firebase);
 
-const SENDER_EMAIL= '****';
-const SENDER_PASSWORD= '****';
+const SENDER_EMAIL= 'waypooltec@gmail.com';
+const SENDER_PASSWORD= 'Waypooltec2020';
 
 // function that sends invite email in response of an event triggered by host user
 exports.sendInviteEmail = functions.firestore

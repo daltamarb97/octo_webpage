@@ -318,7 +318,7 @@ export class SetDataService {
 
   
   sendWhatsappMessageHttp(data){
-    const api_url = "http://localhost:3000/message/sendFromOcto"
+    const api_url = "https://octo-api-wa.herokuapp.com/message/sendFromOcto"
     const finalData = {
       message: data.message,
       number: data.number,

@@ -101,7 +101,7 @@ export class ProfileDialogComponent{
 
   private sendEmailPayment(data){
     this.showSpinner = true;
-    const api_url = "https://us-central1-admos-enterprise.cloudfunctions.net/paymentLink"
+    const api_url = "https://us-central1-octo-work.cloudfunctions.net/paymentLink"
     let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
     const req = this.http.post(api_url, JSON.stringify(data), {headers: headers, responseType: 'json'});
     return req;
