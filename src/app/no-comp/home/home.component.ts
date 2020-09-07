@@ -35,12 +35,12 @@ export class HomeComponent implements OnInit {
         if (currentNav.new) {
         } else {
           if (this.holdData.companyInfo) {
-            this.router.navigate(['inicio']);
+            this.router.navigate(['whatsapp']);
           }
         }
       } else{
         if (this.holdData.companyInfo) {
-          this.router.navigate(['inicio']);
+          this.router.navigate(['whatsapp']);
         }
       }
     });
@@ -57,7 +57,7 @@ export class HomeComponent implements OnInit {
     this.setData.setNewCompany({name: this.companyName}, this.holdData.userInfo)
       .then(() => {
         this.spinner = false;
-        this.router.navigate(['inicio']);
+        this.router.navigate(['whatsapp']);
       })
   }
 
@@ -70,7 +70,7 @@ export class HomeComponent implements OnInit {
         this.setData.setUserInfoInCompany(this.holdData.userInfo, data)
           .then(() => {
             this.spinner = false;
-            this.router.navigate(['inicio']);
+            this.router.navigate(['whatsapp']);
           })
       })
       .catch(error => {

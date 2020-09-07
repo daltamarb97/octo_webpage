@@ -103,7 +103,7 @@ export class ProfilepageComponent implements OnInit {
   async changeProyect(companyId){
     //   change companyId and refresh site
     await this.setData.updateCompanyIdInUser(this.holdData.userId, companyId);
-    this.router.navigate(['inicio']);
+    this.router.navigate(['whatsapp']);
   }
 
   addProyect(){

@@ -38,16 +38,6 @@ export const AppRoutes: Routes = [
         loadChildren:
           () => import('./whatsapp/whatsapp.module').then(m => m.WhatsappComponentModule)
       },
-      // {
-      //   path: 'inicio',
-      //   canActivate: [
-      //     CurrentUserGuard,
-      //     EmailVerifiedGuardService,
-      //     UserinfoGuard,
-      //   ],
-      //   loadChildren:
-      //     () => import('./dashboard/dashboard.module').then(m => m.DashboardModule)
-      // },
       {
         path: 'no-comp',
         canActivate: [
