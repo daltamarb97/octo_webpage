@@ -302,5 +302,21 @@ export class FecthDataService {
     return  ref.get();
   }
 
+  // PAYMENTS
+
+  getPaymentPlans() {
+    let ref = this.db.collection('paymentData')
+    .doc('plans')
+    .collection('types')
+    
+    return ref.get();
+  }
+
+  getBalanceCompanyInfo(companyId: string) {
+    let ref = this.db.collection('paymentData')
+    .doc(companyId)
+    
+    return ref.get();
+  }
 
 }

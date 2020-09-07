@@ -3,12 +3,9 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin';
 import * as nodemailer from 'nodemailer';
+const cors = require('cors')({origin: true});
 
 admin.initializeApp(functions.config().firebase);
-
-
-const SENDER_EMAIL= 'waypooltec@gmail.com';
-const SENDER_PASSWORD= 'Waypooltec2020';
 
 
 
@@ -159,4 +156,45 @@ exports.sendTestRequestLandingContact = functions.https
         res.end();
     });
 
+})
+
+
+exports.paymentLink = functions.https
+.onRequest(async (req, res) => {
+    cors(req, res, () => {
+        const data = {
+            plan: req.body.plan,
+            amount: req.body.amount,
+            email: req.body.email,
+            name: req.body.name
+        }
+        console.log(data);
+        
+         // email Logic stated here
+         const authData = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false,
+            auth: {
+                user: SENDER_EMAIL,
+                pass: SENDER_PASSWORD
+            }
+        });
+    
+        authData.sendMail({
+            from: 'payments@octo.com',
+            to: 'octo-work@criptext.com',
+            subject: `URGENTE - GENERAR LINK DE PAGO`,
+            text: `USUARIO CON LOS SIGUIENTES DATOS: 
+            nombre: ${data.name} / email: ${data.email} 
+            hizo solicitud de recarga en su cuenta de Octo por valor de: $${data.amount} USD
+            ENVIAR LINK DE PAGO ASAP AL EMAIL`,
+        }).then((response)=>{
+            console.log('successfully sent email:' + response);
+            res.end();
+        }).catch(error =>{
+            console.log('error has raised and it is: ' + error); 
+            res.end();
+        });
+    })
 })

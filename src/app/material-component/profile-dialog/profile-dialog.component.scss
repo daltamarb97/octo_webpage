@@ -1,14 +1,4 @@
-.payment-input{
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 20px;
-    margin-top: 15px;
-
-    mat-form-field{
-        margin-right: 10px;
-    }
-
-    button{
-        max-height: 50px;
-    }
-}
+.plan-card {
+    max-width: 100%;
+    background-color: #FFF0EC
+  }
