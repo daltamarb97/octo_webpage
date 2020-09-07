@@ -50,7 +50,6 @@ export class SetDataService {
     await ref.doc(companyId).update({
       companyId: companyId,
       admin: userData.userId,
-      balance: 0.00
     })
     await this.db.collection('users')
       .doc(userData.userId)
@@ -62,15 +61,15 @@ export class SetDataService {
       .collection('employees')
       .doc(userData.userId)
       .set(userData)
-    // enter plan quota info
-    await ref.doc(companyId)
-      .collection('quotas')
-      .doc('whatsapp')
-      .set({
-        // handled by server (free quota)
-        messages: 0,
-        senders: 0
-      })
+    // // enter plan quota info
+    // await ref.doc(companyId)
+    //   .collection('quotas')
+    //   .doc('whatsapp')
+    //   .set({
+    //     // handled by server (free quota)
+    //     messages: 0,
+    //     senders: 0
+    //   })
     // create default hat room
     await this.createChatRoom(
       companyId, 
