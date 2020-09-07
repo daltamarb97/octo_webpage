@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import * as firebase from 'firebase';
 
 @Injectable({
   providedIn: 'root'
@@ -19,46 +18,6 @@ export class DeleteDataService {
     .doc(rowId)
 
     return ref.delete()
-  }
-
-
-  deletePullRequestPaymentProof(data){
-    // delete image and pullRequest of payment proof
-    let ref = firebase.storage().ref(`paymentRecords/${data.buildingId}`).child(`${data.rowId}`);
-    ref.delete()
-      .then(async () => {
-        // set false pullRequest instance
-        let refRecord = this.db.collection('payments_records')
-        .doc(`${data.rowId}`)
-        .collection('record_of_payments')
-        .doc(`${data.paymentId}`)
-
-        let refRow = this.db.collection('payment_tables')
-        .doc(`${data.buildingId}`)
-        .collection('rows_data')
-        .doc(`${data.rowId}`)
-
-        if (data.action) {
-          await refRecord.update({
-            pullRequest: false
-          });
-  
-          refRow.get()
-            .subscribe(dataRow => {
-              const pendingToPay = dataRow.data().pending_to_pay;
-              refRow.update({
-                pullRequest: false,
-                pending_to_pay: pendingToPay - data.paid_amount
-              })
-            })   
-        }else if (data.action === false) {
-          await refRecord.delete();
-  
-          await refRow.update({
-            pullRequest: false
-          });
-        }
-      })
   }
 
   // END PAYMENTS TABLE SERVICES
@@ -106,12 +65,6 @@ export class DeleteDataService {
     .doc(taskId)
 
     return ref.delete()
-  }
-
-  deleteFileOfTask(companyId: string, taskId: string, fileId: string) {
-    const storage = firebase.storage();
-    let ref =  storage.ref(`/tasks/${companyId}/${taskId}/${fileId}`);
-    return ref.delete();
   }
 // END OF TASK SERVICES
 

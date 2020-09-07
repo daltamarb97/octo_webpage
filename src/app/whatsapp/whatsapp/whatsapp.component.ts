@@ -300,7 +300,7 @@ sendMessage(){
         companyId: this.companyId
       }).toPromise()
       .then((data) => {
-        console.log(data);
+        //console.log(data);
         this.setData.sendWhatsappMessage(this.companyId, this.currentChatData.phoneNumber, messageData);
       })
       .catch(error => {

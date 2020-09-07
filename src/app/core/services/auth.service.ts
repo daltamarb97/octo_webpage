@@ -21,7 +21,7 @@ export class AuthService {
       // send verification email
       newUser.user.sendEmailVerification()
       .then(()=>{
-        console.log('email verification sent');
+        //console.log('email verification sent');
       }) 
     })
   }

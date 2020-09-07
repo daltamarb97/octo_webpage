@@ -20,7 +20,7 @@ import { DemoMaterialModule } from './demo-material-module';
 import { SharedModule } from './shared/shared.module';
 import { SpinnerComponent } from './shared/spinner.component';
 
-import { environment } from './../environments/environment';
+import { environment } from './../environments/environment.prod';
 
 // Firebase imports
 import { AngularFireModule } from '@angular/fire';

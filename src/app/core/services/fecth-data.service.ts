@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import * as firebase from 'firebase';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
@@ -224,53 +223,53 @@ export class FecthDataService {
     return ref.stateChanges(['added', 'removed', 'modified']);
   }
 
-  async getFileFromTask(data){
-    // get file from specific task
-    let rta = {
-      contentType: '',
-      url: '',
-    };
-    const storage = firebase.storage();
-    let ref =  storage.ref(`/tasks/${data.companyId}/${data.taskId}/${data.fileId}`);
-    const metadata = await ref.getMetadata();
-    const url = await ref.getDownloadURL();
-    if (metadata.contentType.includes('image')) {
-      rta = {
-        contentType: 'image',
-        url: url,
-      }
-    } else{
-      rta = {
-        contentType: 'file',
-        url: url,
-      }
-    }
-    return rta;
-  }
+  // async getFileFromTask(data){
+  //   // get file from specific task
+  //   let rta = {
+  //     contentType: '',
+  //     url: '',
+  //   };
+  //   const storage = firebase.storage();
+  //   let ref =  storage.ref(`/tasks/${data.companyId}/${data.taskId}/${data.fileId}`);
+  //   const metadata = await ref.getMetadata();
+  //   const url = await ref.getDownloadURL();
+  //   if (metadata.contentType.includes('image')) {
+  //     rta = {
+  //       contentType: 'image',
+  //       url: url,
+  //     }
+  //   } else{
+  //     rta = {
+  //       contentType: 'file',
+  //       url: url,
+  //     }
+  //   }
+  //   return rta;
+  // }
 
-  async getFileFromComment(data){
-    // get file from specific task
-    let rta = {
-      contentType: '',
-      url: '',
-    };
-    const storage = firebase.storage();
-    let ref =  storage.ref(`/tasks/${data.companyId}/${data.taskId}/comments/${data.commentId}/${data.fileId}`);
-    const metadata = await ref.getMetadata();
-    const url = await ref.getDownloadURL();
-    if (metadata.contentType.includes('image')) {
-      rta = {
-        contentType: 'image',
-        url: url,
-      }
-    } else{
-      rta = {
-        contentType: 'file',
-        url: url,
-      }
-    }
-    return rta;
-  }
+  // async getFileFromComment(data){
+  //   // get file from specific task
+  //   let rta = {
+  //     contentType: '',
+  //     url: '',
+  //   };
+  //   const storage = firebase.storage();
+  //   let ref =  storage.ref(`/tasks/${data.companyId}/${data.taskId}/comments/${data.commentId}/${data.fileId}`);
+  //   const metadata = await ref.getMetadata();
+  //   const url = await ref.getDownloadURL();
+  //   if (metadata.contentType.includes('image')) {
+  //     rta = {
+  //       contentType: 'image',
+  //       url: url,
+  //     }
+  //   } else{
+  //     rta = {
+  //       contentType: 'file',
+  //       url: url,
+  //     }
+  //   }
+  //   return rta;
+  // }
 
   getComments(companyId,taskId){
     // get all the announcements for a building

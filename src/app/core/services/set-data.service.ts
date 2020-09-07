@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import * as firebase  from "firebase"
 import { HoldDataService } from './hold-data.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
@@ -337,119 +336,119 @@ export class SetDataService {
 
   // BOARD SERVICES
 
-  private uploadTaskFile(companyId: string, taskId: string, fileId: string, file:any) {
-    const storage = firebase.storage();
-    let ref =  storage.ref(`/tasks/${companyId}/${taskId}/${fileId}`);
-    return ref.put(file);
-  }
+  // private uploadTaskFile(companyId: string, taskId: string, fileId: string, file:any) {
+  //   const storage = firebase.storage();
+  //   let ref =  storage.ref(`/tasks/${companyId}/${taskId}/${fileId}`);
+  //   return ref.put(file);
+  // }
 
 
-  createTask(companyId:string, data:any){
-    // update body or title of the announcement
-    let ref = this.db.collection('board')
-    .doc(companyId)
-    .collection('tasks')
+  // createTask(companyId:string, data:any){
+  //   // update body or title of the announcement
+  //   let ref = this.db.collection('board')
+  //   .doc(companyId)
+  //   .collection('tasks')
 
-    return ref.add({
-      title: data.title,
-      body: data.details,
-      timestamp: data.timestamp,
-      assignedTo: data.assignedTo,
-      assignedBy: data.assignedBy,
-    })
-      .then(async (docRef)=>{
-        const taskId: string = docRef.id;
-        // update document with announcementId
-        ref.doc(taskId)
-        .update({
-          taskId: taskId
-        });
-        // if file, uploads it
-        if (data.file === true) {
-          const fileId = this.holdData.createRandomId();
-          ref.doc(taskId)
-          .update({
-            fileId: fileId
-          })
-          await this.uploadTaskFile(companyId, taskId, fileId, data.fileInfo);
-          console.log('la imagen se subió');     
-        } else {
-          // do nothing
-        }
-      });
-  }
+  //   return ref.add({
+  //     title: data.title,
+  //     body: data.details,
+  //     timestamp: data.timestamp,
+  //     assignedTo: data.assignedTo,
+  //     assignedBy: data.assignedBy,
+  //   })
+  //     .then(async (docRef)=>{
+  //       const taskId: string = docRef.id;
+  //       // update document with announcementId
+  //       ref.doc(taskId)
+  //       .update({
+  //         taskId: taskId
+  //       });
+  //       // if file, uploads it
+  //       if (data.file === true) {
+  //         const fileId = this.holdData.createRandomId();
+  //         ref.doc(taskId)
+  //         .update({
+  //           fileId: fileId
+  //         })
+  //         await this.uploadTaskFile(companyId, taskId, fileId, data.fileInfo);
+  //         console.log('la imagen se subió');     
+  //       } else {
+  //         // do nothing
+  //       }
+  //     });
+  // }
 
 
-  updateTask(companyId:string, data:any){
-    // update body or title of the announcement
-    let ref = this.db.collection('board')
-    .doc(companyId)
-    .collection('tasks')
-    .doc(data.taskId)
+  // updateTask(companyId:string, data:any){
+  //   // update body or title of the announcement
+  //   let ref = this.db.collection('board')
+  //   .doc(companyId)
+  //   .collection('tasks')
+  //   .doc(data.taskId)
 
-    return ref.update(data)
-  }
+  //   return ref.update(data)
+  // }
 
   
-  sendComments(companyId: string, taskId: string, comment){
-    // send comment to a task
-    let ref = this.db.collection('board')
-    .doc(companyId)
-    .collection('tasks')
-    .doc(taskId)
-    .collection('comments')
+  // sendComments(companyId: string, taskId: string, comment){
+  //   // send comment to a task
+  //   let ref = this.db.collection('board')
+  //   .doc(companyId)
+  //   .collection('tasks')
+  //   .doc(taskId)
+  //   .collection('comments')
 
-    if (comment.file !== false) {
-      return ref.add({
-        name: comment.name,
-        lastname: comment.lastname,
-        text: comment.text,
-        timestamp: comment.timestamp,
-        userId: comment.userId,
-        file: comment.file,
-        fileName: comment.fileInfo.name
-      })
-      .then(async (docRef)=>{
-        const commentId: string = docRef.id;
-        // update document with announcementId
-        ref.doc(commentId)
-        .update({
-          commentId: commentId
-        });
-        // if file, uploads it
-        const fileId = this.holdData.createRandomId();
-        ref.doc(commentId)
-        .update({
-          fileId: fileId
-        })
-        await this.uploadCommentFile(companyId, taskId, commentId, fileId, comment.fileInfo);     
-      });
-    } else {
-      return ref.add({
-        name: comment.name,
-        lastname: comment.lastname,
-        text: comment.text,
-        timestamp: comment.timestamp,
-        userId: comment.userId,
-        file: comment.file,
-      })
-      .then(async (docRef)=>{
-        const commentId: string = docRef.id;
-        // update document with announcementId
-        ref.doc(commentId)
-        .update({
-          commentId: commentId
-        });     
-      });
-    }
-  }
+  //   if (comment.file !== false) {
+  //     return ref.add({
+  //       name: comment.name,
+  //       lastname: comment.lastname,
+  //       text: comment.text,
+  //       timestamp: comment.timestamp,
+  //       userId: comment.userId,
+  //       file: comment.file,
+  //       fileName: comment.fileInfo.name
+  //     })
+  //     .then(async (docRef)=>{
+  //       const commentId: string = docRef.id;
+  //       // update document with announcementId
+  //       ref.doc(commentId)
+  //       .update({
+  //         commentId: commentId
+  //       });
+  //       // if file, uploads it
+  //       const fileId = this.holdData.createRandomId();
+  //       ref.doc(commentId)
+  //       .update({
+  //         fileId: fileId
+  //       })
+  //       await this.uploadCommentFile(companyId, taskId, commentId, fileId, comment.fileInfo);     
+  //     });
+  //   } else {
+  //     return ref.add({
+  //       name: comment.name,
+  //       lastname: comment.lastname,
+  //       text: comment.text,
+  //       timestamp: comment.timestamp,
+  //       userId: comment.userId,
+  //       file: comment.file,
+  //     })
+  //     .then(async (docRef)=>{
+  //       const commentId: string = docRef.id;
+  //       // update document with announcementId
+  //       ref.doc(commentId)
+  //       .update({
+  //         commentId: commentId
+  //       });     
+  //     });
+  //   }
+  // }
 
 
-  private uploadCommentFile(companyId: string, taskId: string, commentId: string, fileId: string, file:any) {
-    const storage = firebase.storage();
-    let ref =  storage.ref(`/tasks/${companyId}/${taskId}/comments/${commentId}/${fileId}`);
-    return ref.put(file);
-  }
+  // private uploadCommentFile(companyId: string, taskId: string, commentId: string, fileId: string, file:any) {
+  //   const storage = firebase.storage();
+  //   let ref =  storage.ref(`/tasks/${companyId}/${taskId}/comments/${commentId}/${fileId}`);
+  //   return ref.put(file);
+  // }
   // END OF BOARD SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
