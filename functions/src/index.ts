@@ -89,75 +89,109 @@ exports.sendPushNot = functions.firestore
     })
 
 
-exports.sendTestRequestLanding = functions.https
-.onRequest(async (req, res) => {
-    const data = {
-        name: req.body.name,
-        email: req.body.email,
-        phone: req.body.phone
+exports.sendPushNotWhatsapp = functions.firestore
+.document('whatsapp/{companyId}/chats/{wchatId}/messages/{messageId}')
+.onCreate(async (snapshot, context) => {
+    const message: any = snapshot.data();
+    const companyId = context.params.companyId; 
+    const wchatId = context.params.wchatId;  
+
+    const payload = {
+        notification: {
+            title: 'Nuevo Whatsapp en Octo',
+            body: message.message
+        }
     }
 
-     // email Logic stated here
-     const authData = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-            user: SENDER_EMAIL,
-            pass: SENDER_PASSWORD
+    try {
+        const dataUser: any = await admin.firestore().collection('whatsapp')
+            .doc(companyId)
+            .collection('chats')
+            .doc(wchatId)
+            .get();
+        if (dataUser.assignedTo && message.inbound === true) {
+            const userToken: any = await  admin.firestore().collection('users')
+                .doc(dataUser.assignedTo)
+                .get();
+            
+            const token = userToken.data().token;
+            await admin.messaging().sendToDevice(token, payload)
         }
-    });
-
-    authData.sendMail({
-        from: 'landing@octo.com',
-        to: 'octo-work@criptext.com',
-        subject: `Requerimiento de prueba desde la landing page`,
-        text: `Información del solicitante: nombre: ${data.name} / email: ${data.email} / telefono: ${data.phone}`,
-    }).then((response)=>{
-        console.log('successfully sent email:' + response);
-        res.end();
-    }).catch(error =>{
-        console.log('error has raised and it is: ' + error); 
-        res.end();
-    });
-
+    } catch(error) {
+        console.error('error sending push not: ', error);
+    }
 })
 
 
-exports.sendTestRequestLandingContact = functions.https
-.onRequest(async (req, res) => {
-    const data = {
-        name: `${req.body.name} ${req.body.lastname}`,
-        email: req.body.email,
-        phone: req.body.phone,
-        message: req.body.message
-    }
+// exports.sendTestRequestLanding = functions.https
+// .onRequest(async (req, res) => {
+//     const data = {
+//         name: req.body.name,
+//         email: req.body.email,
+//         phone: req.body.phone
+//     }
 
-     // email Logic stated here
-     const authData = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-            user: SENDER_EMAIL,
-            pass: SENDER_PASSWORD
-        }
-    });
+//      // email Logic stated here
+//      const authData = nodemailer.createTransport({
+//         host: 'smtp.gmail.com',
+//         port: 587,
+//         secure: false,
+//         auth: {
+//             user: SENDER_EMAIL,
+//             pass: SENDER_PASSWORD
+//         }
+//     });
 
-    authData.sendMail({
-        from: 'landing@octo.com',
-        to: 'octo-work@criptext.com',
-        subject: `Contacto desde landing page - contact page`,
-        text: `Información del solicitante: nombre: ${data.name} / email: ${data.email} / telefono: ${data.phone} / mensaje: ${data.message}`,
-    }).then((response)=>{
-        console.log('successfully sent email:' + response);
-        res.end();
-    }).catch(error =>{
-        console.log('error has raised and it is: ' + error); 
-        res.end();
-    });
+//     authData.sendMail({
+//         from: 'landing@octo.com',
+//         to: 'octo-work@criptext.com',
+//         subject: `Requerimiento de prueba desde la landing page`,
+//         text: `Información del solicitante: nombre: ${data.name} / email: ${data.email} / telefono: ${data.phone}`,
+//     }).then((response)=>{
+//         console.log('successfully sent email:' + response);
+//         res.end();
+//     }).catch(error =>{
+//         console.log('error has raised and it is: ' + error); 
+//         res.end();
+//     });
 
-})
+// })
+
+
+// exports.sendTestRequestLandingContact = functions.https
+// .onRequest(async (req, res) => {
+//     const data = {
+//         name: `${req.body.name} ${req.body.lastname}`,
+//         email: req.body.email,
+//         phone: req.body.phone,
+//         message: req.body.message
+//     }
+
+//      // email Logic stated here
+//      const authData = nodemailer.createTransport({
+//         host: 'smtp.gmail.com',
+//         port: 587,
+//         secure: false,
+//         auth: {
+//             user: SENDER_EMAIL,
+//             pass: SENDER_PASSWORD
+//         }
+//     });
+
+//     authData.sendMail({
+//         from: 'landing@octo.com',
+//         to: 'octo-work@criptext.com',
+//         subject: `Contacto desde landing page - contact page`,
+//         text: `Información del solicitante: nombre: ${data.name} / email: ${data.email} / telefono: ${data.phone} / mensaje: ${data.message}`,
+//     }).then((response)=>{
+//         console.log('successfully sent email:' + response);
+//         res.end();
+//     }).catch(error =>{
+//         console.log('error has raised and it is: ' + error); 
+//         res.end();
+//     });
+
+// })
 
 
 exports.paymentLink = functions.https
