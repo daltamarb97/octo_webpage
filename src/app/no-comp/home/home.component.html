@@ -3,16 +3,16 @@
         <mat-expansion-panel>
             <mat-expansion-panel-header>
             <mat-panel-title>
-                Crea un nuevo proyecto
+                Crea un nueva Empresa
             </mat-panel-title>
             <mat-panel-description>
-                Crea un espacio de trabajo para tu proyecto
+                Crea un espacio de trabajo para tu empresa
             </mat-panel-description>
             </mat-expansion-panel-header>
             <!--  -->
             <div class="form-comp">
                 <mat-form-field appearance="fill">
-                    <mat-label>Nombre del proyecto</mat-label>
+                    <mat-label>Nombre de la empresa</mat-label>
                     <input matInput [(ngModel)]="companyName">
                 </mat-form-field>
                 
@@ -22,7 +22,7 @@
         <mat-expansion-panel>
             <mat-expansion-panel-header>
             <mat-panel-title>
-                Ingresa a un proyecto existente
+                Ingresa a una empresa existente
             </mat-panel-title>
             <mat-panel-description>
                 Si tienes código de invitación, debes ingresarlo en este espacio
@@ -43,5 +43,5 @@
 <h3 *ngIf="codeError" style="color: red; text-align: center;">{{errorMessage}}</h3>
 <div *ngIf="spinner" style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
     <mat-spinner></mat-spinner>
-    <h3 style="color: #3197F3;">Creando Proyecto...</h3>
+    <h3 style="color: #3197F3;">Creando espacio de trabajo...</h3>
 </div>

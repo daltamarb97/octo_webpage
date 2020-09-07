@@ -61,15 +61,6 @@ export class SetDataService {
       .collection('employees')
       .doc(userData.userId)
       .set(userData)
-    // // enter plan quota info
-    // await ref.doc(companyId)
-    //   .collection('quotas')
-    //   .doc('whatsapp')
-    //   .set({
-    //     // handled by server (free quota)
-    //     messages: 0,
-    //     senders: 0
-    //   })
     // create default hat room
     await this.createChatRoom(
       companyId, 

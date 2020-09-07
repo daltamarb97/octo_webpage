@@ -7,8 +7,7 @@ const cors = require('cors')({origin: true});
 
 admin.initializeApp(functions.config().firebase);
 
-const SENDER_EMAIL= 'waypooltec@gmail.com';
-const SENDER_PASSWORD= 'Waypooltec2020';
+
 
 // function that sends invite email in response of an event triggered by host user
 exports.sendInviteEmail = functions.firestore
@@ -198,4 +197,19 @@ exports.paymentLink = functions.https
             res.end();
         });
     })
+})
+
+exports.createPaymentMetadata = functions.firestore
+.document('company/{companyId}')
+.onCreate(async (snapshot, context) => {
+    const companyId: string = context.params.companyId;
+    await admin.firestore().collection('paymentData')
+        .doc(companyId)
+        .set({
+            // default values
+            MFee: 0.015,
+            TFee: 0.045,
+            balance: 0,
+            companyId: companyId
+        })
 })
