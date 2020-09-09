@@ -20,12 +20,6 @@ export class currentChatData {
   assignedTo:string = 'null';
 }
 
-// export class currentPrivateChatData {
-//   name:string;
-//   chatId:string;
-//   lastname:string;
-// }
-
 @Component({
   selector: 'app-whatsapp',
   templateUrl: './whatsapp.component.html',
@@ -54,11 +48,13 @@ export class WhatsappComponent implements OnInit {
   templatesArray:Array<any> = [];
   templatesActivated: boolean = false;
   templatesActivatedOptions: boolean = false;
-
+  fileName: string;
+  fileInfo: any;
   // showTextareaTemplate: boolean = false;
   // privateChat:any;
   // newChat:any;
   // oldChat:any;
+  showSpinner: boolean = false;
   firstTimeMsgLoad: boolean = false;
   // firstTimePrivateMsgLoad: boolean = false;
   isAdmin: boolean = false;
@@ -73,7 +69,7 @@ export class WhatsappComponent implements OnInit {
   filteredFruits: Observable<string[]>;
   fruits: string[] = ['Lemon'];
   allFruits: string[] = ['Bugs', 'ventas', 'problema registro', 'pedido incompleto/malo', 'No llego a tiempo'];
-  testing:any;
+  messageSubscription:any;
   @ViewChild('fruitInput') fruitInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto') matAutocomplete: MatAutocomplete;
 
@@ -89,18 +85,6 @@ export class WhatsappComponent implements OnInit {
     private route: ActivatedRoute,
   ) { 
     //getting params from navigation
-    this.route.queryParams.subscribe(() => {
-      if (this.router.getCurrentNavigation().extras.state) {
-        const currentNav = this.router.getCurrentNavigation().extras.state
-        if (currentNav.room) {
-          this.chat = currentNav.room;
-        } else if (currentNav.privateChat) {
-          // this.privateChat = currentNav.privateChat;
-        } else if (currentNav.dirChat) {
-          // this.getMessagesFromPrivateChatOnclick(currentNav.dirChat);
-        }
-      }
-    });
 
     this.filteredFruits = this.fruitCtrl.valueChanges.pipe(
       startWith(null),
@@ -184,32 +168,12 @@ getChatWhatsappNames(){
   )
   .subscribe(data => {
     this.chatWhatsapp = data;
-    this.chatWhatsappAssigned = this.chatWhatsapp.filter(c => c.assignedTo === this.userId); 
-    // info comes from home
-    // if(this.chat){
-    //   this.getMessagesFromWChat(this.chatWhatsapp[this.chat.index]); 
-    //   this.chat = null;
-    //   this.showGeneralChats=true;
-    //   this.showAssignedChats=false;   
-    //   }  
+    this.chatWhatsappAssigned = this.chatWhatsapp.filter(c => c.assignedTo === this.userId);  
   });
 }
 
-// getMessagesFromWChat(data){
-//   this.currentChatData = {
-//     phoneNumber: data.number,
-//     assignedTo: (data.assignedTo) ? data.assignedTo : 'null'
-//   }
-//   this.showGeneralChats=true;
-//   this.showAssignedChats=false;
-//   this.chatMessages = []; //clear the array on click
-//   // this.privateChats = []; //clear the array on click
-//   this.getMessagesFirebase(data);
-// }
-
-
 async getMessagesFromChatOnclick(data, assigned: boolean) {
-  if (this.testing) this.testing.unsubscribe();
+  if (this.messageSubscription) this.messageSubscription.unsubscribe();
   this.templatesActivated = false;
   this.templatesActivatedOptions = false;
   this.fetchData.checkWhatsapp24HourWindow({
@@ -234,7 +198,7 @@ async getMessagesFromChatOnclick(data, assigned: boolean) {
       this.showGeneralChats=true;
       this.showAssignedChats=false;
     }
-    this.testing = this.fetchData.getMessagesFromSpecificWChat(
+    this.messageSubscription = this.fetchData.getMessagesFromSpecificWChat(
       this.companyId, 
       data.number
     )
@@ -249,29 +213,10 @@ async getMessagesFromChatOnclick(data, assigned: boolean) {
       this.firstTimeMsgLoad = false;
     })
   })
+  .catch(error => {
+    console.error(error);
+  })
 }
-
-// private unsubscribeFromMessagesOnClick() {
-//   this.destroyMsgSubs$.next();
-//   this.destroyMsgSubs$.complete();
-// }
-
-// private getMessagesFirebase(data) {
-//     // get messages from room in firestore
-//     this.fetchData.getMessagesFromSpecificWChat(
-//     this.companyId, 
-//     data.number,
-//   )
-//   .pipe(
-//     takeUntil(this.destroy$)
-//   )
-//   .subscribe(res => { 
-//     res.map(r => {
-//       const msg = r.payload.doc.data();
-//       this.chatMessages.push(msg);
-//     })
-//   })
-// }
 
 sendMessage(){
   // check if chat is active
@@ -279,38 +224,59 @@ sendMessage(){
     companyId: this.companyId,
     number: this.currentChatData.phoneNumber
   }).toPromise()
-  .then(dataSession => {
+  .then(async(dataSession) => {
     if(dataSession === 'false') {
       this.templatesActivated = true;
       this.templatesActivatedOptions = true;
     } 
+    this.showSpinner = true;
     //send message in specific room
     if(this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {
-      const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
-      const messageData = {
-        inbound: false,
-        message: this.currentMessage,
-        timestamp: timestamp,
-      }
       // uncomment in production
+      let mediaUrl = null;
+      if(this.fileInfo) {
+        mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.fileInfo, this.fileName);
+      }
       this.setData.sendWhatsappMessageHttp({
         message: this.currentMessage,
         number: this.currentChatData.phoneNumber,
         template: this.templatesActivated,
-        companyId: this.companyId
+        companyId: this.companyId,
+        mediaUrl: mediaUrl
       }).toPromise()
-      .then((data) => {
-        //console.log(data);
-        this.setData.sendWhatsappMessage(this.companyId, this.currentChatData.phoneNumber, messageData);
+      .then(async (data) => {        
+        const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
+        let dataFirebase;
+        if (mediaUrl) {
+          dataFirebase = {
+            inbound: false,
+            message: this.currentMessage,
+            timestamp: timestamp,
+            mediaUrl: mediaUrl
+          }
+          await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
+        } else {
+          dataFirebase = {
+            inbound: false,
+            message: this.currentMessage,
+            timestamp: timestamp,
+          }
+          await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
+        }
+        this.currentMessage = null;
+        this.fileInfo = null;
+        this.fileName = '';
+        this.showSpinner = false;
       })
       .catch(error => {
         if(error.error = 'saldo insuficiente') {
           alert('No se puede enviar mensaje porque la empresa no tiene saldo suficiente');
         }
+        this.currentMessage = null;
+        this.fileInfo = null;
+        this.fileName = '';
+        this.showSpinner = false;
       })
-      this.currentMessage = null;
-      var objDiv = document.getElementById("content-messages");
-      objDiv.scrollTop = objDiv.scrollHeight; 
     } else {
       this.currentMessage = null;
     }
@@ -395,6 +361,15 @@ END OF ROOM CHAT
   templateSelected(template) {
     this.currentMessage = template;
     this.templatesActivated = false;
+  }
+
+  displayImage(url: string){
+    window.open(url, "_blank");
+  }
+
+  selectImage(file) {
+    this.fileInfo = file.target.files[0];
+    this.fileName = file.target.files[0].name;
   }
 }
 

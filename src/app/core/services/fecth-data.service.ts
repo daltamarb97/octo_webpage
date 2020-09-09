@@ -196,7 +196,8 @@ export class FecthDataService {
 
 
   checkWhatsapp24HourWindow(data) {
-      const api_url = "https://octo-api-wa.herokuapp.com/message/check-user"
+      // const api_url = "https://octo-api-wa.herokuapp.com/message/check-user"
+      const api_url = "http://localhost:3000/message/check-user"
       const finalData = {
         companyId: data.companyId,
         number: data.number
@@ -222,54 +223,6 @@ export class FecthDataService {
     
     return ref.stateChanges(['added', 'removed', 'modified']);
   }
-
-  // async getFileFromTask(data){
-  //   // get file from specific task
-  //   let rta = {
-  //     contentType: '',
-  //     url: '',
-  //   };
-  //   const storage = firebase.storage();
-  //   let ref =  storage.ref(`/tasks/${data.companyId}/${data.taskId}/${data.fileId}`);
-  //   const metadata = await ref.getMetadata();
-  //   const url = await ref.getDownloadURL();
-  //   if (metadata.contentType.includes('image')) {
-  //     rta = {
-  //       contentType: 'image',
-  //       url: url,
-  //     }
-  //   } else{
-  //     rta = {
-  //       contentType: 'file',
-  //       url: url,
-  //     }
-  //   }
-  //   return rta;
-  // }
-
-  // async getFileFromComment(data){
-  //   // get file from specific task
-  //   let rta = {
-  //     contentType: '',
-  //     url: '',
-  //   };
-  //   const storage = firebase.storage();
-  //   let ref =  storage.ref(`/tasks/${data.companyId}/${data.taskId}/comments/${data.commentId}/${data.fileId}`);
-  //   const metadata = await ref.getMetadata();
-  //   const url = await ref.getDownloadURL();
-  //   if (metadata.contentType.includes('image')) {
-  //     rta = {
-  //       contentType: 'image',
-  //       url: url,
-  //     }
-  //   } else{
-  //     rta = {
-  //       contentType: 'file',
-  //       url: url,
-  //     }
-  //   }
-  //   return rta;
-  // }
 
   getComments(companyId,taskId){
     // get all the announcements for a building

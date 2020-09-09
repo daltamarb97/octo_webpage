@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { HoldDataService } from './hold-data.service';
+import * as firebase from 'firebase';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
@@ -285,7 +286,7 @@ export class SetDataService {
     })
   }
 
-  sendWhatsappMessage(companyId: string, number: string, messageData){
+  sendWhatsappMessageFirebase(companyId: string, number: string, messageData){
     // send chat message to firestore
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
@@ -293,153 +294,74 @@ export class SetDataService {
     .doc(number)
     .collection('messages')
 
-    return ref.add({
-      inbound: messageData.inbound,
-      message: messageData.message,
-      timestamp: messageData.timestamp
-    })
-    .then(docRef => {
-      ref.doc(docRef.id)
-      .update({
-        messageId: docRef.id
+    if(messageData.mediaUrl) {
+      return ref.add({
+        inbound: messageData.inbound,
+        message: messageData.message,
+        timestamp: messageData.timestamp,
+        mediaUrl: messageData.mediaUrl
       })
-    })
+      .then(docRef => {
+        ref.doc(docRef.id)
+        .update({
+          messageId: docRef.id
+        })
+      })
+    } else {
+      return ref.add({
+        inbound: messageData.inbound,
+        message: messageData.message,
+        timestamp: messageData.timestamp,
+        })
+        .then(docRef => {
+          ref.doc(docRef.id)
+          .update({
+            messageId: docRef.id
+          })
+        })
+    }
   }
 
   
   sendWhatsappMessageHttp(data){
-    const api_url = "https://octo-api-wa.herokuapp.com/message/sendFromOcto"
-    const finalData = {
-      message: data.message,
-      number: data.number,
-      template: data.template, 
-      companyId: data.companyId
-    }
-    let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
-    const req = this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
-    return req;
+    // const api_url = "https://octo-api-wa.herokuapp.com/message/sendFromOcto"
+    const api_url = "http://localhost:3000/message/sendFromOcto";
+      if(data.mediaUrl) {
+          const finalData = {
+            message: data.message,
+            number: data.number,
+            template: data.template, 
+            companyId: data.companyId,
+            mediaUrl: data.mediaUrl
+          }
+          // api request
+          let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
+          const req =  this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
+          return req;           
+      } else {
+        const finalData = {
+          message: data.message,
+          number: data.number,
+          template: data.template, 
+          companyId: data.companyId
+        }
+          // api request
+        let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
+        const req =  this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
+        return req;
+      }
+  }
+
+
+  async uploadMediaFile (companyId: any, number: string, file, fileName: string) {
+    const storage = firebase.storage();
+    let ref =  storage.ref(`/whatsappMedia/${companyId}/${number}/${fileName}`);
+    const rta = await ref.put(file);
+    const url = await rta.ref.getDownloadURL();
+    return url;
   }
 
   // END OF CHATS AND COMUNICATIONS SERVICES
-
-  // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
-
-  // BOARD SERVICES
-
-  // private uploadTaskFile(companyId: string, taskId: string, fileId: string, file:any) {
-  //   const storage = firebase.storage();
-  //   let ref =  storage.ref(`/tasks/${companyId}/${taskId}/${fileId}`);
-  //   return ref.put(file);
-  // }
-
-
-  // createTask(companyId:string, data:any){
-  //   // update body or title of the announcement
-  //   let ref = this.db.collection('board')
-  //   .doc(companyId)
-  //   .collection('tasks')
-
-  //   return ref.add({
-  //     title: data.title,
-  //     body: data.details,
-  //     timestamp: data.timestamp,
-  //     assignedTo: data.assignedTo,
-  //     assignedBy: data.assignedBy,
-  //   })
-  //     .then(async (docRef)=>{
-  //       const taskId: string = docRef.id;
-  //       // update document with announcementId
-  //       ref.doc(taskId)
-  //       .update({
-  //         taskId: taskId
-  //       });
-  //       // if file, uploads it
-  //       if (data.file === true) {
-  //         const fileId = this.holdData.createRandomId();
-  //         ref.doc(taskId)
-  //         .update({
-  //           fileId: fileId
-  //         })
-  //         await this.uploadTaskFile(companyId, taskId, fileId, data.fileInfo);
-  //         console.log('la imagen se subió');     
-  //       } else {
-  //         // do nothing
-  //       }
-  //     });
-  // }
-
-
-  // updateTask(companyId:string, data:any){
-  //   // update body or title of the announcement
-  //   let ref = this.db.collection('board')
-  //   .doc(companyId)
-  //   .collection('tasks')
-  //   .doc(data.taskId)
-
-  //   return ref.update(data)
-  // }
-
-  
-  // sendComments(companyId: string, taskId: string, comment){
-  //   // send comment to a task
-  //   let ref = this.db.collection('board')
-  //   .doc(companyId)
-  //   .collection('tasks')
-  //   .doc(taskId)
-  //   .collection('comments')
-
-  //   if (comment.file !== false) {
-  //     return ref.add({
-  //       name: comment.name,
-  //       lastname: comment.lastname,
-  //       text: comment.text,
-  //       timestamp: comment.timestamp,
-  //       userId: comment.userId,
-  //       file: comment.file,
-  //       fileName: comment.fileInfo.name
-  //     })
-  //     .then(async (docRef)=>{
-  //       const commentId: string = docRef.id;
-  //       // update document with announcementId
-  //       ref.doc(commentId)
-  //       .update({
-  //         commentId: commentId
-  //       });
-  //       // if file, uploads it
-  //       const fileId = this.holdData.createRandomId();
-  //       ref.doc(commentId)
-  //       .update({
-  //         fileId: fileId
-  //       })
-  //       await this.uploadCommentFile(companyId, taskId, commentId, fileId, comment.fileInfo);     
-  //     });
-  //   } else {
-  //     return ref.add({
-  //       name: comment.name,
-  //       lastname: comment.lastname,
-  //       text: comment.text,
-  //       timestamp: comment.timestamp,
-  //       userId: comment.userId,
-  //       file: comment.file,
-  //     })
-  //     .then(async (docRef)=>{
-  //       const commentId: string = docRef.id;
-  //       // update document with announcementId
-  //       ref.doc(commentId)
-  //       .update({
-  //         commentId: commentId
-  //       });     
-  //     });
-  //   }
-  // }
-
-
-  // private uploadCommentFile(companyId: string, taskId: string, commentId: string, fileId: string, file:any) {
-  //   const storage = firebase.storage();
-  //   let ref =  storage.ref(`/tasks/${companyId}/${taskId}/comments/${commentId}/${fileId}`);
-  //   return ref.put(file);
-  // }
-  // END OF BOARD SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 

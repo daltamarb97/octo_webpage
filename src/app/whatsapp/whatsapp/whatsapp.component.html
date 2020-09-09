@@ -91,13 +91,23 @@
                     
                     <div class="chat"  *ngFor="let message of chatMessages" >
                         <div class="me" *ngIf="message.inbound === false">          
-                            <span style="word-wrap: break-word;">{{message.message}} </span>     
+                            <span style="word-wrap: break-word;">{{message.message}} </span> 
+                            <div *ngIf="message.mediaUrl" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                                <img 
+                                    [src]="message.mediaUrl" 
+                                    style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
+                            </div>    
                         </div>
                         <div class="otherMessage" *ngIf="message.inbound === true">
-                            <span class="name"  >
+                            <span class="name">
                                 Cliente
                             </span> <br>
-                            <span style="word-wrap: break-word;">{{message.message}}</span>   
+                            <span style="word-wrap: break-word;">{{message.message}}</span>
+                            <div *ngIf="message.mediaUrl" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                                <img 
+                                    [src]="message.mediaUrl" 
+                                    style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
+                            </div>
                         </div>
                     </div>  
                 
@@ -113,6 +123,7 @@
                     </div>
                 </mat-card-content>
                 <footer>
+                    <mat-spinner *ngIf="showSpinner"></mat-spinner>
                     <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px; max-width: 760px;">
                         <div style="display: flex;">
                             <textarea matInput
@@ -128,9 +139,15 @@
                             <div 
                                 class="example-button-container" 
                                 *ngIf="currentChatData.assignedTo === userId && templatesActivated !== true">
-                                <button mat-mini-fab>
-                                    <mat-icon (click)="sendMessage()">send</mat-icon>
-                                </button>
+                                <div style="display: flex; flex-direction: row">
+                                    <button mat-mini-fab>
+                                        <mat-icon (click)="sendMessage()">send</mat-icon>
+                                    </button>
+                                    <button mat-mini-fab color="warn">
+                                        <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
+                                    </button>
+                                </div>
+                                <p>{{fileName}}</p>
                             </div>
                         </div>
                         <input *ngIf="currentChatData.assignedTo !== userId" matInput value="Si el chat no está asignado a nadie, asígnatelo para responder" readonly>
@@ -170,13 +187,23 @@
                     <div class="chat"  *ngFor="let message of chatMessages" >
                         <div class="me"  *ngIf="message.inbound === false">          
                             <span style="word-wrap: break-word;">                                 
-                                {{message.message}} </span>     
+                                {{message.message}} </span>  
+                            <div *ngIf="message.mediaUrl" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                                <img 
+                                    [src]="message.mediaUrl" 
+                                    style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
+                            </div>    
                         </div>
                         <div class="otherMessage" *ngIf="message.inbound === true">
-                            <span class="name"  >
+                            <span class="name">
                                 Cliente
                             </span> <br>
-                            <span style="word-wrap: break-word;">{{message.message}}</span>   
+                            <span style="word-wrap: break-word;">{{message.message}}</span>
+                            <div *ngIf="message.mediaUrl" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                                <img 
+                                    [src]="message.mediaUrl" 
+                                    style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
+                            </div>   
                         </div>            
                     </div>  
                     <!-- if no messages show this card -->
@@ -191,6 +218,7 @@
                     </div>
                 </mat-card-content>
                 <footer>
+                    <mat-spinner *ngIf="showSpinner"></mat-spinner>
                     <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px; max-width: 760px;">
                         <div style="display: flex;">
                             <textarea matInput
@@ -206,9 +234,15 @@
                             <div 
                                 class="example-button-container"
                                 *ngIf="templatesActivated !== true">
-                                <button mat-mini-fab>
-                                    <mat-icon (click)="sendMessage()">send</mat-icon>
-                                </button>
+                                <div style="display: flex; flex-direction: row">
+                                    <button mat-mini-fab>
+                                        <mat-icon (click)="sendMessage()">send</mat-icon>
+                                    </button>
+                                    <button mat-mini-fab color="warn">
+                                        <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
+                                    </button>
+                                </div>
+                                <p>{{fileName}}</p>
                             </div>
                         </div>
                         <input 
@@ -249,4 +283,6 @@
                     </div>
                 </mat-card>
         </div>
+        <input hidden #fileInput type="file" class="form-control" (change)="selectImage($event)" placeholder="Upload image" accept=".png,.jpg,.jpeg">        
+
            

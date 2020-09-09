@@ -147,8 +147,14 @@ mat-drawer-content {
   display: flex;
   justify-content: center;
   width: 120px;
+  flex-direction: column;
   button {
-    margin-right: 40px;
+    margin-right: 7px;
+  }
+  p {
+    font-size: 10px;
+    margin-left: 25px;
+    margin-top: 5px;
   }
 }
 
