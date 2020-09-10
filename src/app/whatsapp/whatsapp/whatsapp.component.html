@@ -1,28 +1,5 @@
+<button  mat-raised-button color="accent" class="example-icon" (click)="goToStatistics()" >Ver Estadísticas</button>
 
-        <mat-card>
-            <mat-expansion-panel >
-        <mat-expansion-panel-header>
-        <mat-panel-title>
-        Información de tu plan
-        </mat-panel-title>
-        <mat-panel-description>
-        <mat-chip-list>
-                                    
-        Plan: <mat-chip color="accent" class="chip" selected> Popular</mat-chip>
-        </mat-chip-list>
-        </mat-panel-description>
-        </mat-expansion-panel-header>
-        <p>Mensajes restantes: 1000</p>
-        <p>Conversaciones Iniciadas restantes: 500</p>
-        <!-- <a href="http://"></a> -->
-        <p> ¿Tienes preguntas? Entra aquí <a href="http://localhost:4200/inicio"><u>http://localhost:4200/inicio</u></a></p>
-
-        <p>¿Necesitas mas mensajes? entra aquí <a href="http://localhost:4200/inicio"><u>http://localhost:4200/inicio</u></a></p>
-
-
-        </mat-expansion-panel>
-        </mat-card>
-        
     
         <!-- left side menu -->
         <div style="display: flex;">
@@ -31,6 +8,9 @@
                         <div class="p-20  position-relative">
                             <h4 class="card-title  m-0 font-20 font-medium">Clientes de WhatsApp</h4>
                         </div>
+                        <div style="display: flex; justify-content: flex-end;"> 
+                            <button  mat-raised-button color="accent" class="example-icon m-r-15" (click)="goToTags()"  >Agregar Tags</button>
+                         </div>
                         <mat-tab-group  mat-align-tabs="center"> 
                                         <!-- Tab 1 -->
                             <mat-tab   label="Mis chats" >   
@@ -90,7 +70,18 @@
                             <span class="toolbar-msg"  ># {{currentRoomData.name}}</span>
                             <span class="example-spacer"></span>
                             <button  mat-raised-button color="accent" class="example-icon" (click)="assignToMe()" >Asignarme el cliente</button>
-
+                            <button mat-raised-button color="primary" class="example-icon m-l-10"  [matMenuTriggerFor]="animals">Tags</button>
+                            <mat-menu  #animals="matMenu">
+                              <button  *ngFor="let category of tagsCategoriesNames" (click)="getSpecificTags(category)"
+                               mat-menu-item [matMenuTriggerFor]="categories">{{category.name}}</button>
+                            </mat-menu>
+                            
+                            <mat-menu  #categories="matMenu">
+                              <button *ngFor="let tag of tagsCategories" (click)="selected(tag,category)" mat-menu-item >{{tag.name}}</button>
+                              
+                            </mat-menu>
+                            
+                           
                             <!-- <button mat-icon-button [matMenuTriggerFor]="profile"  class="example-icon"  aria-label="Example icon-button with share icon">
                                 <mat-icon>more_vert</mat-icon>
                             </button> -->
@@ -101,32 +92,19 @@
                                 </button>
                             </mat-menu> -->
                         </mat-toolbar>
-                        <div style="display: flex; justify-content: center; padding-left: 15px;padding-top:10px ;" >
-                            <mat-form-field class="example-chip-list">
-                                <mat-chip-list #chipList aria-label="Fruit selection">
-                                  <mat-chip
-                                    *ngFor="let fruit of fruits"
-                                    [selectable]="selectable"
-                                    [removable]="removable"
-                                    (removed)="remove(fruit)">
-                                    {{fruit}}
-                                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                                  </mat-chip>
-                                  <input
-                                    placeholder="Categoría"
-                                    #fruitInput
-                                    
-                                    [matAutocomplete]="auto"
-                                    [matChipInputFor]="chipList"
-                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                    (matChipInputTokenEnd)="add($event)">
-                                </mat-chip-list>
-                                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-                                  <mat-option *ngFor="let fruit of filteredFruits | async" [value]="fruit">
-                                    {{fruit}}
-                                  </mat-option>
-                                </mat-autocomplete>
-                              </mat-form-field>
+                        <div  style=" padding-left: 15px;padding-top:10px ;" >
+                            <mat-chip-list #chipList aria-label="Tags">
+                                  
+                                <mat-chip
+                                  *ngFor="let tag of tagsFromConversation"
+                                  [selectable]="selectable"
+                                  [removable]="removable"
+                                  (removed)="remove(tag)">
+                                  {{tag.name}}
+                                  <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                                </mat-chip>
+                                
+                              </mat-chip-list>
                       </div>
                         <mat-card-content class="backgroun-img" id="content-messages" style="background-color: ghostwhite;max-height: 320px; min-height: 320px; overflow-y: auto;">
                            

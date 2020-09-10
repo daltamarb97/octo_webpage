@@ -64,7 +64,42 @@ export class DeleteDataService {
   // END PAYMENTS TABLE SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
+  // WhatsApp SERVICES
+  deleteTag(companyId, categoryId,tagId){
+    // delete single specific row of payments table
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(categoryId)
+    .collection('tags')
+    .doc(tagId)
 
+    return ref.delete()
+  }
+  deleteTagFromCompany(companyId, categoryId,tagId){
+    // delete single specific row of payments table
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('tags')
+    .doc(categoryId)
+    .collection('tagsnames')
+    .doc(tagId)
+
+    return ref.delete()
+  }
+  deleteCategory(companyId, categoryId){
+    // delete single specific row of payments table
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('tags')
+    .doc(categoryId)
+    
+
+    return ref.delete()
+  }
+  // END WhatsApp SERVICES
+
+  // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
   // COMUNICATIONS AND CHAT
 
   deleteChatRoom(buildingId, roomId, userId){

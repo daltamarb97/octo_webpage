@@ -17,6 +17,7 @@ import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 import {  ReactiveFormsModule} from '@angular/forms';
+import { MatMenuTrigger } from '@angular/material/menu';
 export class currentRoomData {
   name:string;
   roomId:string;
@@ -61,20 +62,18 @@ export class WhatsappComponent implements OnInit {
   firstTimeMsgLoad: boolean = false;
   firstTimePrivateMsgLoad: boolean = false;
   // showSearchBar:boolean = false;
-  typesOfShoes: string[] = ['Boots', 'Clogs', 'Loafers', 'Moccasins', 'Sneakers'];
-
+  tagsCategories:any = [];
+  tagsCategoriesNames:any = [];
+  tagsFromConversation:any = [];
   ///////////////////ONLY FOR EXAMPLE///////////////////////7
   visible = true;
   selectable = true;
   removable = true;
-  separatorKeysCodes: number[] = [ENTER, COMMA];
-  fruitCtrl = new FormControl();
-  filteredFruits: Observable<string[]>;
-  fruits: string[] = ['Lemon'];
-  allFruits: string[] = ['Bugs', 'ventas', 'problema registro', 'pedido incompleto/malo', 'No llego a tiempo'];
-
-  @ViewChild('fruitInput') fruitInput: ElementRef<HTMLInputElement>;
-  @ViewChild('auto') matAutocomplete: MatAutocomplete;
+  tagCtrl = new FormControl();
+  tags: any = [];
+  showTags: boolean = false;
+  @ViewChild('tagInput') tagInput: ElementRef<HTMLInputElement>;
+  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
 
   constructor(
     private fetchData: FecthDataService,
@@ -86,6 +85,7 @@ export class WhatsappComponent implements OnInit {
     private _ngZone: NgZone,
     private router: Router,
     private route: ActivatedRoute,
+    
   ) { 
     //getting params from navigation
     this.route.queryParams.subscribe(() => {
@@ -100,10 +100,12 @@ export class WhatsappComponent implements OnInit {
         }
       }
     });
-
-    this.filteredFruits = this.fruitCtrl.valueChanges.pipe(
-      startWith(null),
-      map((fruit: string | null) => fruit ? this._filter(fruit) : this.allFruits.slice()));
+    //this allows the autocomplete to work but the tags are objects and not string so i doesnt work
+    // this.filteredTags = this.tagCtrl.valueChanges.pipe(
+    //   startWith(null),
+    //   map((tag: string | null) => tag ? this._filter(tag)  : this.allTags.slice() 
+    //   ));
+      
   }
 
 ngOnInit(): void {
@@ -114,6 +116,8 @@ ngOnInit(): void {
   this.companyId = this.holdData.userInfo.companyId;
   this.getChatRoomNames();
   this.getPrivateMessages();
+  this.getCategories();
+
 }
 
 ngOnDestroy(){
@@ -501,10 +505,15 @@ END OF PRIVATE CHAT
   add(event: MatChipInputEvent): void {
     const input = event.input;
     const value = event.value;
-
+    console.log(value);
+    console.log(input);
+    
+    
     // Add our fruit
     if ((value || '').trim()) {
-      this.fruits.push(value.trim());
+      this.tags.push(value.trim());
+      console.log(value.trim());
+      
     }
 
     // Reset the input value
@@ -512,27 +521,66 @@ END OF PRIVATE CHAT
       input.value = '';
     }
 
-    this.fruitCtrl.setValue(null);
+    this.tagCtrl.setValue(null);
   }
 
-  remove(fruit: string): void {
-    const index = this.fruits.indexOf(fruit);
+  getCategories(){
+    // get categories 
+    this.fetchData.getTags(this.companyId)
+    .subscribe(data => {
+      this.tagsCategoriesNames = data;        
+      
+    })
+  }
+  getSpecificTags(category){
+    this.trigger.openMenu();
 
-    if (index >= 0) {
-      this.fruits.splice(index, 1);
-    }
+    this.fetchData.getSpecificTag(category.categoryId,this.companyId)
+    .subscribe(data => {
+      
+      this.tagsCategories = data;
+    })
+    
+  }
+  //ESTO SE DEBE COLOCAR CUANDO UN USUARIO ENTRA EN UNA CONVERSACIÓN
+  getTagsFromConversation(category){
+    this.fetchData.getTagFromConversation(category.categoryId,'whatsapp:+5214771786634',this.companyId)
+    .subscribe(data => {
+      
+      this.tagsFromConversation = data;
+      console.log(data);
+      
+    })
+  }
+  remove(tag): void {    
+      this.deleteData.deleteTag(this.companyId,'whatsapp:+5214771786634',tag.tagId)     
   }
 
-  selected(event: MatAutocompleteSelectedEvent): void {
-    this.fruits.push(event.option.viewValue);
-    this.fruitInput.nativeElement.value = '';
-    this.fruitCtrl.setValue(null);
+  selected(tag,category): void {
+    console.log();
+    
+    //save tag to whatsapp conversation
+    this.setData.sendTag(this.companyId, 'whatsapp:+5214771786634',tag );
+    this.setData.addToTagCounter(this.companyId,tag );
+
   }
 
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.allFruits.filter(fruit => fruit.toLowerCase().indexOf(filterValue) === 0);
+    return this.tagsCategories.filter(tag => 
+      tag.toLowerCase().indexOf(filterValue) === 0);
+  }
+  addTags(){
+this.showTags=true;
+  }
+  goToTags(){
+    this.router.navigate(['/tags']);
+
+  }
+  goToStatistics(){
+    this.router.navigate(['/tag-metrics']);
+
   }
 }
 

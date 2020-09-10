@@ -1,0 +1,26 @@
+<h1>Estadísticas</h1>
+<div >
+    <div class="card text-left" *ngFor="let category of tagsCategoriesNames">
+        <div #containerRef class="card-body">
+            <h4 class="card-title border-bottom">{{category.name}}</h4>
+        <ngx-charts-pie-chart style="display: flex;"
+            [results]="tagsStatistics"
+            [legend]="true"
+            [legendTitle]="'Tags'" 
+            [view]="[800,300]"
+            [labels]="true" >
+        </ngx-charts-pie-chart>
+      </div>
+    </div>
+  </div>
+
+<mat-card *ngFor="let category of tagsCategoriesNames">
+    <mat-list>
+        <div mat-subheader>{{category.name}}</div>
+          <mat-icon mat-list-icon>insert_chart_outlined
+          </mat-icon>
+          <div mat-line>{{tag.name}}</div>
+          <div mat-line> {{tag.times }} </div>
+        <mat-divider></mat-divider>
+        
+      </mat-list></mat-card>

@@ -246,6 +246,34 @@ export class FecthDataService {
 
     return  ref.get();
   }
+  //TAGS SERVICES
+  getTags(companyId){
+    // getting chatrooms info
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('tags')
+    
 
+    return ref.valueChanges();
+  }
+  
+  getSpecificTag(categoryId, companyId){
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('tags')
+    .doc(categoryId)
+    .collection('tagsnames')
 
+    return ref.valueChanges();
+  }
+  getTagFromConversation(categoryId,chatId,companyId){
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(chatId)
+    .collection('tags')
+    
+
+    return ref.valueChanges();
+  }
 }

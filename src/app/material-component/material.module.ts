@@ -19,6 +19,7 @@ import { ProfileDialogComponent } from './profile-dialog/profile-dialog.componen
 import { ExcelDialogComponent } from './excel-dialog/excel-dialog.component';
 import { InviteDialogComponent } from './invite-dialog/invite-dialog.component';
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
+import { CategoryComponent } from './category-dialog/category-dialog.component';
 
 @NgModule({
   imports: [
@@ -41,6 +42,7 @@ import { HelpDialogComponent } from './help-dialog/help-dialog.component';
     ExcelDialogComponent,
     InviteDialogComponent,
     HelpDialogComponent,
+    CategoryComponent
   ]
 })
 export class MaterialComponentsModule {}

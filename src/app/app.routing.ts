@@ -103,6 +103,28 @@ export const AppRoutes: Routes = [
         loadChildren:
           () => import('./profile/profile.module').then(m => m.ProfileModule)
       },
+      {
+        path: 'tags',
+        canActivate: [
+          CurrentUserGuard,
+          EmailVerifiedGuardService,
+          UserinfoGuard,
+          
+        ],
+        loadChildren:
+          () => import('./tags/tags.module').then(m => m.TagsModule)
+      },
+      {
+        path: 'tag-metrics',
+        canActivate: [
+          CurrentUserGuard,
+          EmailVerifiedGuardService,
+          UserinfoGuard,
+          
+        ],
+        loadChildren:
+          () => import('./tag-metrics/tag-metrics.module').then(m => m.TagMetricsModule)
+      },
     ]
   },
   {
