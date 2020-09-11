@@ -50,13 +50,10 @@ export class WhatsappComponent implements OnInit {
   templatesActivatedOptions: boolean = false;
   fileName: string;
   fileInfo: any;
-  // showTextareaTemplate: boolean = false;
-  // privateChat:any;
-  // newChat:any;
-  // oldChat:any;
+  chatNote: string;
   showSpinner: boolean = false;
   firstTimeMsgLoad: boolean = false;
-  // firstTimePrivateMsgLoad: boolean = false;
+  commentsChat: Array<any> = [];
   isAdmin: boolean = false;
   typesOfShoes: string[] = ['Boots', 'Clogs', 'Loafers', 'Moccasins', 'Sneakers'];
 
@@ -70,6 +67,7 @@ export class WhatsappComponent implements OnInit {
   fruits: string[] = ['Lemon'];
   allFruits: string[] = ['Bugs', 'ventas', 'problema registro', 'pedido incompleto/malo', 'No llego a tiempo'];
   messageSubscription:any;
+  commentsSubscription:any;
   @ViewChild('fruitInput') fruitInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto') matAutocomplete: MatAutocomplete;
 
@@ -77,12 +75,10 @@ export class WhatsappComponent implements OnInit {
     private fetchData: FecthDataService,
     private setData: SetDataService,
     private holdData: HoldDataService,
-    private deleteData: DeleteDataService,
     // UI components
     public dialog: MatDialog,
     private _ngZone: NgZone,
     private router: Router,
-    private route: ActivatedRoute,
   ) { 
     //getting params from navigation
 
@@ -111,6 +107,8 @@ ngOnInit(): void {
 ngOnDestroy(){
   this.destroy$.next();
   this.destroy$.complete();
+  this.messageSubscription.unsubscribe();
+  this.commentsSubscription.unsubscribe();
 }
 
 createChat(){
@@ -174,8 +172,17 @@ getChatWhatsappNames(){
 
 async getMessagesFromChatOnclick(data, assigned: boolean) {
   if (this.messageSubscription) this.messageSubscription.unsubscribe();
+  if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
   this.templatesActivated = false;
   this.templatesActivatedOptions = false;
+  // get comments of this chat
+  this.chatNote = null;
+  this.commentsSubscription = this.fetchData.getCommentsChat({
+    companyId: this.companyId,
+    number: data.number
+  }).subscribe(data => {
+    this.commentsChat = data;
+  })
   this.fetchData.checkWhatsapp24HourWindow({
     companyId: this.companyId,
     number: data.number
@@ -283,15 +290,6 @@ sendMessage(){
   })
 }
 
-
-showDetails(){
-  // if (this.showDetail) {
-  //   this.showDetail = false
-  // } else {
-  //   this.showDetail = true
-  // }
-}
-
 /*******************
 END OF ROOM CHAT
 *******************/
@@ -370,6 +368,26 @@ END OF ROOM CHAT
   selectImage(file) {
     this.fileInfo = file.target.files[0];
     this.fileName = file.target.files[0].name;
+  }
+
+  setChatNote(){
+    if(this.chatNote) {
+      const data = {
+        agent: `${this.holdData.userInfo.name} ${this.holdData.userInfo.lastname}`,
+        body: this.chatNote,
+        companyId: this.companyId,
+        number: this.currentChatData.phoneNumber,
+        timestamp: this.holdData.convertJSDateIntoFirestoreTimestamp()
+      }
+      // send comment
+      this.setData.sendChatComment(data);
+      this.chatNote = null;
+    }
+  }
+
+  archiveChat(){
+    // finish chat and remove agent from chat
+    
   }
 }
 

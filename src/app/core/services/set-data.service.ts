@@ -324,8 +324,8 @@ export class SetDataService {
 
   
   sendWhatsappMessageHttp(data){
-    const api_url = "https://octo-api-wa.herokuapp.com/message/sendFromOcto"
-    // const api_url = "http://localhost:3000/message/sendFromOcto";
+    // const api_url = "https://octo-api-wa.herokuapp.com/message/sendFromOcto"
+    const api_url = "http://localhost:5000/message/sendFromOcto";
       if(data.mediaUrl) {
           const finalData = {
             message: data.message,
@@ -359,6 +359,23 @@ export class SetDataService {
     const rta = await ref.put(file);
     const url = await rta.ref.getDownloadURL();
     return url;
+  }
+
+  async sendChatComment(data) {
+    let ref = this.db.collection('whatsapp')
+    .doc(data.companyId)
+    .collection('chats')
+    .doc(data.number)
+    .collection('comments')
+    const comment = await ref.add({
+      agent: data.agent,
+      body: data.body,
+      timestamp: data.timestamp
+    });
+    return ref.doc(comment.id)
+    .update({
+      commentId: comment.id
+    });
   }
 
   // END OF CHATS AND COMUNICATIONS SERVICES

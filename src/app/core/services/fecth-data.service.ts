@@ -196,8 +196,8 @@ export class FecthDataService {
 
 
   checkWhatsapp24HourWindow(data) {
-      const api_url = "https://octo-api-wa.herokuapp.com/message/check-user"
-      // const api_url = "http://localhost:3000/message/check-user"
+      // const api_url = "https://octo-api-wa.herokuapp.com/message/check-user"
+      const api_url = "http://localhost:5000/message/check-user"
       const finalData = {
         companyId: data.companyId,
         number: data.number
@@ -207,37 +207,17 @@ export class FecthDataService {
       return req;
   }
 
+  getCommentsChat(data) {
+    let ref = this.db.collection('whatsapp')
+    .doc(data.companyId)
+    .collection('chats')
+    .doc(data.number)
+    .collection('comments')
+    return ref.valueChanges();
+  }
   // END OF WHATSAPP
 
   // END OF CHATS AND COMUNICATIONS SERVICES
-
-  // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
-
-  // TASK SERVICES
-    
-  getCompanyTasks(companyId){
-    // get all the announcements for a building
-    let ref = this.db.collection('board')
-    .doc(companyId)
-    .collection('tasks', ref => ref.orderBy('timestamp', 'desc'))
-    
-    return ref.stateChanges(['added', 'removed', 'modified']);
-  }
-
-  getComments(companyId,taskId){
-    // get all the announcements for a building
-    let ref = this.db.collection('board')
-    .doc(companyId)
-    .collection('tasks')
-    .doc(taskId)
-    .collection('comments', ref => ref.orderBy('timestamp'))
-    
-    return ref.stateChanges(['added']);
-  }
-
-  // END OF TASK SERVICES
- 
-  // END OF BOARD SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 
