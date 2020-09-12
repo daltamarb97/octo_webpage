@@ -378,6 +378,17 @@ export class SetDataService {
     });
   }
 
+  async archiveChat(data) {
+    let ref = this.db.collection('whatsapp')
+    .doc(data.companyId)
+    .collection('chats')
+    .doc(data.number)
+    return ref.set({
+      number: data.number,
+      finished: true,
+    })
+  }
+
   // END OF CHATS AND COMUNICATIONS SERVICES
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*

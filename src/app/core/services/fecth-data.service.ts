@@ -212,7 +212,8 @@ export class FecthDataService {
     .doc(data.companyId)
     .collection('chats')
     .doc(data.number)
-    .collection('comments')
+    .collection('comments', ref => ref.orderBy('timestamp', "asc"));
+
     return ref.valueChanges();
   }
   // END OF WHATSAPP

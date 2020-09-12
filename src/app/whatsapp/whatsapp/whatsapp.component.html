@@ -32,7 +32,8 @@
                                             </span > {{chat.number}} 
                                             <mat-chip-list  style="margin-left: auto;" >
                                                 <mat-chip color="accent" class="chip" selected *ngIf="chat.assignedName">{{chat.assignedName | slice:0:5}}</mat-chip>
-                                                <mat-chip color="warn" class="chip" selected *ngIf="!chat.assignedName">N/A</mat-chip>
+                                                <mat-chip color="warn" class="chip" selected *ngIf="!chat.assignedName && !chat.finished">N/A</mat-chip>
+                                                <mat-chip style="background-color: aquamarine" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
                                             </mat-chip-list>
                                         </mat-list-item>
                                     </mat-list-option>
@@ -46,13 +47,13 @@
                 <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
                     <span class="toolbar-msg"  ># {{currentChatData.phoneNumber}}</span>
                     <span class="example-spacer"></span>
-                    <button *ngIf="currentChatData.assignedTo === 'null'" [matMenuTriggerFor]="assignment" mat-raised-button class="m-r-5">Asignar conversación</button>
+                    <button *ngIf="currentChatData.assignedTo === 'null' && !currentChatData.finished" [matMenuTriggerFor]="assignment" mat-raised-button class="m-r-5">Asignar conversación</button>
                     <mat-menu #assignment="matMenu" class="mymegamenu" style="overflow-y: auto;">
                         <button mat-menu-item *ngFor="let e of employeesList" matTooltip="{{e.email}}" (click)="assignChat({userId: e.userId, name: e.name, number: currentChatData.phoneNumber})">
                             {{e.name | titlecase}}
                         </button>
                     </mat-menu>
-                    <button *ngIf="templatesActivatedOptions" [matMenuTriggerFor]="templates" mat-raised-button class="m-r-5">Escoger Template</button>
+                    <button *ngIf="templatesActivatedOptions && !currentChatData.finished" [matMenuTriggerFor]="templates" mat-raised-button class="m-r-5">Escoger Template</button>
                     <mat-menu #templates="matMenu" class="mymegamenu" style="overflow-y: auto;">
                         <button mat-menu-item *ngFor="let t of templatesArray" (click)="templateSelected(t)">
                             {{t}}
@@ -151,7 +152,8 @@
                                 <p>{{fileName}}</p>
                             </div>
                         </div>
-                        <input *ngIf="currentChatData.assignedTo !== userId" matInput value="Si el chat no está asignado a nadie, asígnatelo para responder" readonly>
+                        <input *ngIf="currentChatData.assignedTo !== userId && !currentChatData.finished" matInput value="Si el chat no está asignado a nadie, asígnatelo para responder" readonly>
+                        <input *ngIf="currentChatData.finished" matInput value="Este chat fue cerrado, si el cliente vuelve a escribir a la empresa, el chat será reanudado" readonly>
                         <input 
                             *ngIf="templatesActivated === true  && currentChatData.assignedTo === userId" 
                             matInput 
@@ -167,12 +169,8 @@
             <mat-card *ngIf="showAssignedChats" style="height: auto; width: 65%;" >
                 <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
                     <span class="toolbar-msg"  >{{currentChatData.phoneNumber}}</span>
-                    <button [matMenuTriggerFor]="assignment" mat-raised-button class="m-r-5">Reasignar conversación</button>
-                    <mat-menu #assignment="matMenu" class="mymegamenu" style="overflow-y: auto;">
-                        <button mat-menu-item *ngFor="let e of employeesList" matTooltip="{{e.email}}" (click)="assignChat({userId: e.userId, name: e.name, number: currentChatData.phoneNumber})">
-                            {{e.name | titlecase}}
-                        </button>
-                    </mat-menu>
+                    
+                    <!-- PONER AQUI BOTON DE TAGSSSSSS -->
 
                     <button *ngIf="templatesActivatedOptions" [matMenuTriggerFor]="templates" mat-raised-button class="m-r-5">Escoger Template</button>
                     <mat-menu #templates="matMenu" class="mymegamenu" style="overflow-y: auto;">
@@ -258,12 +256,22 @@
 
             <!-- right side menu -->
             <mat-card *ngIf="showDetail" class="details-menu">
-                <mat-card-header>
-                    <mat-card-title *ngIf="currentChatData">#{{currentChatData.phoneNumber}}</mat-card-title>
-                    <mat-card-subtitle *ngIf="commentsChat.length !== 0" >Comentarios previos</mat-card-subtitle>
-                    <mat-card-subtitle *ngIf="commentsChat.length === 0" >No hay comentarios previos</mat-card-subtitle>
+                <mat-card-header class="details-menu_header">
+                    <div>
+                        <mat-card-title *ngIf="currentChatData">#{{currentChatData.phoneNumber}}</mat-card-title>
+                        <mat-card-subtitle *ngIf="commentsChat.length !== 0" >Comentarios previos</mat-card-subtitle>
+                        <mat-card-subtitle *ngIf="commentsChat.length === 0" >No hay comentarios previos</mat-card-subtitle>
+                    </div>
+                    <div class="details-menu_buttons">
+                        <button *ngIf="currentChatData.assignedTo === userId" [matMenuTriggerFor]="assignment" mat-stroked-button class="m-r-5">Reasignar conversación</button>
+                        <mat-menu #assignment="matMenu" class="mymegamenu" style="overflow-y: auto;">
+                            <button mat-menu-item *ngFor="let e of employeesList" matTooltip="{{e.email}}" (click)="assignChat({userId: e.userId, name: e.name, number: currentChatData.phoneNumber})">
+                                {{e.name | titlecase}}
+                            </button>
+                        </mat-menu>
+                        <button (click)="archiveChat()" mat-stroked-button>Marcar como finalizado</button>
+                    </div>
                 </mat-card-header>
-                <button (click)="archiveChat()" mat-stroked-button>Marcar como finalizado</button>
                 <mat-card *ngFor="let c of commentsChat">
                     <mat-card-header>
                         <mat-card-subtitle>{{c.agent | titlecase}}</mat-card-subtitle>

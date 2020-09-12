@@ -182,3 +182,17 @@ footer{
 .note-form-field {
   width: 300px;
 }
+
+.details-menu_header {
+  display: flex;
+  flex-direction: column;
+}
+
+.details-menu_buttons{
+  display: flex;
+  flex-direction: row;
+  button {
+    width: 50%;
+    font-size: 12px;
+  }
+}

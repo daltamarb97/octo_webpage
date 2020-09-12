@@ -18,6 +18,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 export class currentChatData {
   phoneNumber:string;
   assignedTo:string = 'null';
+  finished: boolean = false
 }
 
 @Component({
@@ -196,6 +197,7 @@ async getMessagesFromChatOnclick(data, assigned: boolean) {
     this.chatMessages = [];
     this.currentChatData = {
       phoneNumber: data.number,
+      finished: (data.finished) ? data.finished : false,
       assignedTo: (data.assignedTo) ? data.assignedTo : 'null'
     }
     if (assigned === true) {
@@ -387,7 +389,10 @@ END OF ROOM CHAT
 
   archiveChat(){
     // finish chat and remove agent from chat
-    
+    this.setData.archiveChat({
+      companyId: this.companyId,
+      number: this.currentChatData.phoneNumber
+    })
   }
 }
 
