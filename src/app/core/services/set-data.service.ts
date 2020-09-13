@@ -299,7 +299,8 @@ export class SetDataService {
         inbound: messageData.inbound,
         message: messageData.message,
         timestamp: messageData.timestamp,
-        mediaUrl: messageData.mediaUrl
+        mediaUrl: messageData.mediaUrl,
+        MediaContentType: messageData.MediaContentType
       })
       .then(docRef => {
         ref.doc(docRef.id)

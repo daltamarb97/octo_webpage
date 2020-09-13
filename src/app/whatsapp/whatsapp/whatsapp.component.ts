@@ -214,11 +214,21 @@ async getMessagesFromChatOnclick(data, assigned: boolean) {
     .subscribe((data) => {
       data.map(d => {
         if (this.firstTimeMsgLoad === true) {
-          this.chatMessages.unshift({...d.payload.doc.data()});
+          this.chatMessages.unshift({
+            ...d.payload.doc.data(),
+            MediaContentType: (d.payload.doc.data().MediaContentType) 
+              ? (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file'
+              : null
+          });
         } else{
-          this.chatMessages.push({...d.payload.doc.data()});
+          this.chatMessages.push({
+            ...d.payload.doc.data(),
+            MediaContentType: (d.payload.doc.data().MediaContentType) 
+              ? (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file'
+              : null
+          });
         }
-      })
+      })      
       this.firstTimeMsgLoad = false;
     })
   })
@@ -261,7 +271,8 @@ sendMessage(){
             inbound: false,
             message: this.currentMessage,
             timestamp: timestamp,
-            mediaUrl: mediaUrl
+            mediaUrl: mediaUrl,
+            MediaContentType: this.fileInfo.type
           }
           await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
         } else {
@@ -278,8 +289,12 @@ sendMessage(){
         this.showSpinner = false;
       })
       .catch(error => {
-        if(error.error = 'saldo insuficiente') {
-          alert('No se puede enviar mensaje porque la empresa no tiene saldo suficiente');
+        console.log(error);
+        
+        if(error.status === 400) {
+          alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
+        } else {
+          alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
         }
         this.currentMessage = null;
         this.fileInfo = null;

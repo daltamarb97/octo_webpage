@@ -94,22 +94,28 @@
                     <div class="chat"  *ngFor="let message of chatMessages" >
                         <div class="me" *ngIf="message.inbound === false">          
                             <span style="word-wrap: break-word;">{{message.message}} </span> 
-                            <div *ngIf="message.mediaUrl" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                            <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                                 <img 
                                     [src]="message.mediaUrl" 
                                     style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
-                            </div>    
+                            </div>   
+                            <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                                <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>   
+                            </div>  
                         </div>
                         <div class="otherMessage" *ngIf="message.inbound === true">
                             <span class="name">
                                 Cliente
                             </span> <br>
                             <span style="word-wrap: break-word;">{{message.message}}</span>
-                            <div *ngIf="message.mediaUrl" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                            <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                                 <img 
                                     [src]="message.mediaUrl" 
                                     style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
-                            </div>
+                            </div>   
+                            <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                                <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>   
+                            </div> 
                         </div>
                     </div>  
                 
@@ -187,22 +193,28 @@
                         <div class="me"  *ngIf="message.inbound === false">          
                             <span style="word-wrap: break-word;">                                 
                                 {{message.message}} </span>  
-                            <div *ngIf="message.mediaUrl" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                            <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                                 <img 
                                     [src]="message.mediaUrl" 
                                     style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
-                            </div>    
+                            </div>   
+                            <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                                <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>   
+                            </div>  
                         </div>
                         <div class="otherMessage" *ngIf="message.inbound === true">
                             <span class="name">
                                 Cliente
                             </span> <br>
                             <span style="word-wrap: break-word;">{{message.message}}</span>
-                            <div *ngIf="message.mediaUrl" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                            <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                                 <img 
                                     [src]="message.mediaUrl" 
                                     style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
-                            </div>   
+                            </div>  
+                            <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                                <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>  
+                            </div>  
                         </div>            
                     </div>  
                     <!-- if no messages show this card -->
@@ -291,6 +303,7 @@
                 </mat-card-content>
             </mat-card>
         </div>
-        <input hidden #fileInput type="file" class="form-control" (change)="selectImage($event)" placeholder="Upload image" accept=".png,.jpg,.jpeg">        
+        <input hidden #fileInput type="file" class="form-control" (change)="selectImage($event)" placeholder="Upload image" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
+        text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">        
 
            
