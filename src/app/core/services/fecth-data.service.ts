@@ -264,7 +264,7 @@ export class FecthDataService {
     .doc(categoryId)
     .collection('tagsnames')
 
-    return ref.valueChanges();
+    return ref.stateChanges(['added', 'removed']);
   }
   getTagFromConversation(categoryId,chatId,companyId){
     let ref = this.db.collection('whatsapp')

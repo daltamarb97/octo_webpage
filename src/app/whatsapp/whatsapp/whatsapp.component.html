@@ -1,4 +1,3 @@
-<button  mat-raised-button color="accent" class="example-icon" (click)="goToStatistics()" >Ver Estadísticas</button>
 
     
         <!-- left side menu -->
@@ -67,18 +66,17 @@
                     <mat-card *ngIf="showRoomChats" style="height: auto; width: 65%;">
                         
                         <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
-                            <span class="toolbar-msg"  ># {{currentRoomData.name}}</span>
+                            <span class="toolbar-msg" ># {{currentRoomData.name}}</span>
                             <span class="example-spacer"></span>
                             <button  mat-raised-button color="accent" class="example-icon" (click)="assignToMe()" >Asignarme el cliente</button>
                             <button mat-raised-button color="primary" class="example-icon m-l-10"  [matMenuTriggerFor]="animals">Tags</button>
                             <mat-menu  #animals="matMenu">
-                              <button  *ngFor="let category of tagsCategoriesNames" (click)="getSpecificTags(category)"
-                               mat-menu-item [matMenuTriggerFor]="categories">{{category.name}}</button>
+                              <button *ngFor="let category of tagsCategoriesNames" (click)="getSpecificTags(category)"
+                               mat-menu-item (mouseenter)="getSpecificTags(category)" [matMenuTriggerFor]="categories">{{category.name}}</button>
                             </mat-menu>
                             
-                            <mat-menu  #categories="matMenu">
-                              <button *ngFor="let tag of tagsCategories" (click)="selected(tag,category)" mat-menu-item >{{tag.name}}</button>
-                              
+                            <mat-menu  #categories="matMenu"  >
+                                <button  *ngFor="let tag of tagsCategories" (click)="selected(tag,category)" mat-menu-item >{{tag.name}}</button>                              
                             </mat-menu>
                             
                            
@@ -92,7 +90,7 @@
                                 </button>
                             </mat-menu> -->
                         </mat-toolbar>
-                        <div  style=" padding-left: 15px;padding-top:10px ;" >
+                        <div  style=" padding-left: 15px;padding-top:10px ; background-color: ghostwhite;" >
                             <mat-chip-list #chipList aria-label="Tags">
                                   
                                 <mat-chip
@@ -105,6 +103,7 @@
                                 </mat-chip>
                                 
                               </mat-chip-list>
+                               
                       </div>
                         <mat-card-content class="backgroun-img" id="content-messages" style="background-color: ghostwhite;max-height: 320px; min-height: 320px; overflow-y: auto;">
                            

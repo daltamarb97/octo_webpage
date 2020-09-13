@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, NgZone, ChangeDetectionStrategy, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone, ChangeDetectionStrategy, ElementRef, Renderer2 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { FecthDataService } from '../../core/services/fecth-data.service';
@@ -72,8 +72,10 @@ export class WhatsappComponent implements OnInit {
   tagCtrl = new FormControl();
   tags: any = [];
   showTags: boolean = false;
+  showMenu: boolean = true;
+
   @ViewChild('tagInput') tagInput: ElementRef<HTMLInputElement>;
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
+  @ViewChild(MatMenuTrigger) categories: MatMenuTrigger;
 
   constructor(
     private fetchData: FecthDataService,
@@ -85,9 +87,12 @@ export class WhatsappComponent implements OnInit {
     private _ngZone: NgZone,
     private router: Router,
     private route: ActivatedRoute,
+    private ren: Renderer2
     
   ) { 
     //getting params from navigation
+    console.log(this.tagsCategoriesNames);
+    
     this.route.queryParams.subscribe(() => {
       if (this.router.getCurrentNavigation().extras.state) {
         const currentNav = this.router.getCurrentNavigation().extras.state
@@ -120,9 +125,10 @@ ngOnInit(): void {
 
 }
 
-ngOnDestroy(){
-  this.destroy$.next();
-  this.destroy$.complete();
+mouseOver(trigger,button){
+        // trigger.closeMenu();
+        this.ren.removeClass(button['_elementRef'].nativeElement, 'cdk-focused');
+        this.ren.removeClass(button['_elementRef'].nativeElement, 'cdk-program-focused');
 }
 
 createChat(){
@@ -178,6 +184,7 @@ getMessagesFromRoom(data){
 
 
 getMessagesFromRoomOnclick(data) {
+  
   this.firstTimeMsgLoad = true;
   this.chatMessages = [];
   this.currentRoomData = {
@@ -527,24 +534,49 @@ END OF PRIVATE CHAT
   getCategories(){
     // get categories 
     this.fetchData.getTags(this.companyId)
+    .pipe(
+      takeUntil(this.destroy$)
+    )
     .subscribe(data => {
       this.tagsCategoriesNames = data;        
       
     })
   }
   getSpecificTags(category){
-    this.trigger.openMenu();
-
-    this.fetchData.getSpecificTag(category.categoryId,this.companyId)
-    .subscribe(data => {
-      
-      this.tagsCategories = data;
-    })
+    // this.trigger.openMenu();
     
-  }
+    this.fetchData.getSpecificTag(category.categoryId,this.companyId)
+    .pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(data => {
+      this.tagsCategories = [];
+
+      data.map(a=>{
+        if(a.type === 'added'){
+          const data= a.payload.doc.data(); 
+          this.tagsCategories.push(data);
+          console.log(this.tagsCategories);
+          
+        }else if( a.type === 'removed'){
+          for(let i in this.tagsCategories){
+            if(this.tagsCategories[i].tagId === this.currentRoomData.roomId){
+              const index = parseInt(i);
+              this.tagsCategories.splice(index, 1);
+            }
+          }
+        }
+      });
+   
+    console.log("me llamo en función en hover");
+
+  })
+}
   //ESTO SE DEBE COLOCAR CUANDO UN USUARIO ENTRA EN UNA CONVERSACIÓN
   getTagsFromConversation(category){
     this.fetchData.getTagFromConversation(category.categoryId,'whatsapp:+5214771786634',this.companyId)
+    .pipe(
+      takeUntil(this.destroy$)
+    )
     .subscribe(data => {
       
       this.tagsFromConversation = data;
@@ -558,11 +590,16 @@ END OF PRIVATE CHAT
 
   selected(tag,category): void {
     console.log();
+    console.log(tag);
     
     //save tag to whatsapp conversation
     this.setData.sendTag(this.companyId, 'whatsapp:+5214771786634',tag );
     this.setData.addToTagCounter(this.companyId,tag );
-
+    this.tagsCategories = [];
+    console.log(this.tagsCategories.length );
+    
+    console.log(this.tagsCategories);
+    
   }
 
   private _filter(value: string): string[] {
@@ -581,6 +618,10 @@ this.showTags=true;
   goToStatistics(){
     this.router.navigate(['/tag-metrics']);
 
+  }
+  ngOnDestroy(){
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
 

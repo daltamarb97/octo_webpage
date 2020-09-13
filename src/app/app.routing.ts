@@ -125,6 +125,17 @@ export const AppRoutes: Routes = [
         loadChildren:
           () => import('./tag-metrics/tag-metrics.module').then(m => m.TagMetricsModule)
       },
+      {
+        path: 'statistics',
+        canActivate: [
+          CurrentUserGuard,
+          EmailVerifiedGuardService,
+          UserinfoGuard,
+          
+        ],
+        loadChildren:
+          () => import('./statistics/statistics.module').then(m => m.StatisticsModule)
+      },
     ]
   },
   {

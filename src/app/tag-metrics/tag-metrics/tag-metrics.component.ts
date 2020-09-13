@@ -3,7 +3,9 @@ import { DeleteDataService } from 'app/core/services/delete-data.service';
 import { HoldDataService } from 'app/core/services/hold-data.service';
 import { SetDataService } from 'app/core/services/set-data.service';
 import { FecthDataService } from 'app/core/services/fecth-data.service';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 @Component({
   selector: 'app-tag-metrics',
   templateUrl: './tag-metrics.component.html',
@@ -26,7 +28,9 @@ export class TagMetricsComponent implements OnInit {
   tagsStatistics:any =[];
   colorScheme = {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
-  };
+  }
+  total:number= 0;
+  destroy$: Subject<void> = new Subject();
 
   constructor(private fetchData: FecthDataService,
     private setData: SetDataService,
@@ -67,6 +71,9 @@ export class TagMetricsComponent implements OnInit {
     
 
     this.fetchData.getTags(this.companyId)
+    .pipe(
+      takeUntil(this.destroy$)
+    )
     .subscribe(data => {
       this.tagsCategoriesNames = data;
       this.tagsCategories = [];
@@ -77,10 +84,46 @@ export class TagMetricsComponent implements OnInit {
   }
   getSpecificTags(category){
     this.fetchData.getSpecificTag(category.categoryId,this.companyId)
+    .pipe(
+      takeUntil(this.destroy$)
+    )
     .subscribe(data => {
       
       this.tagsCategories = data;
     })
   }
+  seeStatistics(category){
+    //get tags from category and send them in the correct format for statistics
+    this.fetchData.getSpecificTag(category.categoryId,this.companyId)
+    .pipe(
+      takeUntil(this.destroy$)
+    )
+    .subscribe(data => {
+      
+      this.tagsCategories = data;
+      console.log(this.tagsCategories);
+      this.tagsCategories.forEach(tag => {
+        let statisticTagFormat = {name:tag.name,value:tag.times}
+        this.tagsStatistics.push(statisticTagFormat);
+        this.total = tag.times + this.total
 
+      })
+
+        let tagsAndCategory = { array:this.tagsStatistics,category:category,total:this.total}
+        console.log(tagsAndCategory);
+        
+        let navigationExtras: NavigationExtras = {
+          state: {
+            statistics: tagsAndCategory
+          }
+        };
+        this.router.navigate(['statistics'],navigationExtras);
+      
+      
+    })
+  }
+  ngOnDestroy(){
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

@@ -1,0 +1,17 @@
+<h1>Estadísticas</h1>
+<div >
+    <div class="card text-left" >
+        <div #containerRef class="card-body">
+            <h4 class="card-title border-bottom"> Categoría {{category.name}}</h4>
+            <h4 class="card-title border-bottom"> {{total}} conversaciones fueron taggeadas en esta categoría</h4>
+            <p>Los valores en la gráfica están en porcentajes</p>
+        <ngx-charts-pie-chart style="display: flex;"
+            [results]="tagsStatistics"
+            [legend]="true"
+            [legendTitle]="'Tags'" 
+            [view]="[800,300]"
+            [labels]="true" >
+        </ngx-charts-pie-chart>
+      </div>
+    </div>
+  </div>
