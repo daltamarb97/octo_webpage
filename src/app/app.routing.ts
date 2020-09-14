@@ -54,7 +54,6 @@ export const AppRoutes: Routes = [
           CurrentUserGuard,
           EmailVerifiedGuardService,
           UserinfoGuard,
-          
         ],
         loadChildren:
           () => import('./comunications/comunications.module').then(m => m.ComunicationsModule)
@@ -64,8 +63,7 @@ export const AppRoutes: Routes = [
         canActivate: [
           CurrentUserGuard,
           EmailVerifiedGuardService,
-          UserinfoGuard,
-          
+          UserinfoGuard, 
         ],
         loadChildren:
           () => import('./directory/directory.module').then(m => m.DirectoryModule)
@@ -75,8 +73,7 @@ export const AppRoutes: Routes = [
         canActivate: [
           CurrentUserGuard,
           EmailVerifiedGuardService,
-          UserinfoGuard,
-          
+          UserinfoGuard,   
         ],
         loadChildren:
           () => import('./profile/profile.module').then(m => m.ProfileModule)
@@ -86,8 +83,7 @@ export const AppRoutes: Routes = [
         canActivate: [
           CurrentUserGuard,
           EmailVerifiedGuardService,
-          UserinfoGuard,
-          
+          UserinfoGuard,  
         ],
         loadChildren:
           () => import('./tags/tags.module').then(m => m.TagsModule)
@@ -97,8 +93,7 @@ export const AppRoutes: Routes = [
         canActivate: [
           CurrentUserGuard,
           EmailVerifiedGuardService,
-          UserinfoGuard,
-          
+          UserinfoGuard,   
         ],
         loadChildren:
           () => import('./tag-metrics/tag-metrics.module').then(m => m.TagMetricsModule)
@@ -108,8 +103,7 @@ export const AppRoutes: Routes = [
         canActivate: [
           CurrentUserGuard,
           EmailVerifiedGuardService,
-          UserinfoGuard,
-          
+          UserinfoGuard,   
         ],
         loadChildren:
           () => import('./statistics/statistics.module').then(m => m.StatisticsModule)
