@@ -222,9 +222,9 @@ async getMessagesFromChatOnclick(data, assigned: boolean) {
       this.firstTimeMsgLoad = false;
     })
   })
-  .catch(error => {
-    console.error(error);
-  })
+  // .catch(error => {
+  //   console.error(error);
+  // })
 }
 
 sendMessage(){
@@ -279,7 +279,7 @@ sendMessage(){
         this.showSpinner = false;
       })
       .catch(error => {
-        console.log(error);
+        // console.log(error);
         
         if(error.status === 400) {
           alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
@@ -333,21 +333,11 @@ END OF ROOM CHAT
   }
 
   getSpecificTags(category){
-    // this.trigger.openMenu();   
     this.fetchData.getSpecificTag(category.categoryId,this.companyId)
     .pipe(
       takeUntil(this.destroy$)
     ).subscribe(data => {
-      this.tagsCategories = [];
-
-      data.map(a=>{
-        if(a.type === 'added'){
-          const data= a.payload.doc.data(); 
-          this.tagsCategories.push(data);
-          console.log(this.tagsCategories);
-          
-        }
-      });
+      this.tagsCategories = data;
   })
 }
 

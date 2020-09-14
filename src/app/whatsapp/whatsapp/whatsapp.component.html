@@ -151,8 +151,7 @@
             <mat-card *ngIf="showAssignedChats" style="height: auto; width: 65%;" >
                 <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
                     <span class="toolbar-msg"  >{{currentChatData.phoneNumber}}</span>
-                    
-                    <!-- PONER AQUI BOTON DE TAGSSSSSS -->
+
                     <button mat-raised-button color="primary" class="example-icon m-l-10"  [matMenuTriggerFor]="animals">Tags</button>
                     <mat-menu  #animals="matMenu">
                       <button *ngFor="let category of tagsCategoriesNames" (click)="getSpecificTags(category)"
