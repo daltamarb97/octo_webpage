@@ -390,10 +390,82 @@ export class SetDataService {
     })
   }
 
-  // END OF CHATS AND COMUNICATIONS SERVICES
+  // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
+  sendTag(companyId, chatId, tag){
+    // send tag to firestore
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(chatId)
+    .collection('tags')
+    .doc(tag.tagId)
+
+    return ref.set({
+      categoryId:tag.categoryId,
+      name:tag.name,
+      tag:tag.tagId
+    })
+  }
+  addToTagCounter(companyId, tag){
+    //add to times counter for statistics
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('tags')
+    .doc(tag.categoryId)
+    .collection('tagsnames')
+    .doc(tag.tagId)
+
+    return ref.update({
+      times:tag.times+1
+    })
+    ;
+    
+  }
+  sendTagToCategories(companyId, categoryId, name){
+    // send tag to Categories to firestore
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('tags')
+    .doc(categoryId)
+    .collection('tagsnames')
+
+    return ref.add({
+      name: name,
+      categoryId:categoryId,
+      times: 0,
+    })
+    .then(docRef => {
+      const tagId: string = docRef.id;
+      ref.doc(tagId)
+      .update({
+        tagId: tagId
+      })
+    })
+   }
+   createCategory(companyId, categoryName){
+    // send tag to Categories to firestore
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('tags')
+    
+
+    return ref.add({
+      name: categoryName,            
+    })
+    .then(docRef => {
+      const categoryId: string = docRef.id;
+      ref.doc(categoryId)
+      .update({
+        categoryId: categoryId
+      })
+    })
+   }
+    // END OF WhatsApp services
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 
+  //
+  
   // OTHER SERVICES
 
   sendSupportMessage(data, messsage: string) {

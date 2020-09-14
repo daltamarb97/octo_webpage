@@ -1,0 +1,48 @@
+<h1> Tags de mi empresa</h1>
+    <span class="m-b-15">Estos tags segmentarán las conversaciones con tus clientes permitiendo estadísticas automáticas</span>
+      <mat-accordion class="example-headers-align">
+        <div class="m-b-10">
+          <button  mat-raised-button color="accent" class="example-icon m-r-10 " (click)="addCategory()" >Agregar Grupo de Tags</button>
+          <button  mat-raised-button color="warn" class="example-icon" (click)="showDelete()" >Eliminar Categoría</button>
+  
+        </div>
+       
+        
+        <mat-expansion-panel  *ngFor="let category of tagsCategoriesNames" (click)="getSpecificTags(category)"  >
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{category.name}}
+            </mat-panel-title>
+            <mat-panel-description>
+              <mat-icon style="color: red;" *ngIf="showDeleteCategory" (click)="eraseCategory(category)">delete_forever
+              </mat-icon>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+      
+          <mat-chip-list #chipList aria-label="Tag selection"> 
+            <ng-container *ngFor="let tag of tagsCategories" >
+              <mat-chip  [selectable]="selectable"
+                      [removable]="removable" (removed)="remove(tag,category)">
+                {{tag.name}}
+                <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+              </mat-chip>
+            </ng-container>         
+            
+          </mat-chip-list>
+          
+          <mat-action-row>
+            <mat-form-field *ngIf="allowCreate">
+              <mat-label>Escribe tu tag aquí y dale enter para guardar  </mat-label>
+              <input matInput  placeholder="Escribe aqui..."
+                           [matChipInputFor]="chipList"
+                           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                           (matChipInputTokenEnd)="add($event,category)">
+            </mat-form-field>
+            
+            <button mat-button color="warn" (click)="eraseTags()">Eliminar Tags</button>
+            <button mat-button color="primary" (click)="createTags()">Agregar Tags</button>
+          </mat-action-row>
+        </mat-expansion-panel>
+      
+      </mat-accordion>
+    

@@ -1,0 +1,18 @@
+<h1>Estadísticas</h1>
+
+  <span class="m-b-15">Las estadísticas se actualizarán automáticamente</span>
+
+<mat-card >
+    <mat-list>
+        <div mat-subheader> Categorías de Tags</div>
+        <mat-list-item *ngFor="let category of tagsCategoriesNames">
+          <mat-icon mat-list-icon>analytics
+          </mat-icon>
+          <div mat-line>{{category.name}}</div> 
+                    <button  mat-raised-button color="accent" class="example-icon m-r-10 " (click)="seeStatistics(category)" >Ver estadísticas</button>
+
+        </mat-list-item>
+          
+        <mat-divider></mat-divider>
+        
+      </mat-list></mat-card>

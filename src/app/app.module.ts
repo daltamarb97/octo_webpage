@@ -29,6 +29,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore'
 import { AngularFireAuthModule } from '@angular/fire/auth'
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { NotfoundComponent } from './notfound/notfound.component';
+import { NgxChartsModule } from "@swimlane/ngx-charts";
 
 
 
@@ -55,7 +56,7 @@ import { NotfoundComponent } from './notfound/notfound.component';
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireStorageModule,
-    
+    NgxChartsModule
   ],
   providers: [
     {

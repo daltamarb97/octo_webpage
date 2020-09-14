@@ -1,19 +1,15 @@
-import { Component, OnInit, ViewChild, NgZone, ChangeDetectionStrategy, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { SetDataService } from '../../core/services/set-data.service';
 import { DeleteDataService } from '../../core/services/delete-data.service';
 
-import { takeUntil, take, startWith, map } from 'rxjs/operators';
-import { Subject, Observable } from 'rxjs';
+import { takeUntil, take } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import { HoldDataService } from '../../core/services/hold-data.service';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormControl } from '@angular/forms';
-import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { Router } from '@angular/router';
 
 export class currentChatData {
   phoneNumber:string;
@@ -56,36 +52,35 @@ export class WhatsappComponent implements OnInit {
   firstTimeMsgLoad: boolean = false;
   commentsChat: Array<any> = [];
   isAdmin: boolean = false;
-  typesOfShoes: string[] = ['Boots', 'Clogs', 'Loafers', 'Moccasins', 'Sneakers'];
+  tagsCategories:any = [];
+  tagsCategoriesNames:any = [];
+  tagsFromConversation:any = [];
+  firstTimePrivateMsgLoad: boolean = false;
+  commentsSubscription:any;
+  messageSubscription:any;
 
-  ///////////////////ONLY FOR EXAMPLE///////////////////////7
   visible = true;
   selectable = true;
   removable = true;
-  separatorKeysCodes: number[] = [ENTER, COMMA];
-  fruitCtrl = new FormControl();
-  filteredFruits: Observable<string[]>;
-  fruits: string[] = ['Lemon'];
-  allFruits: string[] = ['Bugs', 'ventas', 'problema registro', 'pedido incompleto/malo', 'No llego a tiempo'];
-  messageSubscription:any;
-  commentsSubscription:any;
-  @ViewChild('fruitInput') fruitInput: ElementRef<HTMLInputElement>;
-  @ViewChild('auto') matAutocomplete: MatAutocomplete;
 
   constructor(
     private fetchData: FecthDataService,
     private setData: SetDataService,
     private holdData: HoldDataService,
+    private deleteData: DeleteDataService,
     // UI components
     public dialog: MatDialog,
     private _ngZone: NgZone,
     private router: Router,
-  ) { 
-    //getting params from navigation
+  ) { }
 
-    this.filteredFruits = this.fruitCtrl.valueChanges.pipe(
-      startWith(null),
-      map((fruit: string | null) => fruit ? this._filter(fruit) : this.allFruits.slice()));
+  ngOnDestroy(){
+    this.destroy$.next();
+    this.destroy$.complete();
+    if(this.messageSubscription && this.commentsSubscription) {
+      this.messageSubscription.unsubscribe();
+      this.commentsSubscription.unsubscribe();
+    }
   }
 
 ngOnInit(): void {
@@ -103,13 +98,7 @@ ngOnInit(): void {
   this.getChatWhatsappNames();
   this.getCompanyEmployees();
   this.getWhatsappTemplateMessages();
-}
-
-ngOnDestroy(){
-  this.destroy$.next();
-  this.destroy$.complete();
-  this.messageSubscription.unsubscribe();
-  this.commentsSubscription.unsubscribe();
+  this.getCategories();
 }
 
 createChat(){
@@ -207,6 +196,7 @@ async getMessagesFromChatOnclick(data, assigned: boolean) {
       this.showGeneralChats=true;
       this.showAssignedChats=false;
     }
+    this.getTagsFromConversation(data.number);
     this.messageSubscription = this.fetchData.getMessagesFromSpecificWChat(
       this.companyId, 
       data.number
@@ -249,7 +239,7 @@ sendMessage(){
       this.templatesActivatedOptions = true;
     } 
     this.showSpinner = true;
-    //send message in specific room
+    //send message in specific chat
     if(this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {
       // uncomment in production
       let mediaUrl = null;
@@ -330,43 +320,72 @@ END OF ROOM CHAT
     this.showGeneralChats = false;
   }
 
-
-  add(event: MatChipInputEvent): void {
-    const input = event.input;
-    const value = event.value;
-
-    // Add our fruit
-    if ((value || '').trim()) {
-      this.fruits.push(value.trim());
-    }
-
-    // Reset the input value
-    if (input) {
-      input.value = '';
-    }
-
-    this.fruitCtrl.setValue(null);
+  getCategories(){
+    // get categories 
+    this.fetchData.getTags(this.companyId)
+    .pipe(
+      takeUntil(this.destroy$)
+    )
+    .subscribe(data => {
+      this.tagsCategoriesNames = data;        
+      
+    })
   }
 
-  remove(fruit: string): void {
-    const index = this.fruits.indexOf(fruit);
+  getSpecificTags(category){
+    // this.trigger.openMenu();   
+    this.fetchData.getSpecificTag(category.categoryId,this.companyId)
+    .pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(data => {
+      this.tagsCategories = [];
 
-    if (index >= 0) {
-      this.fruits.splice(index, 1);
-    }
-  }
+      data.map(a=>{
+        if(a.type === 'added'){
+          const data= a.payload.doc.data(); 
+          this.tagsCategories.push(data);
+          console.log(this.tagsCategories);
+          
+        }
+      });
+  })
+}
 
-  selected(event: MatAutocompleteSelectedEvent): void {
-    this.fruits.push(event.option.viewValue);
-    this.fruitInput.nativeElement.value = '';
-    this.fruitCtrl.setValue(null);
-  }
+getTagsFromConversation(number){
+  this.fetchData.getTagFromConversation(number,this.companyId)
+  .pipe(
+    takeUntil(this.destroy$)
+  )
+  .subscribe(data => {
+    this.tagsFromConversation = data;
+  })
+}
 
-  private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
 
-    return this.allFruits.filter(fruit => fruit.toLowerCase().indexOf(filterValue) === 0);
-  }
+remove(tag): void {    
+    this.deleteData.deleteTag(this.companyId, this.currentChatData.phoneNumber,tag.tagId)     
+}
+
+selected(tag, category): void {
+  //save tag to whatsapp conversation
+  this.setData.sendTag(this.companyId, this.currentChatData.phoneNumber,tag );
+  this.setData.addToTagCounter(this.companyId,tag );
+  this.tagsCategories = [];
+}
+
+private _filter(value: string): string[] {
+  const filterValue = value.toLowerCase();
+  return this.tagsCategories.filter(tag => 
+    tag.toLowerCase().indexOf(filterValue) === 0);
+}
+
+goToTags(){
+  this.router.navigate(['/tags']);
+}
+
+goToStatistics(){
+  this.router.navigate(['/tag-metrics']);
+}
 
   onTabChanged(){
     this.showAssignedChats = false;

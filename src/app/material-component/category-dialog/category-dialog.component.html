@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>Crear nueva categoría de tags</h1>
+<div  >
+  <mat-form-field>
+    <input type="text" placeholder="Nombre de la categoría, Ej: ciudades,productos,países,ventas,devoluciones" matInput [(ngModel)]="local_data">
+  </mat-form-field>
+
+
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancelar</button>
+    <button mat-button mat-flat-button color="primary" (click)="createCategory()">Crear</button>
+  </div>
+</div>
+
+
