@@ -24,17 +24,32 @@ export class DeleteDataService {
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
   // WhatsApp SERVICES
-  deleteTag(companyId, categoryId,tagId){
+  private async deleteTag(companyId, number,tagId){
     // delete single specific row of payments table
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
     .collection('chats')
-    .doc(categoryId)
+    .doc(number)
     .collection('tags')
     .doc(tagId)
-
-    return ref.delete()
+    return ref.delete();
   }
+
+  deleteTagCounter(companyId, categoryId, tagId, number){
+    let refCounter = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('tags')
+    .doc(categoryId)
+    .collection('tagsnames')
+    .doc(tagId);
+    return refCounter.get()
+      .subscribe(async data => {
+        await this.deleteTag(companyId,number, tagId);
+        await refCounter.update({times: data.data().times-1})
+      })
+  }
+
+
   deleteTagFromCompany(companyId, categoryId,tagId){
     // delete single specific row of payments table
     let ref = this.db.collection('whatsapp')

@@ -352,14 +352,18 @@ getTagsFromConversation(number){
 }
 
 
-remove(tag): void {    
-    this.deleteData.deleteTag(this.companyId, this.currentChatData.phoneNumber,tag.tagId)     
+remove(tag) {  
+  this.deleteData.deleteTagCounter(this.companyId, tag.categoryId, tag.tagId, this.currentChatData.phoneNumber);     
 }
 
-selected(tag, category): void {
+selected(tag) {
+  const tagData = {
+    ...tag,
+    times: (tag.times) ? tag.times : 0
+  }
   //save tag to whatsapp conversation
-  this.setData.sendTag(this.companyId, this.currentChatData.phoneNumber,tag );
-  this.setData.addToTagCounter(this.companyId,tag );
+  this.setData.sendTag(this.companyId, this.currentChatData.phoneNumber,tagData );
+  this.setData.addToTagCounter(this.companyId,tagData );
   this.tagsCategories = [];
 }
 

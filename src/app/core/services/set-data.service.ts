@@ -403,9 +403,10 @@ export class SetDataService {
     return ref.set({
       categoryId:tag.categoryId,
       name:tag.name,
-      tag:tag.tagId
+      tagId:tag.tagId
     })
   }
+  
   addToTagCounter(companyId, tag){
     //add to times counter for statistics
     let ref = this.db.collection('whatsapp')
