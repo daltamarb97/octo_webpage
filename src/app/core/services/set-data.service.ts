@@ -97,7 +97,7 @@ export class SetDataService {
         companyId: companyData.companyId
       })
     await this.setCompanyInfoInUserNode(userData.userId, {
-      name: companyData.company, 
+      name: companyData.name, 
       companyId: companyData.companyId
     });  
   }
