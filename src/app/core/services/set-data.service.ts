@@ -325,32 +325,31 @@ export class SetDataService {
 
   
   sendWhatsappMessageHttp(data){
-    const api_url = "https://octo-api-wa.herokuapp.com/message/sendFromOcto"
-    // const api_url = "http://localhost:5000/message/sendFromOcto";
-      if(data.mediaUrl) {
-          const finalData = {
-            message: data.message,
-            number: data.number,
-            template: data.template, 
-            companyId: data.companyId,
-            mediaUrl: data.mediaUrl
-          }
-          // api request
-          let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
-          const req =  this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
-          return req;           
-      } else {
+    const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
+    if(data.mediaUrl) {
         const finalData = {
           message: data.message,
           number: data.number,
           template: data.template, 
-          companyId: data.companyId
+          companyId: data.companyId,
+          mediaUrl: data.mediaUrl
         }
-          // api request
+        // api request
         let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
         const req =  this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
-        return req;
+        return req;           
+    } else {
+      const finalData = {
+        message: data.message,
+        number: data.number,
+        template: data.template, 
+        companyId: data.companyId
       }
+        // api request
+      let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
+      const req =  this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
+      return req;
+    }
   }
 
 

@@ -175,7 +175,8 @@ async getMessagesFromChatOnclick(data, assigned: boolean) {
   })
   this.fetchData.checkWhatsapp24HourWindow({
     companyId: this.companyId,
-    number: data.number
+    number: data.number,
+    api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
   }).toPromise()
   .then(dataSession => {
     if(dataSession === 'false') {
@@ -231,7 +232,8 @@ sendMessage(){
   // check if chat is active
   this.fetchData.checkWhatsapp24HourWindow({
     companyId: this.companyId,
-    number: this.currentChatData.phoneNumber
+    number: this.currentChatData.phoneNumber,
+    api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
   }).toPromise()
   .then(async(dataSession) => {
     if(dataSession === 'false') {
@@ -251,7 +253,8 @@ sendMessage(){
         number: this.currentChatData.phoneNumber,
         template: this.templatesActivated,
         companyId: this.companyId,
-        mediaUrl: mediaUrl
+        mediaUrl: mediaUrl,
+        api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
       }).toPromise()
       .then(async (data) => {        
         const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();

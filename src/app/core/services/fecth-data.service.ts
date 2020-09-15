@@ -196,8 +196,7 @@ export class FecthDataService {
 
 
   checkWhatsapp24HourWindow(data) {
-      const api_url = "https://octo-api-wa.herokuapp.com/message/check-user"
-      // const api_url = "http://localhost:5000/message/check-user"
+      const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
       const finalData = {
         companyId: data.companyId,
         number: data.number
