@@ -108,6 +108,16 @@ export const AppRoutes: Routes = [
         loadChildren:
           () => import('./statistics/statistics.module').then(m => m.StatisticsModule)
       },
+      {
+        path: 'chat-flow',
+        canActivate: [
+          CurrentUserGuard,
+          EmailVerifiedGuardService,
+          UserinfoGuard,   
+        ],
+        loadChildren:
+          () => import('./chat-flow/chat-flow.module').then(m => m.ChatFlowModule)
+      }
     ]
   },
   {
