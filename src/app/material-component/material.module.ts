@@ -20,6 +20,8 @@ import { ExcelDialogComponent } from './excel-dialog/excel-dialog.component';
 import { InviteDialogComponent } from './invite-dialog/invite-dialog.component';
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 import { CategoryComponent } from './category-dialog/category-dialog.component';
+import { OptionComponent } from './option-dialog/option-dialog.component';
+import { MessageComponent } from './message-dialog/message-dialog.component';
 
 @NgModule({
   imports: [
@@ -42,7 +44,9 @@ import { CategoryComponent } from './category-dialog/category-dialog.component';
     ExcelDialogComponent,
     InviteDialogComponent,
     HelpDialogComponent,
-    CategoryComponent
+    CategoryComponent,
+    OptionComponent,
+    MessageComponent
   ]
 })
 export class MaterialComponentsModule {}

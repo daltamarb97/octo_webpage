@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>Edita el mensaje</h1>
+<div  >
+    <mat-form-field style="width:500px" class="example-full-width">
+      <mat-label>Edita el mensaje </mat-label>
+      <textarea  matInput placeholder="Escribe aquí..." rows="5"  [(ngModel)]="local_data"></textarea>
+
+    </mat-form-field>
+
+
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancelar</button>
+    <button mat-button mat-flat-button color="primary" (click)="editMessage()">Aceptar</button>
+  </div>
+</div>
+
+

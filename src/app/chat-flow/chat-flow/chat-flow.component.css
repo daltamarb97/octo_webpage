@@ -1,0 +1,7 @@
+.mat-list-base .mat-list-item .mat-list-item-content-reverse, .mat-list-base .mat-list-option .mat-list-item-content-reverse {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    flex-direction: inherit;
+    justify-content: space-around;
+}

@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>Crear una nueva opción</h1>
+<div  >
+    <mat-form-field class="example-full-width">
+      <mat-label>Nombre:</mat-label>
+      <input type="text" matInput placeholder="Escribe aquí el nombre..." [(ngModel)]="local_data">
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <mat-label>Mensaje: </mat-label>
+      <input type="text" matInput placeholder="Escribe aquí el mensaje..." [(ngModel)]="local_data">
+    </mat-form-field>
+    
+    <mat-slide-toggle [(ngModel)]="isChecked">Contactar con agentes</mat-slide-toggle>
+
+    <p>Al activar el toggle, hará que cuando tus clientes escojan esta opción se comuniquen automáticamente con ventas.</p>
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancelar</button>
+    <button mat-button mat-flat-button color="primary" (click)="addOption()">Crear</button>
+  </div>
+</div>
+
+

@@ -9,8 +9,11 @@ export interface Menu {
 
 const MENUITEMS = [
   { state: 'whatsapp', type: 'link', name: 'WhatsApp', icon: 'chat' },
-  { state: 'canales-comunicacion', type: 'link', name: 'chats', icon: 'message' },
+  { state: 'chat-flow', type: 'link', name: 'Flujos de chat', icon: 'chat' },
+
   { state: 'tag-metrics', type: 'link', name: 'Estadísticas', icon: 'fact_check' },
+  { state: 'canales-comunicacion', type: 'link', name: 'chats', icon: 'message' },
+
   { state: 'directorio', type: 'link', name: 'Directorio', icon: 'book' },
   { state: 'perfil', type: 'link', name: 'Perfil', icon: 'account_circle' },
 
