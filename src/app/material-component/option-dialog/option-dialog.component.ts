@@ -13,10 +13,10 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./option-dialog.component.scss']
 })
 export class OptionComponent {
-  action:string;
   local_data: any;
   destroy$: Subject<void> = new Subject();
-  isChecked = false;
+  agent = false;
+  options = false;
 
   constructor(
     public dialogRef: MatDialogRef<OptionComponent>,
@@ -24,7 +24,11 @@ export class OptionComponent {
     private holdData: HoldDataService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    
+    this.local_data = {
+      name: '',
+      message: '',
+      file: null
+    }
   }
 
   onNoClick(): void {
@@ -34,11 +38,11 @@ export class OptionComponent {
   }
 
   addOption() {
-    this.dialogRef.close( this.local_data);
+    this.dialogRef.close({event: 'data', data: this.local_data, agent: this.agent, options: this.options});
   }
-  
 
-
- 
+  selectImage(file) {
+    this.local_data.file = file.target.files[0];
+  }
 }
 

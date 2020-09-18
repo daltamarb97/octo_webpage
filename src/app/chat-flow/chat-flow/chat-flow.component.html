@@ -2,87 +2,33 @@
     
   <span class="m-b-15">Aquí podrás crear un menú de opciones que resolverá aquellas preguntas repetitivas.</span>
   <div style="display: flex; flex-direction:row;" >
-    
-    <!-- FIRST FLOW CARD -->
-    <mat-card style="min-width:25%; max-width: 30%; height: 100%;" >
-        <mat-card-header>
-            
-          <mat-card-title  style="font-size: 16px;">Primer Mensaje del Bot </mat-card-title>
-          
-          <mat-card-subtitle style="font-size: 12px;"> Aquí saldrán las primeras opciones para tu cliente</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-                  
-              
-          <p  class="font-12">
-            <strong> Mensaje: <button (click)="editMessage()" style="margin-left: auto;" mat-icon-button color="primary" aria-label="create option">
-              <mat-icon>create</mat-icon>
-            </button>  </strong>
-            
-            <br> ¡Hola!, Gracias por escribirnos al servicio al cliente de Porthos, escoge alguna de las siguientes funciones:
-          </p>
-            <mat-selection-list #option [multiple]="false">
-              <div  mat-subheader>Opciones                                  
-                <button style="margin-left: auto;" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Mas">
-                  <mat-icon>more_vert</mat-icon>
-                </button>
-                <mat-menu  #menu="matMenu">
-                  <button (click)="createOption()" mat-menu-item>
-                    <mat-icon  >add</mat-icon>
-                    <span >Agregar</span>
-                  </button>
-                  <button mat-menu-item >
-                    <mat-icon>create</mat-icon>
-                    <span>Editar</span>
-                  </button>
-                  <button  mat-menu-item>
-                    <mat-icon style="color:red">delete</mat-icon>
-                    <span style="color:red">Eliminar</span>
-                  </button>
-                </mat-menu>
-              </div>
-
-                <mat-list-option   *ngFor="let option of optionList" [value]="option" (click)="seeOption(option)" >                
-                  <mat-icon mat-list-icon>chevron_right
-                  </mat-icon>
-                    <span style=" font-size: 12px; ">
-                        {{option.name}}             
-                    </span>                  
-                </mat-list-option>
-            </mat-selection-list>
-
-        </mat-card-content>
-        
-      </mat-card>
-      <!-- END OF FIRST FLOW CARD -->
-
       <!-- OPTIONS CARD -->
-      <mat-card *ngIf="showOption" style="min-width:25%; max-width: 30%; height: 100%;" >
+      <mat-card *ngFor="let flow of currentFlowList; let i = index" style="min-width:25%; max-width: 30%; height: 100%;" >
         <mat-chip-list  style="display: flex; justify-content: center;" >
-          <mat-chip class="chip" color="primary" selected>Opción</mat-chip>
-      </mat-chip-list>
+          <mat-chip *ngIf="flow.options && !flow.main" class="chip" color="primary" selected>Opción</mat-chip>
+          <mat-chip *ngIf="!flow.options && !flow.main" class="chip" color="accent" selected>Fin del flujo</mat-chip>
+          <mat-chip  *ngIf="flow.main" style="background-color: #ffd480">Primer Mensaje del Bot </mat-chip>
+        </mat-chip-list>
         <mat-card-header>
-
-          <mat-card-title  style="font-size: 16px;">{{option.name}}</mat-card-title>
-          
+          <mat-card-title  *ngIf="!flow.main" style="font-size: 16px;">{{flow.shortMessage}}</mat-card-title>
+          <!-- <mat-card-title  *ngIf="flow.main" style="font-size: 16px;">Primer Mensaje del Bot</mat-card-title> -->
+          <mat-card-subtitle *ngIf="flow.main" tyle="font-size: 12px;"> Aquí saldrán las primeras opciones para tu cliente</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-                  
-              
           <p  class="font-12">
             <strong> Mensaje: <button (click)="editMessage()" style="margin-left: auto;" mat-icon-button color="primary" aria-label="create option">
               <mat-icon>create</mat-icon>
             </button>  </strong>
             
-            <br> ¡Hola!, Gracias por escribirnos al servicio al cliente de Porthos, escoge alguna de las siguientes funciones:
+            <br> {{flow.message}}
           </p>
-            <mat-selection-list #option [multiple]="false">
+            <mat-selection-list *ngIf="flow.options" #option [multiple]="false">
               <div  mat-subheader>Opciones                                  
                 <button style="margin-left: auto;" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Mas">
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu  #menu="matMenu">
-                  <button (click)="createOption()" mat-menu-item>
+                  <button (click)="createOption(flow, i)" mat-menu-item>
                     <mat-icon  >add</mat-icon>
                     <span >Agregar</span>
                   </button>
@@ -96,51 +42,13 @@
                   </button>
                 </mat-menu>
               </div>
-
-                <mat-list-option   *ngFor="let option of optionList" [value]="option" (click)="seeOption(option)" >
-                
-                  <mat-icon mat-list-icon>chevron_right
-                  </mat-icon>
-
-                    <span style=" font-size: 12px; ">
-                        {{option.name}}
-
-                        <!-- <span class="material-icons m-r-15 b-b" style="margin-left: auto;">
-                            
-                            </span > -->
-                        
-                    </span>
-                  
-                </mat-list-option>
+              <mat-list-option   *ngFor="let optionFlow of flow.options" [value]="optionFlow" (click)="seeOption(optionFlow, i)" >
+                <mat-icon mat-list-icon>chevron_right </mat-icon>
+                <span style=" font-size: 12px; ">{{optionFlow.message}}</span>
+              </mat-list-option>
             </mat-selection-list>
-
+            <mat-spinner *ngIf="showSpinner"></mat-spinner>
         </mat-card-content>
        
       </mat-card>
-      <!-- CONTACT WITH AGENTS -->
-      <mat-card style="min-width:20%; max-width: 30%;height: 100%;" >
-        <mat-chip-list  style="display: flex; justify-content: center;" >
-          <mat-chip class="chip" color="accent" selected>Fin del flujo</mat-chip>
-      </mat-chip-list>
-        <mat-card-header>
-            
-          <mat-card-title  style="font-size: 16px;">Conexión con Agente </mat-card-title>
-          
-          <mat-card-subtitle style="font-size: 12px;">Se conecta con el servicio al cliente de la empresa, aquí se acaba el octo bot.</mat-card-subtitle>
-         
-      </mat-card-header>
-
-        <mat-card-content>
-          <p  class="font-12">
-            <strong> Mensaje: <button (click)="editMessage()" style="margin-left: auto;" mat-icon-button  aria-label="create option">
-              <mat-icon color="secondary">create</mat-icon>
-            </button>  </strong>
-            
-            <br> ¡Hola!, Gracias por escribirnos al servicio al cliente de Porthos, escoge alguna de las siguientes funciones:
-          </p>
-        </mat-card-content>
-       
-      </mat-card>
-      <!-- END OF CONTACT WITH AGENTS -->
-
 </div>

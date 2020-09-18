@@ -487,5 +487,51 @@ export class SetDataService {
     })
   }
 
+  // FLOW SERVICES
+
+  async setOptionInFlow(companyId: string, parentFlowId: string, dataChildOption: any) {
+    // create option 
+    let ref = this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('flow')
+    const flowCreation = await ref.add({
+      message: dataChildOption.message,
+      agent: dataChildOption.agent,
+      options: dataChildOption.options,
+      mediaUrl: dataChildOption.mediaUrl
+    })
+    await ref.doc(flowCreation.id)
+      .update({flowId: flowCreation.id})
+    let optionNumber;
+    await ref.doc(parentFlowId)
+      .collection('options')
+      .get()
+      .toPromise().then(data => {
+        optionNumber = data.docs.length + 1;
+      })
+    const optUpdate = await ref.doc(parentFlowId)
+      .collection('options')
+      .add({
+        redirectTo: flowCreation.id,
+        message: dataChildOption.name,
+        optionNumber: optionNumber.toString(),
+      })
+    await ref.doc(parentFlowId)
+      .collection('options')
+      .doc(optUpdate.id)
+      .update({
+        optionId: optUpdate.id
+      })
+    return flowCreation.id;
+  }
+
+  async uploadFileForOption(companyId: string, fileName: string, file) {
+    const storage = firebase.storage();
+    let ref =  storage.ref(`/flows/${companyId}/${fileName}`);
+    const rta = await ref.put(file);
+    const url = await rta.ref.getDownloadURL();
+    return url;
+  }
+  // END OF FLOW SERVICES
 }
 
