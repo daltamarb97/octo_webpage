@@ -6,6 +6,7 @@ import { HoldDataService } from '../../core/services/hold-data.service';
 import { SetDataService } from '../../core/services/set-data.service';
 import { OptionComponent } from '../../material-component/option-dialog/option-dialog.component';
 import { EditOptDialogComponent } from '../../material-component/editopt-dialog/editopt-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-chat-flow',
@@ -29,11 +30,19 @@ export class ChatFlowComponent implements OnInit {
     private holdData: HoldDataService,
     private deleteData: DeleteDataService,
     public dialog: MatDialog,
+    private router: Router,
   ) { }
 
   async ngOnInit(){
+    if (!this.holdData.companyInfo) {
+      this.router.navigate(['no-comp'])
+    }
     this.companyId = this.holdData.userInfo.companyId;
-    this.showBot = this.holdData.companyInfo.bot || false;
+    if(this.companyId) {
+      this.showBot = this.holdData.companyInfo.bot || false;
+    } else {
+      this.showBot = false;
+    }    
     this.getCompleteFlow();
   }
 

@@ -35,15 +35,13 @@ exports.sendInviteEmail = functions.firestore
             // text: `Para registrarte solo debes ingresar el siguiente código de invitación en el campo 'código de invitación' el cual está en el formulario de registro de nuestra plataforma web. CODIGO DE INVITACIÓN: ${inviteId}. RECUERDA NO COMPARTIR ESTE CÓDIGO CON NADIE`,
             html: `<h1>¡Únete al espacio de trabajo de ${data.company} en Octo!</h1>
                     <br>
-                    <h3>Para registrarte solo debes ingresar el siguiente código de invitación en el campo 'código de invitación' el cual está en el formulario de registro de Octo Web. 
+                    <h3>Para ingresar a este espacio de trabajo debes <br> (1) Registrarte en https://octo-work.web.app/ <br> (2) Una vez registrado, ingresa el código de invitación que te llegó en este correo en el espacio "Ingresa a una empresa existente" 
                         <br>
                         <br>
                         CODIGO DE INVITACIÓN: <span style="color: red;">${inviteId}</span>  
                         <br>
                         <br>
                         RECUERDA NO COMPARTIR ESTE CÓDIGO CON NADIE
-                        <br>
-                        Página web: https://octo-work.web.app/
                     </h3>`
         }).then((res)=>{
             console.log('successfully sent email:' + res);
