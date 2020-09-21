@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExcelDialogComponent } from './excel-dialog.component';
+import { EditOptDialogComponent } from './editopt-dialog.component';
 
 describe('ExcelDialogComponent', () => {
-  let component: ExcelDialogComponent;
-  let fixture: ComponentFixture<ExcelDialogComponent>;
+  let component: EditOptDialogComponent;
+  let fixture: ComponentFixture<EditOptDialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ExcelDialogComponent ]
+      declarations: [ EditOptDialogComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ExcelDialogComponent);
+    fixture = TestBed.createComponent(EditOptDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

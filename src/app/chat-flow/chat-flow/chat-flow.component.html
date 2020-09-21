@@ -1,27 +1,63 @@
-<h1>Flujos de Conversación con Octo-Bot.</h1>
+<div *ngIf="!showBot">
+  <h1>Tu empresa no tiene la opción de crear flujos de conversación automatizados con Octo-Bot</h1>
+  <h3>Contáctanos a <a href="https://weareocto.web.app/front/pages/contact.html" target="_blank" style="color: #EF78A0">octo.colombia@gmail.com</a> para activar esta funcionalidad</h3>
+</div>
+
+<div *ngIf="showBot">
+  <h1>Flujos de Conversación con Octo-Bot.</h1>
     
-  <span class="m-b-15">Aquí podrás crear un menú de opciones que resolverá aquellas preguntas repetitivas.</span>
-  <div style="display: flex; flex-direction:row;" >
-      <!-- OPTIONS CARD -->
-      <mat-card *ngFor="let flow of currentFlowList; let i = index" style="min-width:25%; max-width: 30%; height: 100%;" >
-        <mat-chip-list  style="display: flex; justify-content: center;" >
-          <mat-chip *ngIf="flow.options && !flow.main" class="chip" color="primary" selected>Opción</mat-chip>
-          <mat-chip *ngIf="!flow.options && !flow.main" class="chip" color="accent" selected>Fin del flujo</mat-chip>
-          <mat-chip  *ngIf="flow.main" style="background-color: #ffd480">Primer Mensaje del Bot </mat-chip>
-        </mat-chip-list>
-        <mat-card-header>
-          <mat-card-title  *ngIf="!flow.main" style="font-size: 16px;">{{flow.shortMessage}}</mat-card-title>
-          <!-- <mat-card-title  *ngIf="flow.main" style="font-size: 16px;">Primer Mensaje del Bot</mat-card-title> -->
-          <mat-card-subtitle *ngIf="flow.main" tyle="font-size: 12px;"> Aquí saldrán las primeras opciones para tu cliente</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <p  class="font-12">
-            <strong> Mensaje: <button (click)="editMessage()" style="margin-left: auto;" mat-icon-button color="primary" aria-label="create option">
-              <mat-icon>create</mat-icon>
-            </button>  </strong>
-            
-            <br> {{flow.message}}
-          </p>
+    <div 
+      *ngIf="currentFlowList.length === 0" 
+      style="display: flex; flex-direction: column;">
+      <span class="m-b-15">Aquí podrás crear un flujo de conversación que resolverá aquellas preguntas repetitivas.</span>
+      <button 
+        color="primary"
+        mat-raised-button
+        (click)="createFirstFlow()"
+        >Crear primer mensaje del flujo
+      </button>
+    </div>
+    <span class="m-b-15" *ngIf="currentFlowList.length !== 0">Aquí podrás crear un flujo de conversación que resolverá aquellas preguntas repetitivas.</span>
+    <div *ngIf="currentFlowList.length !== 0" style="display: flex; flex-direction:row;" >
+        <!-- OPTIONS CARD -->
+        <mat-card *ngFor="let flow of currentFlowList; let i = index" style="min-width:25%; max-width: 30%; height: 100%;" >
+          <mat-chip-list  style="display: flex; justify-content: center;" >
+            <mat-chip *ngIf="flow.options && !flow.main" class="chip" color="primary" selected>Opción</mat-chip>
+            <mat-chip *ngIf="!flow.options && !flow.main" class="chip" color="accent" selected>Fin del flujo</mat-chip>
+            <mat-chip  *ngIf="flow.main" style="background-color: #ffd480">Primer Mensaje del Bot </mat-chip>
+          </mat-chip-list>
+          <mat-card-header>
+            <mat-card-title  *ngIf="!flow.main" style="font-size: 16px;">{{flow.shortMessage}}</mat-card-title>
+            <!-- <mat-card-title  *ngIf="flow.main" style="font-size: 16px;">Primer Mensaje del Bot</mat-card-title> -->
+            <mat-card-subtitle *ngIf="flow.main" tyle="font-size: 12px;"> Aquí saldrá el primer mensaje y opciones que verán tus clientes al comunicarse contigo</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p  class="font-12">
+              <strong> Mensaje:  </strong>
+                <button (click)="editMessage(flow, i)" style="margin-left: auto;" mat-icon-button color="primary" aria-label="create option">
+                  <mat-icon>create</mat-icon>
+                </button>  
+                <button 
+                  (click)="deleteFlow(flow, i)" 
+                  style="margin-left: auto;" 
+                  mat-icon-button 
+                  color="primary" 
+                  aria-label="create option"
+                  matTooltip="Si eliminas el primer mensaje del flujo, los demás mensajes del flujo serán borrados también"
+                  *ngIf="flow.main">
+                  <mat-icon style="color:red">delete</mat-icon>
+                </button>  
+                <button 
+                  (click)="deleteFlow(flow, i)" 
+                  style="margin-left: auto;" 
+                  mat-icon-button 
+                  color="primary" 
+                  aria-label="create option"
+                  *ngIf="!flow.main">
+                  <mat-icon style="color:red">delete</mat-icon>
+                </button> 
+              <br> {{flow.message}}
+            </p>
             <mat-selection-list *ngIf="flow.options" #option [multiple]="false">
               <div  mat-subheader>Opciones                                  
                 <button style="margin-left: auto;" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Mas">
@@ -32,23 +68,15 @@
                     <mat-icon  >add</mat-icon>
                     <span >Agregar</span>
                   </button>
-                  <button mat-menu-item >
-                    <mat-icon>create</mat-icon>
-                    <span>Editar</span>
-                  </button>
-                  <button  mat-menu-item>
-                    <mat-icon style="color:red">delete</mat-icon>
-                    <span style="color:red">Eliminar</span>
-                  </button>
                 </mat-menu>
               </div>
-              <mat-list-option   *ngFor="let optionFlow of flow.options" [value]="optionFlow" (click)="seeOption(optionFlow, i)" >
+              <mat-list-option   *ngFor="let optionFlow of flow.options" [value]="optionFlow" (click)="seeOption(optionFlow, i, flow)" >
                 <mat-icon mat-list-icon>chevron_right </mat-icon>
                 <span style=" font-size: 12px; ">{{optionFlow.message}}</span>
               </mat-list-option>
             </mat-selection-list>
             <mat-spinner *ngIf="showSpinner"></mat-spinner>
-        </mat-card-content>
-       
-      </mat-card>
+          </mat-card-content>     
+        </mat-card>
+  </div>
 </div>

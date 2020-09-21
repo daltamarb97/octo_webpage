@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>Crear una nueva opción</h1>
-<div  >
-    <mat-form-field class="example-full-width">
+<div>
+    <mat-form-field class="example-full-width" *ngIf="input.event !== 'first'">
       <mat-label>Nombre de la opción:</mat-label>
       <input type="text" matInput placeholder="Nombre de la opción..." [(ngModel)]="local_data.name">
     </mat-form-field>
@@ -8,14 +8,13 @@
       <mat-label>Mensaje: </mat-label>
       <input type="text" matInput placeholder="Mensaje que aparecerá al seleccionar esta opción..." [(ngModel)]="local_data.message">
     </mat-form-field>
-    <input type="file" (change)="selectImage($event)" placeholder="Selecciona un archivo..." accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
+    <input *ngIf="input.event !== 'first'" type="file" (change)="selectImage($event)" placeholder="Selecciona un archivo..." accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
     text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx" style="display: block">
-    <div style="margin-top: 15px;">
+    <div *ngIf="input.event !== 'first'" style="margin-top: 15px;">
       <mat-slide-toggle [(ngModel)]="agent">Contactar con agentes</mat-slide-toggle>
       <p style="font-size: 10px;">Al activar esta opción, después de este mensaje la conversación será dirijida a Octo para que sea atendida por un agente.</p>
       <mat-slide-toggle [(ngModel)]="options">Esta opción tendrá más opciones anidadas</mat-slide-toggle>
     </div>
-
   <div mat-dialog-actions>
     <button mat-button (click)="onNoClick()">Cancelar</button>
     <button mat-button mat-flat-button color="primary" (click)="addOption()">Crear</button>

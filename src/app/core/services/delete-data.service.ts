@@ -105,18 +105,62 @@ export class DeleteDataService {
 
 // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 
-// TASK SERVICES
+// WHATSAPP SERVICES
 
-  deleteTask(companyId:string, taskId:string){
-    // update body or title of the announcement
-    let ref = this.db.collection('board')
-    .doc(companyId)
-    .collection('tasks')
-    .doc(taskId)
-
-    return ref.delete()
-  }
-// END OF TASK SERVICES
+deleteFlow(data) {
+  let ref = this.db.collection('whatsapp')
+    .doc(data.companyId)
+    .collection('flow')
+    .doc(data.flowId)
+  
+  return ref.get().toPromise().then(async (rta) => {
+    try{
+      if(rta.data().main) {
+        // delete main message
+        await ref.delete();
+        // delete all flow collection
+        this.db.collection('whatsapp')
+          .doc(data.companyId)
+          .collection('flow')
+          .stateChanges(['added'])
+          .toPromise()
+          .then(result => {
+            result.map(async (d) => {
+              await this.db.collection('whatsapp')
+                .doc(data.companyId)
+                .collection('flow')
+                .doc(d.payload.doc.id)
+                .delete();
+            })
+            window.location.reload();
+          })
+      } else {
+        await ref.delete();
+        let refParent = this.db.collection('whatsapp')
+          .doc(data.companyId)
+          .collection('flow')
+          .doc(data.parentFlow)
+          .collection('options', refParent => refParent.where("redirectTo", "==", data.flowId))
+          .get();
+        refParent.toPromise().then(rta => {
+          rta.forEach(async (flow) => {
+            await this.db.collection('whatsapp')
+            .doc(data.companyId)
+            .collection('flow')
+            .doc(data.parentFlow)
+            .collection('options')
+            .doc(flow.id)
+            .delete();
+          })
+          window.location.reload(); 
+        })
+      }
+    }catch(error) {
+      return new Error(error)
+    }
+  }) 
+}
+// WHATSAPP SERVICES
 
 // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 

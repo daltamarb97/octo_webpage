@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>Editar mensaje del flujo</h1>
+<div>
+    <mat-form-field class="example-full-width">
+      <mat-label>Mensaje:</mat-label>
+      <input type="text" matInput placeholder="..." [(ngModel)]="message">
+    </mat-form-field>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancelar</button>
+    <button mat-button mat-flat-button color="primary" (click)="updateOption()">Confirmar</button>
+  </div>
+</div>

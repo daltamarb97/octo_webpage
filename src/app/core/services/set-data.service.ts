@@ -325,7 +325,8 @@ export class SetDataService {
 
   
   sendWhatsappMessageHttp(data){
-    const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
+    const api_url = "http://localhost:5000/message/sendFromOcto"
+    // const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {
           message: data.message,
@@ -498,7 +499,7 @@ export class SetDataService {
       message: dataChildOption.message,
       agent: dataChildOption.agent,
       options: dataChildOption.options,
-      mediaUrl: dataChildOption.mediaUrl
+      mediaUrl: dataChildOption.mediaUrl,
     })
     await ref.doc(flowCreation.id)
       .update({flowId: flowCreation.id})
@@ -525,12 +526,37 @@ export class SetDataService {
     return flowCreation.id;
   }
 
+  async createFirstFlow(companyId: string, message: string) {
+    let ref = this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('flow')
+    const mainFlow = await ref.add({
+        message: message,
+        main: true
+      })
+    return ref.doc(mainFlow.id)
+      .update({
+        flowId: mainFlow.id
+      })
+  }
+
   async uploadFileForOption(companyId: string, fileName: string, file) {
     const storage = firebase.storage();
     let ref =  storage.ref(`/flows/${companyId}/${fileName}`);
     const rta = await ref.put(file);
     const url = await rta.ref.getDownloadURL();
     return url;
+  }
+
+  async updateMessageFlow(data){
+    let ref = this.db.collection('whatsapp')
+      .doc(data.companyId)
+      .collection('flow')
+      .doc(data.flowId)
+      
+      return ref.update({
+        message: data.message
+      })
   }
   // END OF FLOW SERVICES
 }

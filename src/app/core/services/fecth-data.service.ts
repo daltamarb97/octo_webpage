@@ -34,7 +34,7 @@ export class FecthDataService {
 
 
   getCompanyEmployees(companyId: string){
-    // get building residents
+    // get company employees
     let ref = this.db.collection('company')
     .doc(companyId)
     .collection('employees')
@@ -42,12 +42,21 @@ export class FecthDataService {
     return ref.stateChanges(['added']);
   }
 
-  getWhatsappTemplates(){
-    // get building residents
-    let ref = this.db.collection('whatsapp')
-    .doc('templates')
-
-    return ref.get();
+  getWhatsappTemplates(companyId: string, customTemplates: boolean){
+    // get whatsapp templates
+    if (customTemplates) {
+      let ref = this.db.collection('whatsapp')
+      .doc('templates')
+  
+      return ref.get();
+    } else {
+      let ref = this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('templates')
+      .doc('templates')
+  
+      return ref.get();
+    }
   }
 
   getInviteCodes() {
@@ -196,7 +205,8 @@ export class FecthDataService {
 
 
   checkWhatsapp24HourWindow(data) {
-      const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
+    const api_url = "http://localhost:5000/message/check-user"
+      // const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
       const finalData = {
         companyId: data.companyId,
         number: data.number

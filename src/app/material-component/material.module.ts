@@ -16,12 +16,12 @@ import { DialogOverviewComponent} from './dialog/dialog.component';
 import { ChatCreationDialogComponent } from './chat-creation-dialog/chat-creation-dialog.component';
 import { BoardDialogComponent } from './board-dialog/board-dialog.component';
 import { ProfileDialogComponent } from './profile-dialog/profile-dialog.component';
-import { ExcelDialogComponent } from './excel-dialog/excel-dialog.component';
 import { InviteDialogComponent } from './invite-dialog/invite-dialog.component';
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 import { CategoryComponent } from './category-dialog/category-dialog.component';
 import { OptionComponent } from './option-dialog/option-dialog.component';
 import { MessageComponent } from './message-dialog/message-dialog.component';
+import { EditOptDialogComponent } from './editopt-dialog/editopt-dialog.component';
 
 @NgModule({
   imports: [
@@ -41,7 +41,7 @@ import { MessageComponent } from './message-dialog/message-dialog.component';
     ChatCreationDialogComponent,
     BoardDialogComponent,
     ProfileDialogComponent,
-    ExcelDialogComponent,
+    EditOptDialogComponent,
     InviteDialogComponent,
     HelpDialogComponent,
     CategoryComponent,

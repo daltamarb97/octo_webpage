@@ -78,7 +78,7 @@ export class LoginComponent implements OnInit {
         ){
           alert('email o contraseña incorrectos');
         }else{
-          alert('ocurrió un problema, contáctanos a waypooltec@gmail.com');
+          alert('ocurrió un problema, contáctanos a octo.colombia@gmail.com');
         }
       })
     }

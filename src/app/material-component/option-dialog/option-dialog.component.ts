@@ -17,13 +17,14 @@ export class OptionComponent {
   destroy$: Subject<void> = new Subject();
   agent = false;
   options = false;
-
+  input: any;
   constructor(
     public dialogRef: MatDialogRef<OptionComponent>,
     private fetchData: FecthDataService,
     private holdData: HoldDataService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
+    this.input = data;
     this.local_data = {
       name: '',
       message: '',
@@ -38,7 +39,7 @@ export class OptionComponent {
   }
 
   addOption() {
-    this.dialogRef.close({event: 'data', data: this.local_data, agent: this.agent, options: this.options});
+    this.dialogRef.close({event: this.input.event, data: this.local_data, agent: this.agent, options: this.options});
   }
 
   selectImage(file) {

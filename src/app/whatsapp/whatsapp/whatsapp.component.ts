@@ -123,13 +123,23 @@ getCompanyEmployees() {
 
 getWhatsappTemplateMessages() {
   // get whatsapp approve templates
-  this.fetchData.getWhatsappTemplates()
-    .subscribe(data =>{
-      let obj = data.data();
-      Object.keys(obj).forEach(k => {
-        this.templatesArray.push(obj[k]);
+  if (this.holdData.companyInfo.api_url) {
+    this.fetchData.getWhatsappTemplates(this.companyId, true)
+      .subscribe(data =>{
+        let obj = data.data();
+        Object.keys(obj).forEach(k => {
+          this.templatesArray.push(obj[k]);
+        })
       })
-    })
+  }else {
+    this.fetchData.getWhatsappTemplates(this.companyId, false)
+      .subscribe(data =>{
+        let obj = data.data();
+        Object.keys(obj).forEach(k => {
+          this.templatesArray.push(obj[k]);
+        })
+      })
+  }
 }
 
 getWhatsappQuota() {
