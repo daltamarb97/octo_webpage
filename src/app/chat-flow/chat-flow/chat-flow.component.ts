@@ -5,7 +5,7 @@ import { FecthDataService } from '../../core/services/fecth-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
 import { SetDataService } from '../../core/services/set-data.service';
 import { OptionComponent } from '../../material-component/option-dialog/option-dialog.component';
-import { EditOptDialogComponent } from '../../material-component/excel-dialog/editopt-dialog.component';
+import { EditOptDialogComponent } from '../../material-component/editopt-dialog/editopt-dialog.component';
 
 @Component({
   selector: 'app-chat-flow',
@@ -33,7 +33,7 @@ export class ChatFlowComponent implements OnInit {
 
   async ngOnInit(){
     this.companyId = this.holdData.userInfo.companyId;
-    this.showBot = this.holdData.companyInfo.bot;
+    this.showBot = this.holdData.companyInfo.bot || false;
     this.getCompleteFlow();
   }
 

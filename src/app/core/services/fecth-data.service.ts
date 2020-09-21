@@ -46,13 +46,13 @@ export class FecthDataService {
     // get whatsapp templates
     if (customTemplates) {
       let ref = this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('templates')
       .doc('templates')
   
       return ref.get();
     } else {
       let ref = this.db.collection('whatsapp')
-      .doc(companyId)
-      .collection('templates')
       .doc('templates')
   
       return ref.get();

@@ -122,7 +122,7 @@ getCompanyEmployees() {
 }
 
 getWhatsappTemplateMessages() {
-  // get whatsapp approve templates
+  // get whatsapp approve templates  
   if (this.holdData.companyInfo.api_url) {
     this.fetchData.getWhatsappTemplates(this.companyId, true)
       .subscribe(data =>{
