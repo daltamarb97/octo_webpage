@@ -216,7 +216,7 @@ exports.paymentLink = functions.https
     
         authData.sendMail({
             from: 'payments@octo.com',
-            to: 'octo-work@criptext.com',
+            to: 'octo.colombia@gmail.com',
             subject: `URGENTE - GENERAR LINK DE PAGO`,
             text: `USUARIO CON LOS SIGUIENTES DATOS: 
             nombre: ${data.name} / email: ${data.email} 

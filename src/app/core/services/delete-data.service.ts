@@ -132,7 +132,6 @@ deleteFlow(data) {
                 .doc(d.payload.doc.id)
                 .delete();
             })
-            window.location.reload();
           })
       } else {
         await ref.delete();
@@ -152,7 +151,6 @@ deleteFlow(data) {
             .doc(flow.id)
             .delete();
           })
-          window.location.reload(); 
         })
       }
     }catch(error) {

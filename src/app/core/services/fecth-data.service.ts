@@ -293,12 +293,21 @@ export class FecthDataService {
 
   // BOT FLOW SERVICES
 
-  getCompleteFlow(companyId){
+  getCompleteFlow(companyId: string){
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
     .collection('flow')
 
-    return ref.stateChanges(['added']);
+    return ref.get();
+  }
+
+  getSpecificFlow(companyId: string, flowId: string){
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('flow')
+    .doc(flowId)
+
+    return ref.valueChanges();
   }
 
   getFlowOptions(companyId, flowId){
@@ -308,7 +317,7 @@ export class FecthDataService {
     .doc(flowId)
     .collection('options', ref => ref.orderBy('optionNumber', "asc"))
 
-    return ref.get();
+    return ref.valueChanges();
   }
 
   // END OF BOT FLOW SERVICES

@@ -7,7 +7,7 @@
   <h1>Flujos de Conversación con Octo-Bot.</h1>
     
     <div 
-      *ngIf="currentFlowList.length === 0" 
+      *ngIf="flow === null" 
       style="display: flex; flex-direction: column;">
       <span class="m-b-15">Aquí podrás crear un flujo de conversación que resolverá aquellas preguntas repetitivas.</span>
       <button 
@@ -17,12 +17,13 @@
         >Crear primer mensaje del flujo
       </button>
     </div>
-    <span class="m-b-15" *ngIf="currentFlowList.length !== 0">Aquí podrás crear un flujo de conversación que resolverá aquellas preguntas repetitivas.</span>
-    <div *ngIf="currentFlowList.length !== 0" style="display: flex; flex-direction:row;" >
+    <span class="m-b-15" *ngIf="flow">Aquí podrás crear un flujo de conversación que resolverá aquellas preguntas repetitivas.</span>
+    <div *ngIf="flow" style="display: flex; flex-direction:column;" >
         <!-- OPTIONS CARD -->
-        <mat-card *ngFor="let flow of currentFlowList; let i = index" style="min-width:25%; max-width: 30%; height: 100%;" >
+        <mat-card  style="min-width:25%; max-width: 30%; height: 100%;" >
+          <mat-icon *ngIf="listFlow.length > 1" aria-label="backbutton" (click)="goPreviousFlow()">arrow_back</mat-icon>
           <mat-chip-list  style="display: flex; justify-content: center;" >
-            <mat-chip *ngIf="flow.options && !flow.main" class="chip" color="primary" selected>Opción</mat-chip>
+            <mat-chip *ngIf="flow.options && !flow.main" class="chip" color="primary" selected>Opción - nivel {{counter}}</mat-chip>
             <mat-chip *ngIf="!flow.options && !flow.main" class="chip" color="accent" selected>Fin del flujo</mat-chip>
             <mat-chip  *ngIf="flow.main" style="background-color: #ffd480">Primer Mensaje del Bot </mat-chip>
           </mat-chip-list>
@@ -34,11 +35,11 @@
           <mat-card-content>
             <p  class="font-12">
               <strong> Mensaje:  </strong>
-                <button (click)="editMessage(flow, i)" style="margin-left: auto;" mat-icon-button color="primary" aria-label="create option">
+                <button (click)="editMessage()" style="margin-left: auto;" mat-icon-button color="primary" aria-label="create option">
                   <mat-icon>create</mat-icon>
                 </button>  
                 <button 
-                  (click)="deleteFlow(flow, i)" 
+                  (click)="deleteFlow()" 
                   style="margin-left: auto;" 
                   mat-icon-button 
                   color="primary" 
@@ -48,7 +49,7 @@
                   <mat-icon style="color:red">delete</mat-icon>
                 </button>  
                 <button 
-                  (click)="deleteFlow(flow, i)" 
+                  (click)="deleteFlow()" 
                   style="margin-left: auto;" 
                   mat-icon-button 
                   color="primary" 
@@ -58,25 +59,44 @@
                 </button> 
               <br> {{flow.message}}
             </p>
-            <mat-selection-list *ngIf="flow.options" #option [multiple]="false">
-              <div  mat-subheader>Opciones                                  
-                <button style="margin-left: auto;" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Mas">
-                  <mat-icon>more_vert</mat-icon>
-                </button>
-                <mat-menu  #menu="matMenu">
-                  <button (click)="createOption(flow, i)" mat-menu-item>
-                    <mat-icon  >add</mat-icon>
-                    <span >Agregar</span>
-                  </button>
-                </mat-menu>
-              </div>
-              <mat-list-option   *ngFor="let optionFlow of flow.options" [value]="optionFlow" (click)="seeOption(optionFlow, i, flow)" >
-                <mat-icon mat-list-icon>chevron_right </mat-icon>
-                <span style=" font-size: 12px; ">{{optionFlow.message}}</span>
-              </mat-list-option>
-            </mat-selection-list>
+            <mat-divider *ngIf="!flow.options && !flow.main"></mat-divider>
+            <div *ngIf="flow.agent === true" style="margin-top: 6px;">
+              <p style="font-size: 12px;">Después de que este mensaje es mostrado, la conversación con tu cliente es enviada a Octo para que sea atendida por un agente de servicio al cliente</p>
+            </div>
+            <mat-divider *ngIf="!flow.options && !flow.main"></mat-divider>
+            <div *ngIf="flow.mediaUrl" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 6px;">
+              <p style="font-size: 12px;">Este mensaje envía un archivo/imagen</p>
+              <a mat-stroked-button style="height: 5%;" href="{{flow.mediaUrl}}" target="_blank">Ver Imagen</a>              
+            </div>
+            <mat-expansion-panel 
+              *ngIf="flow.options === true || flow.main === true" 
+              [expanded]="expandedOptions" 
+              (opened)="getOptions()">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Opciones
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div style="display: flex; flex-direction: column; justify-content: space-between" >
+                  <div 
+                    *ngFor="let o of flowOptions" 
+                    style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 7px;">
+                      <p>{{o.message}}</p>
+                      <button mat-raised-button style="margin-bottom: 6px;" (click)="seeOption(o)">Ir</button>
+                  </div>
+                  <mat-divider></mat-divider>
+                  <button mat-stroked-button style="align-self: center; margin-top: 10px;" (click)="createOption()">Crear opción</button>
+                </div>
+              </mat-expansion-panel>
             <mat-spinner *ngIf="showSpinner"></mat-spinner>
           </mat-card-content>     
         </mat-card>
+        <!-- HACER ESTO -->
+        <!-- <mat-chip-list aria-label="Fish selection">
+          <mat-chip>primer mensaje</mat-chip>
+          <mat-chip>opcion 1</mat-chip>
+          <mat-chip color="primary" selected>opcion 2</mat-chip>
+          <mat-chip color="accent" selected>opcion 3</mat-chip>
+        </mat-chip-list> -->
   </div>
 </div>

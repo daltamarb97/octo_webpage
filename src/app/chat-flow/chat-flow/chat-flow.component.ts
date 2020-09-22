@@ -14,16 +14,19 @@ import { Router } from '@angular/router';
   styleUrls: ['./chat-flow.component.css']
 })
 export class ChatFlowComponent implements OnInit {
-  currentFlowList: Array<any> = [];
   companyId:any;
-  currentIndex: number;
-  flow: Array<any> = [];
+  flow: any = null;
+  prevFlow: any = null;
   mainMessageFlow:any;
   showSpinner: boolean= false;
-  mainMessageSubs: any;
-  messageEdited:string;
-  parentFlow: string;
+  messageSubs: any;
+  optionSubs: any;
   showBot: boolean = true;
+  flowOptions:Array<any> = [];
+  expandedOptions:boolean = false;
+  previousFlow:any = null;
+  counter: number = -1;
+  listFlow: Array<any> = [];
   constructor(
     private setData: SetDataService,
     private fetchData: FecthDataService,
@@ -43,46 +46,33 @@ export class ChatFlowComponent implements OnInit {
     } else {
       this.showBot = false;
     }    
-    this.getCompleteFlow();
+    this.getMainFlow();
   }
 
   ngOnDestroy(){
-    if (this.mainMessageSubs) this.mainMessageSubs.unsubscribe();
+    if (this.messageSubs) this.messageSubs.unsubscribe();
+    if(this.optionSubs) this.optionSubs.unsubscribe();
   }
 
-  getCompleteFlow(){
+  getMainFlow(){
     // flow subscription
-    this.mainMessageSubs = this.fetchData.getCompleteFlow(this.companyId)
-      .subscribe(async (data) => {
-        // get whole flow at once
-        data.map(d => {
-          const data = {
-            ...d.payload.doc.data(),
-            flowId: d.payload.doc.id
+    this.fetchData.getCompleteFlow(this.companyId)
+      .toPromise()
+      .then(data => {
+        data.forEach(d => {
+          if(d.data().main === true) {
+            this.seeOption({redirectTo: d.data().flowId});
           }
-          this.flow.push(data);
         })
-        // get main message and its options
-        this.mainMessageFlow = this.flow.filter(d => d.main === true);
-        const optionsData = await this.fetchData.getFlowOptions(this.companyId, this.mainMessageFlow[0].flowId).toPromise()
-        let optionListMessage = []; 
-        optionsData.forEach(o => {
-          optionListMessage.push(o.data());
-        });
-        this.mainMessageFlow[0].options = optionListMessage;
-        if (this.currentFlowList.length === 0) this.currentFlowList = this.mainMessageFlow;
-        this.currentIndex = 1;
       })
   }
 
-
-  createOption(flow, index){
+  createOption(){
     const dialogRef = this.dialog.open(OptionComponent, {data: {companyId: this.companyId, event: 'old'}});
     dialogRef.afterClosed()
       .subscribe(async result =>{ 
         this.showSpinner = true;
         if (result.event === 'old') {   
-          this.currentIndex = index + 1;
           let dataRta = {
             ...result.data,
             options: result.options,
@@ -90,18 +80,12 @@ export class ChatFlowComponent implements OnInit {
           }
           if (dataRta.file) {
             dataRta.mediaUrl = await this.setData.uploadFileForOption(this.companyId, dataRta.file.name, dataRta.file);
-            const redirectTo =  await this.setData.setOptionInFlow(this.companyId, flow.flowId, dataRta);
-            dataRta.redirectTo =  redirectTo;
-            this.currentFlowList[index].options.push(dataRta);
+            await this.setData.setOptionInFlow(this.companyId, this.prevFlow.flowId, dataRta);
             this.showSpinner = false;
-            this.seeOption({...dataRta, shortMessage: dataRta.name}, index, flow);
           } else {
             dataRta.mediaUrl = '';
-            const redirectTo = await this.setData.setOptionInFlow(this.companyId, flow.flowId, dataRta)
-            dataRta.redirectTo =  redirectTo;
-            this.currentFlowList[index].options.push(dataRta);
+            await this.setData.setOptionInFlow(this.companyId, this.prevFlow.flowId, dataRta)
             this.showSpinner = false;
-            this.seeOption({...dataRta, shortMessage: dataRta.name}, index, flow);
           }
         }else  {
           this.showSpinner = false;
@@ -109,53 +93,53 @@ export class ChatFlowComponent implements OnInit {
       })
   }
 
-
-  async seeOption(option, index, currentFlow){
+  async seeOption(option){
     // get options of current flow message if options
-    this.parentFlow = currentFlow.flowId;
-    if ((index + 1) <= this.currentIndex) {
-      this.currentFlowList.splice((index + 1), this.currentFlowList.length);
-      this.currentIndex = index + 1;
-    } else {
-      this.currentIndex ++;
-    }
-    let optionListMessage = [];
-    const optionRta: any = this.flow.filter(d => d.flowId === option.redirectTo); 
-    optionRta[0].shortMessage = option.shortMessage || option.message;
-    if (optionRta[0].options === true){
-      const optionsData = await this.fetchData.getFlowOptions(this.companyId, optionRta[0].flowId).toPromise();
-      optionsData.forEach(o => {
-        optionListMessage.push(o.data());
-      });
-      optionRta[0].options = optionListMessage
-    }
-    (this.currentFlowList.length === 0) ? this.currentFlowList = optionRta : this.currentFlowList.push(optionRta[0]);
+    if (this.messageSubs) this.messageSubs.unsubscribe();
+    this.counter ++;
+    if(this.prevFlow) this.previousFlow = this.prevFlow;
+    this.expandedOptions = false;
+    let redirection;
+    (!option.redirectTo) ? redirection = option.flowId : redirection = option.redirectTo;
+    this.messageSubs = this.fetchData.getSpecificFlow(this.companyId, redirection)
+      .subscribe(data => {
+        this.prevFlow = data;
+        if(option.message) {
+          if(option.shortMessage) {
+            this.prevFlow.shortMessage = option.shortMessage
+          } else {
+            this.prevFlow.shortMessage = option.message;
+          }
+        }
+        this.listFlow.push(this.prevFlow);
+        this.flow = this.listFlow[this.counter];
+      })
   }
 
-  editMessage(flow, index){
-    const dialogRef = this.dialog.open(EditOptDialogComponent, {data: flow.message});
+  editMessage(){
+    const dialogRef = this.dialog.open(EditOptDialogComponent, {data: this.prevFlow.message});
     dialogRef.afterClosed()
       .subscribe(async (result) => {
         if(result.event !== 'close'){
           const data = {
             companyId: this.companyId,
-            flowId: flow.flowId,
+            flowId: this.prevFlow.flowId,
             message: result.message
           }
           await this.setData.updateMessageFlow(data);
-          this.currentFlowList[index].message = result.message;
-          this.messageEdited = null;
+          this.listFlow[this.counter].message = result.message;
         }
       })
   }
 
-  async deleteFlow(flow){
+  async deleteFlow(){
     const data = {
       companyId: this.companyId,
-      flowId: flow.flowId,
-      parentFlow: this.parentFlow
+      flowId: this.prevFlow.flowId,
+      parentFlow: this.previousFlow.flowId
     }
     await this.deleteData.deleteFlow(data);
+    this.goPreviousFlow();
   }
 
   createFirstFlow() {
@@ -166,5 +150,23 @@ export class ChatFlowComponent implements OnInit {
           this.setData.createFirstFlow(this.companyId, result.data.message);
         }
       })
+  }
+
+  getOptions() {
+    if(this.optionSubs) this.optionSubs.unsubscribe();
+    this.expandedOptions = true;
+    this.flowOptions = [];
+    this.optionSubs = this.fetchData.getFlowOptions(this.companyId, this.prevFlow.flowId)
+      .subscribe(data => {
+        this.flowOptions = data;        
+      })
+  }
+
+  goPreviousFlow(){
+    this.listFlow.splice(this.counter, 1);
+    this.expandedOptions = false;
+    this.counter -= 1;
+    this.prevFlow = this.listFlow[this.counter];
+    this.flow = this.listFlow[this.counter];
   }
 }
