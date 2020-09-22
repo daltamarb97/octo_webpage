@@ -68,35 +68,32 @@
               <p style="font-size: 12px;">Este mensaje envía un archivo/imagen</p>
               <a mat-stroked-button style="height: 5%;" href="{{flow.mediaUrl}}" target="_blank">Ver Imagen</a>              
             </div>
-            <mat-expansion-panel 
-              *ngIf="flow.options === true || flow.main === true" 
-              [expanded]="expandedOptions" 
-              (opened)="getOptions()">
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    Opciones
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-                <div style="display: flex; flex-direction: column; justify-content: space-between" >
-                  <div 
-                    *ngFor="let o of flowOptions" 
-                    style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 7px;">
-                      <p>{{o.message}}</p>
-                      <button mat-raised-button style="margin-bottom: 6px;" (click)="seeOption(o)">Ir</button>
-                  </div>
-                  <mat-divider></mat-divider>
-                  <button mat-stroked-button style="align-self: center; margin-top: 10px;" (click)="createOption()">Crear opción</button>
-                </div>
-              </mat-expansion-panel>
+            <mat-selection-list *ngIf="flow.options || flow.main" #option [multiple]="false">
+              <div  mat-subheader>Opciones                                  
+                <button style="margin-left: auto;" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Mas">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu  #menu="matMenu">
+                  <button (click)="createOption()" mat-menu-item>
+                    <mat-icon  >add</mat-icon>
+                    <span >Agregar</span>
+                  </button>
+                </mat-menu>
+              </div>
+              <mat-list-option  *ngFor="let o of flowOptions" [value]="o" (click)="seeOption(o)" >
+                <mat-icon mat-list-icon>chevron_right </mat-icon>
+                <span style=" font-size: 12px; ">{{o.message}}</span>
+              </mat-list-option>
+            </mat-selection-list>
             <mat-spinner *ngIf="showSpinner"></mat-spinner>
           </mat-card-content>     
         </mat-card>
-        <!-- HACER ESTO -->
-        <!-- <mat-chip-list aria-label="Fish selection">
-          <mat-chip>primer mensaje</mat-chip>
-          <mat-chip>opcion 1</mat-chip>
-          <mat-chip color="primary" selected>opcion 2</mat-chip>
-          <mat-chip color="accent" selected>opcion 3</mat-chip>
-        </mat-chip-list> -->
+        <mat-chip-list aria-label="options selection">
+          <mat-chip 
+            *ngFor="let o of listFlow" 
+            [style.background-color]="o.shortMessage ? ((o.agent || o.mediaUrl) ? '#3747A0' : '#EF78A0') : '#ffd480'"
+            >{{(o.shortMessage) ? o.shortMessage : 'Primer mensaje'}}
+          </mat-chip>
+        </mat-chip-list>
   </div>
 </div>

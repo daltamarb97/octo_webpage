@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-chat-flow',
   templateUrl: './chat-flow.component.html',
-  styleUrls: ['./chat-flow.component.css']
+  styleUrls: ['./chat-flow.component.scss']
 })
 export class ChatFlowComponent implements OnInit {
   companyId:any;
@@ -113,6 +113,7 @@ export class ChatFlowComponent implements OnInit {
         }
         this.listFlow.push(this.prevFlow);
         this.flow = this.listFlow[this.counter];
+        this.getOptions();
       })
   }
 
@@ -158,7 +159,7 @@ export class ChatFlowComponent implements OnInit {
     this.flowOptions = [];
     this.optionSubs = this.fetchData.getFlowOptions(this.companyId, this.prevFlow.flowId)
       .subscribe(data => {
-        this.flowOptions = data;        
+        this.flowOptions = data;  
       })
   }
 
@@ -167,6 +168,7 @@ export class ChatFlowComponent implements OnInit {
     this.expandedOptions = false;
     this.counter -= 1;
     this.prevFlow = this.listFlow[this.counter];
+    this.getOptions();
     this.flow = this.listFlow[this.counter];
   }
 }
