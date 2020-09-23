@@ -331,6 +331,7 @@ END OF ROOM CHAT
     this.currentChatData.assignedTo = data.userId;
     this.showAssignedChats = false;
     this.showGeneralChats = false;
+    this.showDetail = false;
   }
 
   getCategories(){

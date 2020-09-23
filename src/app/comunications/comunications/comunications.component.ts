@@ -244,23 +244,23 @@ private getParticipantsFromRoom(){
   })
 }
 
-addChatRoom(){
-  const dialogRef = this.dialog.open(ChatCreationDialogComponent, {data: this.companyId});
-  dialogRef.afterClosed()
-  .subscribe(result =>{
-    // create new chat room  
-    const roomData = {
-      roomName: result.data.name,
-      roomDescription: result.data.description
-    }
-    const participants: Array<any> = result.data.participants;
-    this.setData.createChatRoom(
-      this.companyId, 
-      roomData, 
-      participants
-    );  
-  })  
-}
+// addChatRoom(){
+//   const dialogRef = this.dialog.open(ChatCreationDialogComponent, {data: this.companyId});
+//   dialogRef.afterClosed()
+//   .subscribe(result =>{
+//     // create new chat room  
+//     const roomData = {
+//       roomName: result.data.name,
+//       roomDescription: result.data.description
+//     }
+//     const participants: Array<any> = result.data.participants;
+//     this.setData.createChatRoom(
+//       this.companyId, 
+//       roomData, 
+//       participants
+//     );  
+//   })  
+// }
 
 sendMessage(){
   // send message in specific room

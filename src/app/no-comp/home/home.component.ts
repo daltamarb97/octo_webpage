@@ -67,8 +67,6 @@ export class HomeComponent implements OnInit {
     this.spinner = true;
     this.checkInviteCode()
       .then(data => {
-        console.log(data);
-        
         this.setData.setUserInfoInCompany(this.holdData.userInfo, data)
           .then(() => {
             this.spinner = false;

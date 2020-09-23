@@ -57,9 +57,16 @@ export class LoginComponent implements OnInit {
         )
         .subscribe((user)=>{
           this.holdData.userInfo = user;
-          this.buttonInvalid = true;
-          // allow user to login
-          this.router.navigate(['/no-comp']); 
+          if(result.user.emailVerified !== true){
+            this.buttonInvalid = true;
+            // email verification required
+            alert('por favor verifica tu email para ingresar');
+            this.authService.logOut();
+          }else{
+            this.buttonInvalid = true;
+            // allow user to login
+            this.router.navigate(['/no-comp'])  
+          }
         })
       }).catch(error =>{
         this.buttonInvalid = true;

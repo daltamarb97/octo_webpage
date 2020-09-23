@@ -56,9 +56,8 @@ export class SignUpComponent implements OnInit {
               email: this.form.get('email').value,
               userId: user.uid
             }
-            
             this.setDataService.createNewUser(personData);
-            this.router.navigate(['/auth/login'])
+            this.router.navigate(['/auth/login']);
           }
         })
       }).catch(e => {

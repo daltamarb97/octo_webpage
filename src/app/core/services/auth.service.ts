@@ -15,7 +15,15 @@ export class AuthService {
 
   signUp(email: string, password: string){
     // user registration in firebase
-    return this.afa.createUserWithEmailAndPassword(email, password);
+    return this.afa.createUserWithEmailAndPassword(email, password)
+    .then((result)=>{
+      const newUser = result;
+      // send verification email
+      newUser.user.sendEmailVerification()
+      .then(()=>{
+        //console.log('email verification sent');
+      }) 
+    })
   }
 
 

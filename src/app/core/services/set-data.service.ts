@@ -64,17 +64,17 @@ export class SetDataService {
       .doc(userData.userId)
       .set(userData)
     // create default hat room
-    await this.createChatRoom(
-      companyId, 
-      {roomName: 'General', 
-      roomDescription: 'Sala de chat dónde todos los miembros del edificio estan automáticamente'
-      }, 
-      [userData],
-    );
+    // await this.createChatRoom(
+    //   companyId, 
+    //   {roomName: 'General', 
+    //   roomDescription: 'Sala de chat dónde todos los miembros del edificio estan automáticamente'
+    //   }, 
+    //   [userData],
+    // );
   }
 
   createNewUser(data){
-    // set new user
+    // set new user    
     let ref = this.db.collection('users')
     .doc(data.userId)
 
@@ -171,39 +171,39 @@ export class SetDataService {
   }
 
 
-  async createChatRoom(companyId:string, roomData:any, participants:Array<any>){ 
-    const roomId: string = this.holdData.createRandomId();
-    participants.forEach(async (p)=>{
-      // push room info into user node
-      await this.stepIntoChatRoom(
-        {
-          ...roomData,
-          roomId: roomId, 
-        },
-        p,
-        companyId
-      )
-    }) 
-    // creates new Chat room
-    await this.db.collection('chats')
-    .doc(companyId)
-    .collection('rooms')
-    .doc(roomId)
-    .set({
-      roomName: roomData.roomName,
-      roomDescription: roomData.roomDescription,
-      roomId: roomId
-    })
+  // async createChatRoom(companyId:string, roomData:any, participants:Array<any>){ 
+  //   const roomId: string = this.holdData.createRandomId();
+  //   participants.forEach(async (p)=>{
+  //     // push room info into user node
+  //     await this.stepIntoChatRoom(
+  //       {
+  //         ...roomData,
+  //         roomId: roomId, 
+  //       },
+  //       p,
+  //       companyId
+  //     )
+  //   }) 
+  //   // creates new Chat room
+  //   await this.db.collection('chats')
+  //   .doc(companyId)
+  //   .collection('rooms')
+  //   .doc(roomId)
+  //   .set({
+  //     roomName: roomData.roomName,
+  //     roomDescription: roomData.roomDescription,
+  //     roomId: roomId
+  //   })
 
-    participants.forEach(async (p)=>{
-      // push participants info in chat room
-      await this.setEmplKeyInChatOnCreate(
-        companyId,
-        roomId,
-        p
-      )
-    }) 
-  }
+  //   participants.forEach(async (p)=>{
+  //     // push participants info in chat room
+  //     await this.setEmplKeyInChatOnCreate(
+  //       companyId,
+  //       roomId,
+  //       p
+  //     )
+  //   }) 
+  // }
 
 
   async createPrivateChat(localData, foreignData, companyId) {
@@ -325,7 +325,7 @@ export class SetDataService {
 
   
   sendWhatsappMessageHttp(data){
-    // const api_url = "http://localhost:5000/message/sendFromOcto"
+     //const api_url = "http://localhost:5000/message/sendFromOcto"
     const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {
