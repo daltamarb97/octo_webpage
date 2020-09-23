@@ -57,6 +57,7 @@ export class SetDataService {
       .update({
         companyId: companyId
     })
+    await this.setCompanyInfoInUserNode(userData.userId, {name: companyData.name, companyId: companyId});  
     // enter employee info
     await ref.doc(companyId)
       .collection('employees')
@@ -70,7 +71,6 @@ export class SetDataService {
       }, 
       [userData],
     );
-    await this.setCompanyInfoInUserNode(userData.userId, {name: companyData.name, companyId: companyId});  
   }
 
   createNewUser(data){
@@ -83,6 +83,15 @@ export class SetDataService {
 
   async setUserInfoInCompany(userData, companyData: any){
     // use this function when user enters invite code  
+    await this.setCompanyInfoInUserNode(userData.userId, {
+      name: companyData.name, 
+      companyId: companyData.companyId
+    });  
+    await this.db.collection('users')
+      .doc(userData.userId)
+      .update({
+        companyId: companyData.companyId
+    });
     // set info of user in employees subcollection of company
     let companyRef = this.db.collection('company')
       .doc(companyData.companyId)
@@ -91,15 +100,6 @@ export class SetDataService {
 
     await companyRef.set(userData)
      // set companyId on new user
-    await this.db.collection('users')
-      .doc(userData.userId)
-      .update({
-        companyId: companyData.companyId
-      })
-    await this.setCompanyInfoInUserNode(userData.userId, {
-      name: companyData.name, 
-      companyId: companyData.companyId
-    });  
   }
 
   setInviteEmails(data) {
