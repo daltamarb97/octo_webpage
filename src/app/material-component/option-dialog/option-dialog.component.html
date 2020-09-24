@@ -6,7 +6,7 @@
     </mat-form-field>
     <mat-form-field class="example-full-width">
       <mat-label>Mensaje: </mat-label>
-      <input type="text" matInput placeholder="Mensaje que aparecerá al seleccionar esta opción..." [(ngModel)]="local_data.message">
+      <textarea cols="1" rows="5" matInput placeholder="Mensaje que aparecerá al seleccionar esta opción..." [(ngModel)]="local_data.message"></textarea>
     </mat-form-field>
     <input *ngIf="input.event !== 'first'" type="file" (change)="selectImage($event)" placeholder="Selecciona un archivo..." accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
     text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx" style="display: block">

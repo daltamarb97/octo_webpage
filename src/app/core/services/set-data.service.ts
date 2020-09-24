@@ -515,7 +515,7 @@ export class SetDataService {
       .add({
         redirectTo: flowCreation.id,
         message: dataChildOption.name,
-        optionNumber: optionNumber.toString(),
+        optionNumber: optionNumber,
       })
     await ref.doc(parentFlowId)
       .collection('options')

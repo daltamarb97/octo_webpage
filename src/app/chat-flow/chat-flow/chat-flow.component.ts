@@ -110,7 +110,7 @@ export class ChatFlowComponent implements OnInit {
           }
         }
         this.listFlow.push(this.prevFlow);
-        this.flow = this.listFlow[this.counter];        
+        this.flow = this.listFlow[this.counter];         
         this.getOptions();
       })
   }
@@ -138,14 +138,15 @@ export class ChatFlowComponent implements OnInit {
       flowId: this.prevFlow.flowId,
       parentFlow: (this.prevFlow.main) ? null : this.previousFlow.flowId
     } 
+    if (this.messageSubs) this.messageSubs.unsubscribe();
     this.deleteData.deleteFlow(data)
-      .then(()=> {
-        if (this.prevFlow.main) {
+      .then(()=> { 
+        if (this.prevFlow.main) { 
           this.messageSubs.unsubscribe();
           this.optionSubs.unsubscribe();
           this.flow = null;
           this.listFlow = []; 
-        } else {
+        } else { 
           this.goPreviousFlow();
         }
       })
@@ -177,7 +178,12 @@ export class ChatFlowComponent implements OnInit {
     this.listFlow.splice(this.counter, 1);
     this.counter -= 1;
     this.prevFlow = this.listFlow[this.counter];
-    this.getOptions();
-    this.flow = this.listFlow[this.counter];
+    this.previousFlow = this.listFlow[this.counter -1];
+    if (this.messageSubs) this.messageSubs.unsubscribe();    
+    this.messageSubs = this.fetchData.getSpecificFlow(this.companyId, this.prevFlow.flowId)
+    .subscribe(data => {
+      this.flow = this.listFlow[this.counter];    
+      this.getOptions();
+    })
   }
 }

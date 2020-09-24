@@ -429,12 +429,13 @@ goToStatistics(){
     }
   }
 
-  archiveChat(){
+  async archiveChat(){
     // finish chat and remove agent from chat
-    this.setData.archiveChat({
+    await this.setData.archiveChat({
       companyId: this.companyId,
       number: this.currentChatData.phoneNumber
     })
+    this.showDetail = false;
   }
 }
 
