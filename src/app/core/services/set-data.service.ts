@@ -534,10 +534,11 @@ export class SetDataService {
         message: message,
         main: true
       })
-    return ref.doc(mainFlow.id)
+    await ref.doc(mainFlow.id)
       .update({
         flowId: mainFlow.id
       })
+    return mainFlow.id;
   }
 
   async uploadFileForOption(companyId: string, fileName: string, file) {

@@ -23,7 +23,6 @@ export class ChatFlowComponent implements OnInit {
   optionSubs: any;
   showBot: boolean = true;
   flowOptions:Array<any> = [];
-  expandedOptions:boolean = false;
   previousFlow:any = null;
   counter: number = -1;
   listFlow: Array<any> = [];
@@ -95,10 +94,9 @@ export class ChatFlowComponent implements OnInit {
 
   async seeOption(option){
     // get options of current flow message if options
-    if (this.messageSubs) this.messageSubs.unsubscribe();
+    if (this.messageSubs) this.messageSubs.unsubscribe();    
     this.counter ++;
     if(this.prevFlow) this.previousFlow = this.prevFlow;
-    this.expandedOptions = false;
     let redirection;
     (!option.redirectTo) ? redirection = option.flowId : redirection = option.redirectTo;
     this.messageSubs = this.fetchData.getSpecificFlow(this.companyId, redirection)
@@ -112,7 +110,7 @@ export class ChatFlowComponent implements OnInit {
           }
         }
         this.listFlow.push(this.prevFlow);
-        this.flow = this.listFlow[this.counter];
+        this.flow = this.listFlow[this.counter];        
         this.getOptions();
       })
   }
@@ -129,6 +127,7 @@ export class ChatFlowComponent implements OnInit {
           }
           await this.setData.updateMessageFlow(data);
           this.listFlow[this.counter].message = result.message;
+          this.listFlow.pop();
         }
       })
   }
@@ -137,10 +136,19 @@ export class ChatFlowComponent implements OnInit {
     const data = {
       companyId: this.companyId,
       flowId: this.prevFlow.flowId,
-      parentFlow: this.previousFlow.flowId
-    }
-    await this.deleteData.deleteFlow(data);
-    this.goPreviousFlow();
+      parentFlow: (this.prevFlow.main) ? null : this.previousFlow.flowId
+    } 
+    this.deleteData.deleteFlow(data)
+      .then(()=> {
+        if (this.prevFlow.main) {
+          this.messageSubs.unsubscribe();
+          this.optionSubs.unsubscribe();
+          this.flow = null;
+          this.listFlow = []; 
+        } else {
+          this.goPreviousFlow();
+        }
+      })
   }
 
   createFirstFlow() {
@@ -148,14 +156,16 @@ export class ChatFlowComponent implements OnInit {
     dialogRef.afterClosed()
       .subscribe(async result =>{ 
         if(result.event === 'first') {
-          this.setData.createFirstFlow(this.companyId, result.data.message);
+          this.setData.createFirstFlow(this.companyId, result.data.message)
+            .then(flowId => {
+              this.seeOption({redirectTo: flowId});
+            })
         }
       })
   }
 
   getOptions() {
     if(this.optionSubs) this.optionSubs.unsubscribe();
-    this.expandedOptions = true;
     this.flowOptions = [];
     this.optionSubs = this.fetchData.getFlowOptions(this.companyId, this.prevFlow.flowId)
       .subscribe(data => {
@@ -165,7 +175,6 @@ export class ChatFlowComponent implements OnInit {
 
   goPreviousFlow(){
     this.listFlow.splice(this.counter, 1);
-    this.expandedOptions = false;
     this.counter -= 1;
     this.prevFlow = this.listFlow[this.counter];
     this.getOptions();

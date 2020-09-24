@@ -107,32 +107,29 @@ export class DeleteDataService {
 
 // WHATSAPP SERVICES
 
-deleteFlow(data) {
+async deleteFlow(data) {
   let ref = this.db.collection('whatsapp')
     .doc(data.companyId)
     .collection('flow')
     .doc(data.flowId)
   
-  return ref.get().toPromise().then(async (rta) => {
     try{
-      if(rta.data().main) {
-        // delete main message
-        await ref.delete();
-        // delete all flow collection
+      if(!data.parentFlow) {
+        // delete all flow collection because main was deleted
         this.db.collection('whatsapp')
           .doc(data.companyId)
           .collection('flow')
-          .stateChanges(['added'])
-          .toPromise()
-          .then(result => {
-            result.map(async (d) => {
+          .get()
+          .subscribe(dataRta => {
+            dataRta.forEach(async(d) => {
               await this.db.collection('whatsapp')
-                .doc(data.companyId)
-                .collection('flow')
-                .doc(d.payload.doc.id)
-                .delete();
+              .doc(data.companyId)
+              .collection('flow')
+              .doc(d.id)
+              .delete();
             })
           })
+          return;
       } else {
         await ref.delete();
         let refParent = this.db.collection('whatsapp')
@@ -152,11 +149,11 @@ deleteFlow(data) {
             .delete();
           })
         })
+        return;
       }
     }catch(error) {
       return new Error(error)
     }
-  }) 
 }
 // WHATSAPP SERVICES
 
