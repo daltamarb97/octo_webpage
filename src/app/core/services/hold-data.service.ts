@@ -8,7 +8,6 @@ import { AngularFirestore } from '@angular/fire/firestore';
 })
 export class HoldDataService {
 
-  userInfoInRow:object; // variable used to pass data from table of payment to custom user profile in row
   userInfo:any;
   companyInfo:any;
   userId:string;

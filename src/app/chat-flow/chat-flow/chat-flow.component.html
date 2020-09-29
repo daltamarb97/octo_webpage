@@ -80,10 +80,20 @@
                   </button>
                 </mat-menu>
               </div>
-              <mat-list-option  *ngFor="let o of flowOptions" [value]="o" (click)="seeOption(o)" >
+              <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+                  <div 
+                    class="example-box" 
+                    *ngFor="let o of flowOptions" 
+                    cdkDrag 
+                    (click)="seeOption(o)">
+                    <span style=" font-size: 12px;">{{o.optionNumber}} - {{o.message}}</span>
+                  </div>
+                </div>
+
+              <!-- <mat-list-option  *ngFor="let o of flowOptions" [value]="o" (click)="seeOption(o)" >
                 <mat-icon mat-list-icon>chevron_right </mat-icon>
                 <span style=" font-size: 12px; ">{{o.message}}</span>
-              </mat-list-option>
+              </mat-list-option> -->
             </mat-selection-list>
             <mat-spinner *ngIf="showSpinner"></mat-spinner>
           </mat-card-content>     

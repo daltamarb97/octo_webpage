@@ -47,13 +47,4 @@ export class AuthService {
     return this.afa.signOut();
   }
 
-
-  // PROFILE SERVICES
-
-  checkIfDoormanEmailExists(email){
-    // check if a doorman account already exists
-    return this.afa.fetchSignInMethodsForEmail(email);
-  }
-  // END OF PROFILE SERVICES
-
 }

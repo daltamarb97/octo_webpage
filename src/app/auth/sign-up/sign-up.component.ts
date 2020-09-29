@@ -6,8 +6,6 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { SetDataService } from '../../core/services/set-data.service';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { FecthDataService } from '../../core/services/fecth-data.service';
-import { DeleteDataService } from '../../core/services/delete-data.service';
 
 export interface CompanyData {
   name: string,

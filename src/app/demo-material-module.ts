@@ -34,6 +34,7 @@ import {CdkAccordionModule} from '@angular/cdk/accordion';
 import {A11yModule} from '@angular/cdk/a11y';
 import {BidiModule} from '@angular/cdk/bidi';
 import { CdkScrollableModule} from '@angular/cdk/scrolling'
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {PlatformModule} from '@angular/cdk/platform';
 import {ObserversModule} from '@angular/cdk/observers';
@@ -85,7 +86,8 @@ import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
     ObserversModule,
     OverlayModule,
     PlatformModule,
-    PortalModule
+    PortalModule,
+    DragDropModule
   ]
 })
 export class DemoMaterialModule {}

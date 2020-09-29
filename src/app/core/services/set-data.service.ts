@@ -102,17 +102,18 @@ export class SetDataService {
      // set companyId on new user
   }
 
-  setInviteEmails(data) {
+  async setInviteEmails(data) {
     let ref = this.db.collection('invites')
-    
-    return ref.add(data)
+    let inviteId;
+    await ref.add(data)
     .then(docRef => {
-      const inviteId = docRef.id;
+      inviteId = docRef.id;
       ref.doc(inviteId)
       .update({
         inviteId: inviteId
       })
     })
+    return inviteId;
   }
 
   private async setCompanyInfoInUserNode(userId: string, companyData: any) {
@@ -325,7 +326,7 @@ export class SetDataService {
 
   
   sendWhatsappMessageHttp(data){
-     //const api_url = "http://localhost:5000/message/sendFromOcto"
+    // const api_url = "http://localhost:5000/message/sendFromOcto"
     const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {
@@ -390,6 +391,30 @@ export class SetDataService {
     })
   }
 
+  async changeOptionNumber(data) {
+    let ref = this.db.collection('whatsapp')
+      .doc(data.companyId)
+      .collection('flow')
+      .doc(data.flowId);
+    const opt1 = await ref.collection('options', ref => ref.where("optionNumber", "==", data.newPosition))
+      .get();
+    const opt2 = await ref.collection('options', ref => ref.where("optionNumber", "==", data.oldPosition))
+      .get();
+    opt1.subscribe(dataRta => {
+      const optId = dataRta.docs[0].id;
+      ref.collection('options').doc(optId).update({
+        optionNumber: data.oldPosition
+      })
+    })
+    opt2.subscribe(dataRta => {
+      const optId = dataRta.docs[0].id;
+      ref.collection('options').doc(optId).update({
+        optionNumber: data.newPosition
+      })
+    })
+    return;
+  }
+
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
   sendTag(companyId, chatId, tag){
     // send tag to firestore
@@ -422,7 +447,33 @@ export class SetDataService {
     ;
     
   }
-  sendTagToCategories(companyId, categoryId, name){
+
+
+  // sendTagToCategories(companyId, categoryId, name, trainingPhrases){
+  //   // send tag to Categories to firestore
+  //   let ref = this.db.collection('whatsapp')
+  //   .doc(companyId)
+  //   .collection('tags')
+  //   .doc(categoryId)
+  //   .collection('tagsnames')
+
+  //   return ref.add({
+  //     name: name,
+  //     categoryId:categoryId,
+  //     times: 0,
+  //     trainingPhrases: trainingPhrases
+  //   })
+  //   .then(docRef => {
+  //     const tagId: string = docRef.id;
+  //     ref.doc(tagId)
+  //     .update({
+  //       tagId: tagId
+  //     })
+  //   })
+  //  }
+
+
+   sendTagToCategories(companyId, categoryId, name){
     // send tag to Categories to firestore
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
@@ -443,6 +494,8 @@ export class SetDataService {
       })
     })
    }
+
+
    createCategory(companyId, categoryName){
     // send tag to Categories to firestore
     let ref = this.db.collection('whatsapp')

@@ -31,13 +31,20 @@
           </mat-chip-list>
           
           <mat-action-row>
-            <mat-form-field *ngIf="allowCreate">
-              <mat-label>Escribe tu tag aquí y dale enter para guardar  </mat-label>
-              <input matInput  placeholder="Escribe aqui..."
-                           [matChipInputFor]="chipList"
-                           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                           (matChipInputTokenEnd)="add($event,category)">
-            </mat-form-field>
+            <!-- <div style="display: flex; flex-direction: column;"> -->
+              <mat-form-field *ngIf="allowCreate">
+                <mat-label>Escribe tu tag aquí y dale enter para guardar  </mat-label>
+                <input matInput  placeholder="Escribe aqui..."
+                  [matChipInputFor]="chipList"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="add($event,category)">
+              </mat-form-field>
+  
+              <!-- <mat-form-field *ngIf="allowCreate">
+                <mat-label>Escribe tus frases para entrenar la A.I. separados por coma </mat-label>
+                <input matInput  placeholder="Escribe aqui..." [(ngModel)]="training">
+              </mat-form-field> -->
+            <!-- </div> -->
             
             <button mat-button color="warn" (click)="eraseTags()">Eliminar Tags</button>
             <button mat-button color="primary" (click)="createTags()">Agregar Tags</button>

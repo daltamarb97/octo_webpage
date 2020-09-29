@@ -28,8 +28,8 @@ export class HomeComponent implements OnInit {
     // angular
     private router: Router,
     private route: ActivatedRoute,
-  ) { 
-    this.route.queryParams.subscribe(() => {
+  ) {  
+    this.route.queryParams.subscribe((params) => {
       if (this.router.getCurrentNavigation().extras.state) {
         const currentNav = this.router.getCurrentNavigation().extras.state
         if (currentNav.new) {
@@ -47,7 +47,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-     this.messagingService.getPermissions();
+    this.messagingService.getPermissions();
   }
 
   createCompany() {

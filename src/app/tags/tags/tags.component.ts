@@ -31,6 +31,7 @@ export class TagsComponent implements OnInit {
   step = 0;
   allowCreate:boolean =  false;
   showDeleteCategory:boolean = false;
+  // training: string;
   @ViewChild('tagInput') tagInput: ElementRef<HTMLInputElement>;
   constructor(
     private fetchData: FecthDataService,
@@ -45,17 +46,33 @@ export class TagsComponent implements OnInit {
     this.companyId = this.holdData.userInfo.companyId;
     this.getCategories();
   }
+
+
+
    add(event: MatChipInputEvent,category): void {
     const input = event.input;
     const value = event.value;
+
+    // ARTIFICIAL INTELIGENCE
+
+    // process training phrases
+    // const dirtyPhrases = this.training.split(',');
+    // let cleanPhrases: Array<string> = [];
+    // dirtyPhrases.forEach(e => cleanPhrases.push(e.trim())); 
+
+
+
     // Add our tag / value trim takes the extra whitespaces in both sides of the text
     if ((value || '').trim()) {
+      // this.setData.sendTagToCategories(this.companyId, category.categoryId,value.trim(), cleanPhrases)
       this.setData.sendTagToCategories(this.companyId, category.categoryId,value.trim())
+
     }
     // Reset the input value
     if (input) {
       input.value = '';
     }
+    // this.training = null;
   }
 
   getCategories(){

@@ -2,7 +2,7 @@
 <div>
     <mat-form-field class="example-full-width">
       <mat-label>Mensaje:</mat-label>
-      <input type="text" matInput placeholder="..." [(ngModel)]="message">
+      <textarea cols="1" rows="5" matInput placeholder="..." [(ngModel)]="message"></textarea>
     </mat-form-field>
   <div mat-dialog-actions>
     <button mat-button (click)="onNoClick()">Cancelar</button>

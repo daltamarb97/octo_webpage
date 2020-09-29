@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot, UrlTree, Router} from '@angular/router';
+import { CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
 
 import { HoldDataService } from '../services/hold-data.service';
 import { FecthDataService } from '../services/fecth-data.service';
@@ -13,7 +13,6 @@ export class UserinfoGuard implements CanActivate {
     private holdData: HoldDataService,
     private fetchData: FecthDataService,
     private authService: AuthService,
-    private router: Router,
   ) {} 
   async canActivate(
     next: ActivatedRouteSnapshot,

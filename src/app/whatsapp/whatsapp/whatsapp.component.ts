@@ -229,6 +229,7 @@ async getMessagesFromChatOnclick(data, assigned: boolean) {
               : null
           });
         }
+        
       })      
       this.firstTimeMsgLoad = false;
     })

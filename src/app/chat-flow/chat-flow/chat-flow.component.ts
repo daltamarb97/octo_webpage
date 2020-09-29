@@ -6,6 +6,7 @@ import { HoldDataService } from '../../core/services/hold-data.service';
 import { SetDataService } from '../../core/services/set-data.service';
 import { OptionComponent } from '../../material-component/option-dialog/option-dialog.component';
 import { EditOptDialogComponent } from '../../material-component/editopt-dialog/editopt-dialog.component';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import { Router } from '@angular/router';
 
 @Component({
@@ -170,7 +171,7 @@ export class ChatFlowComponent implements OnInit {
     this.flowOptions = [];
     this.optionSubs = this.fetchData.getFlowOptions(this.companyId, this.prevFlow.flowId)
       .subscribe(data => {
-        this.flowOptions = data;  
+        this.flowOptions = data;
       })
   }
 
@@ -185,5 +186,16 @@ export class ChatFlowComponent implements OnInit {
       this.flow = this.listFlow[this.counter];    
       this.getOptions();
     })
+  }
+
+  drop(event: CdkDragDrop<string[]>){
+    moveItemInArray(this.flowOptions, event.previousIndex, event.currentIndex);
+    let data = {
+      companyId: this.companyId,
+      flowId: this.prevFlow.flowId,
+      oldPosition: event.previousIndex + 1,
+      newPosition: event.currentIndex + 1
+    }
+    this.setData.changeOptionNumber(data);
   }
 }

@@ -7,6 +7,7 @@ import { SetDataService } from '../../core/services/set-data.service';
 import { InviteDialogComponent } from '../../material-component/invite-dialog/invite-dialog.component';
 import {  MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition, MatSnackBar } from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
+import { AuthService } from '../../core/services/auth.service';
 
 
 @Component({
@@ -27,6 +28,7 @@ export class DirectoryComponent implements OnInit {
     private fecthDataService:FecthDataService,
     private setData: SetDataService,
     private holdData:HoldDataService,
+    private authService: AuthService,
     // angular stuff
     private dialog: MatDialog,
     private router: Router,
@@ -117,6 +119,6 @@ export class DirectoryComponent implements OnInit {
 
  private setInviteEmail (data) {
   //  set invite email in firebase
-  this.setData.setInviteEmails(data);
+    this.setData.setInviteEmails(data);
  }
 }
