@@ -1,117 +1,131 @@
-        <!-- left side menu -->
-        <div style="display: flex;">
-                <div style="width: 30%; height: 100%; " >
-                    <mat-card >
-                        <div class="p-20  position-relative">
-                            <h4 class="card-title  m-0 font-20 font-medium">Chats</h4>
-                        </div>
-                        <mat-tab-group  mat-align-tabs="center"> 
-                                        <!-- Tab 1 -->
-                            <!-- <mat-tab   label="Grupos">   
-                                <div style="display: flex; justify-content: center; margin-top: 20px;">
-                                    <button mat-raised-button (click)="addChatRoom()" color="primary" >Crear Grupo </button>
-                                </div>
-                                
-                                <mat-selection-list  [multiple]="false">
-                                            
-                                    <mat-list-option *ngFor="let room of chatRooms; index as i" (click)="getMessagesFromRoomOnclick(room)">
-                                        <mat-list-item>
-                                            <span class="material-icons m-r-15 b-b">
-                                                groups
-                                                </span > {{room.roomName}} 
-                                            
-                                            </mat-list-item>
-                                    </mat-list-option>
-
-                                  </mat-selection-list>
-                            </mat-tab>  -->
-                        
-                                <!-- End Tab 1 -->
-                                <!-- Tab 2 -->
-                
-                                <mat-tab label="Directos">
-                                        <!-- ============================================================== -->
-                                        <!-- column -->
-                                        <!-- ============================================================== -->
-                                        <div style="display: flex; justify-content: center; margin-top: 20px;">
-                                            <button mat-raised-button (click)="createChat()" color="primary" >Crear chat</button>
-                                            
-                                        </div>
-                                    <mat-selection-list [multiple]="false">
-                                        <mat-list-option *ngFor="let privateChat of privateChatsNames; index as i"  
-                                        (click)="getMessagesFromPrivateChatOnclick(privateChat)" >
-                                            <mat-list-item > 
-                                            <span class="material-icons m-r-15">
-                                                account_circle
-                                                </span>{{privateChat.name}} {{privateChat.lastname}}  
-                                            </mat-list-item>
-                                        </mat-list-option>
-                                    </mat-selection-list>
-                                </mat-tab>
-                            </mat-tab-group>
-                    </mat-card>
-                </div>
-                   
-              
-            <!-- /*******************
-            PRIVATE CHAT
-            *******************/ -->    
-            <mat-card *ngIf="showPrivateChats" style="height: auto; width: 75%;" >
-                <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
-                    
-                    <span class="toolbar-msg"  >{{currentPrivateChat.name}} {{currentPrivateChat.lastname}}</span>
-                    
+<mat-sidenav-container class="chat-sidebar-container">
+  
+        <mat-sidenav opened mode="side" style="width: 27%; background-color: #EBF2F6;">
+          <div  >
+              <mat-card >
+                  <div class="p-20  position-relative">
+                      <h4 class="card-title  m-0 font-20 font-medium">Chats</h4>
+                  </div>
+                  <mat-tab-group  mat-align-tabs="center"> 
+                                  <!-- Tab 1 -->
+                      <!-- <mat-tab   label="Grupos">   
+                          <div style="display: flex; justify-content: center; margin-top: 20px;">
+                              <button mat-raised-button (click)="addChatRoom()" color="primary" >Crear Grupo </button>
+                          </div>
+                          
+                          <mat-selection-list  [multiple]="false">
+                                      
+                              <mat-list-option *ngFor="let room of chatRooms; index as i" (click)="getMessagesFromRoomOnclick(room)">
+                                  <mat-list-item>
+                                      <span class="material-icons m-r-15 b-b">
+                                          groups
+                                          </span > {{room.roomName}} 
+                                      
+                                      </mat-list-item>
+                              </mat-list-option>
+  
+                            </mat-selection-list>
+                      </mat-tab>  -->
                   
-                </mat-toolbar>
-                <mat-card-content id="content-messages-private" style="max-height: 380px; min-height: 380px; overflow-y: auto;">
-                    <div style="display: flex; justify-content: center;" >
-                        <button (click)="morePrivateMessages()" mat-mini-fab color="primary" aria-label="Example icon button with a menu icon">
-                          <mat-icon>refresh</mat-icon>
-                        </button>
+                          <!-- End Tab 1 -->
+                          <!-- Tab 2 -->
+          
+                          <mat-tab label="Directos">
+                                  <!-- ============================================================== -->
+                                  <!-- column -->
+                                  <!-- ============================================================== -->
+                                  <div style="display: flex; justify-content: center; margin-top: 20px;">
+                                      <button mat-raised-button (click)="createChat()" color="primary" >Crear chat</button>
+                                      
+                                  </div>
+                              <mat-selection-list [multiple]="false">
+                                  <mat-list-option *ngFor="let privateChat of privateChatsNames; index as i"  
+                                  (click)="getMessagesFromPrivateChatOnclick(privateChat)" >
+                                      <mat-list-item > 
+                                      <span class="material-icons m-r-15">
+                                          account_circle
+                                          </span>{{privateChat.name}} {{privateChat.lastname}}  
+                                      </mat-list-item>
+                                  </mat-list-option>
+                              </mat-selection-list>
+                          </mat-tab>
+                      </mat-tab-group>
+              </mat-card>
+          </div>
+      </mat-sidenav>
+        <!-- left side menu -->
+                  
+                     
+                
+              <!-- /*******
+              PRIVATE CHAT
+              *******/ -->  
+              <mat-sidenav-content opened mode="side" position="end">
+                  <div>
+                      
+                      <mat-toolbar *ngIf="showPrivateChats" class="background-room" style=" background-color: #2C3B4D !important;">
+                      
+                          <span class="toolbar-msg"  >{{currentPrivateChat.name}} {{currentPrivateChat.lastname}}</span>
+                          
+                        
+                      </mat-toolbar>
+                  </div>
+                 
+              <mat-card *ngIf="showPrivateChats" style="max-height: 75%;min-height:75% ; overflow-y: auto" >
+  
+                  
+                  <mat-card-content id="content-messages-private" >
+                      <div style="display: flex; justify-content: center;" >
+                          <button (click)="morePrivateMessages()" mat-mini-fab color="primary" aria-label="Example icon button with a menu icon">
+                            <mat-icon>refresh</mat-icon>
+                          </button>
+                        </div>
+                      <div class="chat"  *ngFor="let message of privateChats" >
+                          <div class="me"  *ngIf="userId == message.userId">          
+                              <span style="word-wrap: break-word;">{{message.message}} </span>     
+                              <p class="time-left">{{message.timestamp | date: 'short'}}</p> 
+                          </div>
+                          <div class="otherMessage"   *ngIf="userId !== message.userId">
+                              <span class="name"  >
+                                  {{message.name}} {{message.lastname}}<p class="time-right" style="margin-left:10px;">{{message.timestamp | date: 'short'}}</p> 
+                              </span> <br>
+                              <span style="word-wrap: break-word;">{{message.message}}</span>   
+     
+                          </div>            
+                      </div>  
+                      <!-- if no messages show this card -->
+                      <div *ngIf="privateChats.length === 0">
+                          <mat-card class="message-card">
+                              <mat-card-content>
+                                  <p>
+                                  Aún no hay mensajes en esta sala
+                                  </p>
+                              </mat-card-content>
+                          </mat-card>
                       </div>
-                    <div class="chat"  *ngFor="let message of privateChats" >
-                        <div class="me"  *ngIf="userId == message.userId">          
-                            <span style="word-wrap: break-word;">{{message.message}} </span>     
-                            <p class="time-left">{{message.timestamp | date: 'short'}}</p> 
-                        </div>
-                        <div class="otherMessage"   *ngIf="userId !== message.userId">
-                            <span class="name"  >
-                                {{message.name}} {{message.lastname}}<p class="time-right" style="margin-left:10px;">{{message.timestamp | date: 'short'}}</p> 
-                            </span> <br>
-                            <span style="word-wrap: break-word;">{{message.message}}</span>   
-   
-                        </div>            
-                    </div>  
-                    <!-- if no messages show this card -->
-                    <div *ngIf="privateChats.length === 0">
-                        <mat-card class="message-card">
-                            <mat-card-content>
-                                <p>
-                                Aún no hay mensajes en esta sala
-                                </p>
-                            </mat-card-content>
-                        </mat-card>
-                    </div>
-                </mat-card-content>
-                <footer>
-                    <mat-form-field style="background-color: white; border-top: gray;    padding-left: 20px;">
-                        <div style="display: flex;">
-                            <textarea matInput
-                            cdkTextareaAutosize
-                            #autosize="cdkTextareaAutosize"
-                            cdkAutosizeMinRows="1"
-                            cdkAutosizeMaxRows="9"
-                            [(ngModel)]="currentMessage" placeholder="Envía un mensaje" (keydown.enter)="sendPrivateMessage()"></textarea>
-                            
-                            <div class="example-button-container">
-                                <button mat-mini-fab>
-                                    <mat-icon *ngIf="showRoomChats" (click)="sendMessage()">send</mat-icon>
-                                    <mat-icon *ngIf="showPrivateChats" (click)="sendPrivateMessage()">send</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                    </mat-form-field>
-                </footer>
-             </mat-card>
-        </div>
-           
+                  </mat-card-content>
+                  
+                  <footer>
+                      <mat-form-field style="background-color: white; border-top: gray;    padding-left: 20px;">
+                          <div style="display: flex;">
+                              <textarea matInput
+                              cdkTextareaAutosize
+                              #autosize="cdkTextareaAutosize"
+                              cdkAutosizeMinRows="1"
+                              cdkAutosizeMaxRows="9"
+                              [(ngModel)]="currentMessage" placeholder="Envía un mensaje" (keydown.enter)="sendPrivateMessage()"></textarea>
+                              
+                              <div class="example-button-container">
+                                  <button mat-mini-fab>
+                                      <mat-icon *ngIf="showRoomChats" (click)="sendMessage()">send</mat-icon>
+                                      <mat-icon *ngIf="showPrivateChats" (click)="sendPrivateMessage()">send</mat-icon>
+                                  </button>
+                              </div>
+                          </div>
+                      </mat-form-field>
+                  </footer>
+               </mat-card>
+              </mat-sidenav-content>
+  
+          
+      </mat-sidenav-container>

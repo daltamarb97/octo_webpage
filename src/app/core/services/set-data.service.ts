@@ -326,7 +326,7 @@ export class SetDataService {
 
   
   sendWhatsappMessageHttp(data){
-    // const api_url = "http://localhost:5000/message/sendFromOcto"
+    //  const api_url = "http://localhost:5000/message/sendFromOcto"
     const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {
