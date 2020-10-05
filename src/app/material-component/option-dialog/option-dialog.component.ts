@@ -4,7 +4,6 @@ import {  MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 
 @Component({
@@ -15,8 +14,9 @@ import { takeUntil } from 'rxjs/operators';
 export class OptionComponent {
   local_data: any;
   destroy$: Subject<void> = new Subject();
-  agent = false;
-  options = false;
+  agent: boolean = false;
+  options: boolean = false;
+  mainMenu: boolean = false;
   input: any;
   constructor(
     public dialogRef: MatDialogRef<OptionComponent>,
@@ -39,7 +39,7 @@ export class OptionComponent {
   }
 
   addOption() {
-    this.dialogRef.close({event: this.input.event, data: this.local_data, agent: this.agent, options: this.options});
+    this.dialogRef.close({event: this.input.event, data: this.local_data, agent: this.agent, options: this.options, mainMenu: this.mainMenu});
   }
 
   selectImage(file) {

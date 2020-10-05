@@ -3,5 +3,8 @@
 <!-- Profile - style you can find in header.scss -->
 <!-- ============================================================== -->
 <a class=" m-r-20 " mat-raised-button color="primary" (click)="sendSuggestion()">Sugerencias</a>
+<button *ngIf="!showNot" mat-raised-button color="primary" (click)="allowSound()">Activar sonido de Notifiaciones</button>
+<button *ngIf="showNot" mat-raised-button color="warm" (click)="disallowSound()">Desactivar sonido de Notifiaciones</button>
+
 
 
