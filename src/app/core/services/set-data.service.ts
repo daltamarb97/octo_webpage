@@ -552,6 +552,7 @@ export class SetDataService {
       message: dataChildOption.message,
       agent: dataChildOption.agent,
       options: dataChildOption.options,
+      mainMenuRedirect: dataChildOption.mainMenu,
       mediaUrl: dataChildOption.mediaUrl,
     })
     await ref.doc(flowCreation.id)

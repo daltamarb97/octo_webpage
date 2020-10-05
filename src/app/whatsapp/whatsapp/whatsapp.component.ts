@@ -63,6 +63,7 @@ export class WhatsappComponent implements OnInit {
   selectable = true;
   removable = true;
 
+
   constructor(
     private fetchData: FecthDataService,
     private setData: SetDataService,

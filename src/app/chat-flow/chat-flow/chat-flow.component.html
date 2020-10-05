@@ -29,7 +29,6 @@
           </mat-chip-list>
           <mat-card-header>
             <mat-card-title  *ngIf="!flow.main" style="font-size: 16px;">{{flow.shortMessage}}</mat-card-title>
-            <!-- <mat-card-title  *ngIf="flow.main" style="font-size: 16px;">Primer Mensaje del Bot</mat-card-title> -->
             <mat-card-subtitle *ngIf="flow.main" tyle="font-size: 12px;"> Aquí saldrá el primer mensaje y opciones que verán tus clientes al comunicarse contigo</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
@@ -81,19 +80,14 @@
                 </mat-menu>
               </div>
               <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-                  <div 
-                    class="example-box" 
-                    *ngFor="let o of flowOptions" 
-                    cdkDrag 
-                    (click)="seeOption(o)">
-                    <span style=" font-size: 12px;">{{o.optionNumber}} - {{o.message}}</span>
-                  </div>
+                <div 
+                  class="example-box" 
+                  *ngFor="let o of flowOptions" 
+                  cdkDrag 
+                  (click)="seeOption(o)">
+                  <span style=" font-size: 12px;">{{o.optionNumber}} - {{o.message}} - ( {{(o.counter) ? o.counter : 0}} )</span>
                 </div>
-
-              <!-- <mat-list-option  *ngFor="let o of flowOptions" [value]="o" (click)="seeOption(o)" >
-                <mat-icon mat-list-icon>chevron_right </mat-icon>
-                <span style=" font-size: 12px; ">{{o.message}}</span>
-              </mat-list-option> -->
+              </div>
             </mat-selection-list>
             <mat-spinner *ngIf="showSpinner"></mat-spinner>
           </mat-card-content>     

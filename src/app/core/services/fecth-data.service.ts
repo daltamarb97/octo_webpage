@@ -192,6 +192,15 @@ export class FecthDataService {
     return ref.valueChanges();
   }
 
+  getWhatsappChatsSound(companyId){
+    // getting chatrooms info
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+
+    return ref.snapshotChanges(['added']);
+  }
+
   getMessagesFromSpecificWChat(companyId: string, phoneNumber: string){
     // get messages from specific whatsapp chat
     let ref = this.db.collection('whatsapp')
