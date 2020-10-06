@@ -18,6 +18,7 @@ export class AppHeaderComponent {
 
   event: Event = new Event('not');
   showNot: boolean = false;
+  compId: boolean = false;
 
   constructor(
     private router: Router,
@@ -27,10 +28,13 @@ export class AppHeaderComponent {
     private setData: SetDataService,
     private holdData: HoldDataService,
   ){
-    this.getNewMessages();
+    if (this.holdData.userInfo.companyId) {
+      this.getNewMessages();
+    }
   }
 
   getNewMessages() {
+    this.compId = true;
     this.fetchData.getWhatsappChatsSound(this.holdData.companyInfo.companyId)
       .subscribe(data => {
         data.map(d => {
@@ -41,7 +45,6 @@ export class AppHeaderComponent {
 
   sendSuggestion() {
     const dialogRef = this.dialog.open(HelpDialogComponent);
-
     dialogRef.afterClosed().subscribe(result => {
       if (result.event !== 'close') {
         // send support message
