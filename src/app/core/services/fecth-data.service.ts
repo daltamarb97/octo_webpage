@@ -59,6 +59,24 @@ export class FecthDataService {
     }
   }
 
+  getFormsFromCompany(companyId: string) {
+    let ref = this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('forms')
+    
+    return ref.get();
+  }
+
+  getMainMessageForm(companyId: string, formId: string) {
+    let ref = this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('forms')
+      .doc(formId)
+      .collection('content', ref => ref.where("main", "==", true))
+
+    return ref.get();
+  }
+
   getInviteCodes() {
     // retreive all company pass
     let ref = this.db.collection('invites')
@@ -198,7 +216,7 @@ export class FecthDataService {
     .doc(companyId)
     .collection('chats')
 
-    return ref.snapshotChanges(['added']);
+    return ref.stateChanges(['modified']);
   }
 
   getMessagesFromSpecificWChat(companyId: string, phoneNumber: string){
@@ -214,8 +232,8 @@ export class FecthDataService {
 
 
   checkWhatsapp24HourWindow(data) {
-      // const api_url = "http://localhost:5000/message/check-user"
-      const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
+      const api_url = "http://localhost:5000/message/check-user"
+      // const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
       const finalData = {
         companyId: data.companyId,
         number: data.number

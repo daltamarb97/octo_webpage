@@ -11,6 +11,8 @@ import { HoldDataService } from '../../core/services/hold-data.service';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { Router } from '@angular/router';
 
+import { Howl } from 'howler';
+
 export class currentChatData {
   phoneNumber:string;
   assignedTo:string = 'null';
@@ -58,11 +60,13 @@ export class WhatsappComponent implements OnInit {
   firstTimePrivateMsgLoad: boolean = false;
   commentsSubscription:any;
   messageSubscription:any;
+  formsAlias: Array<any> = [];
 
   visible = true;
   selectable = true;
   removable = true;
 
+  event: Event = new Event('not');
 
   constructor(
     private fetchData: FecthDataService,
@@ -100,10 +104,21 @@ ngOnInit(): void {
   this.getCompanyEmployees();
   this.getWhatsappTemplateMessages();
   this.getCategories();
+  this.getForms();
 }
 
 createChat(){
   this.router.navigate(['directorio']);
+}
+
+getForms() {
+  // get forms from company
+  this.fetchData.getFormsFromCompany(this.companyId)
+    .subscribe(data => {
+      data.forEach(d => {
+        this.formsAlias.push(d.data());
+      })
+    })
 }
 
 getCompanyEmployees() {
@@ -120,6 +135,13 @@ getCompanyEmployees() {
         this.employeesList.push(data);
       })
     })
+}
+
+allowSound() {
+  const audioHowl = new Howl({
+    src: ['../../../assets/images/sounds/piece-of-cake.mp3']
+  });
+  audioHowl.play();
 }
 
 getWhatsappTemplateMessages() {
@@ -213,8 +235,16 @@ async getMessagesFromChatOnclick(data, assigned: boolean) {
       this.companyId, 
       data.number
     )
-    .subscribe((data) => {
-      data.map(d => {
+    .subscribe((dataRta) => {
+      if(data.agent && !data.assignedTo) this.allowSound();
+      if (this.showGeneralChats) {
+        const el = document.getElementById('content-messages');
+        el.scrollTop = el.scrollHeight;
+      } else if (this.showAssignedChats) {
+        const el = document.getElementById('content-messages-private');
+        el.scrollTop = el.scrollHeight;
+      }
+      dataRta.map(d => {
         if (this.firstTimeMsgLoad === true) {
           this.chatMessages.unshift({
             ...d.payload.doc.data(),
@@ -238,6 +268,36 @@ async getMessagesFromChatOnclick(data, assigned: boolean) {
   // .catch(error => {
   //   console.error(error);
   // })
+}
+
+sendForm(formId: string) {
+  this.archiveChat();
+  let formData;
+  this.fetchData.getMainMessageForm(this.companyId, formId)
+    .toPromise()
+    .then(async(data) => {
+      data.forEach(main => {
+        formData = {
+          ...main.data(),
+          formId: formId,
+        }
+      })
+      await this.setData.setMainFormUser(this.companyId, this.currentChatData.phoneNumber, formData);
+      this.setData.sendWhatsappMessageHttp({
+        message: formData.message,
+        number: this.currentChatData.phoneNumber,
+        template: this.templatesActivated,
+        companyId: this.companyId,
+        form: true,
+        api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
+      }).toPromise()
+      .then(data => {
+        console.log('form sent', data);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+    })
 }
 
 sendMessage(){

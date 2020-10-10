@@ -23,6 +23,8 @@ export class ProfileDialogComponent{
   showEmailConf: boolean = false;
   showSpinner:boolean = false;
   currentCompanyBalance: any;
+  companyId: string;
+  availableNotifications: number;
 
   constructor(
     public dialogRef: MatDialogRef<ProfileDialogComponent>,
@@ -48,6 +50,8 @@ export class ProfileDialogComponent{
       .subscribe(data => {
         this.currentCompanyBalance = data.data();
       })
+    // companyId - API key
+    this.companyId = this.holdData.userInfo.companyId;
   }
 
 

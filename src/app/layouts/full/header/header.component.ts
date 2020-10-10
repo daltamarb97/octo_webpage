@@ -38,7 +38,11 @@ export class AppHeaderComponent {
     this.fetchData.getWhatsappChatsSound(this.holdData.companyInfo.companyId)
       .subscribe(data => {
         data.map(d => {
-          if (this.showNot) document.documentElement.dispatchEvent(this.event);
+          if (
+            this.showNot && 
+            d.payload.doc.data().agent &&
+            !d.payload.doc.data().assignedTo &&
+            !d.payload.doc.data().finished) document.documentElement.dispatchEvent(this.event);
         })
       })
   }

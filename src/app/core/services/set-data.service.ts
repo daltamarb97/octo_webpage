@@ -324,17 +324,19 @@ export class SetDataService {
     }
   }
 
-  
   sendWhatsappMessageHttp(data){
-    //  const api_url = "http://localhost:5000/message/sendFromOcto"
-    const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
+     const responseId = this.holdData.createRandomId(); 
+     const api_url = "http://localhost:5000/message/sendFromOcto"
+    // const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {
           message: data.message,
           number: data.number,
           template: data.template, 
           companyId: data.companyId,
-          mediaUrl: data.mediaUrl
+          mediaUrl: data.mediaUrl,
+          responseId: (data.form) ? responseId : 0,
+          form: data.form
         }
         // api request
         let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
@@ -345,7 +347,9 @@ export class SetDataService {
         message: data.message,
         number: data.number,
         template: data.template, 
-        companyId: data.companyId
+        companyId: data.companyId,
+        form: data.form,
+        responseId: (data.form) ? responseId : 0,
       }
         // api request
       let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
@@ -354,13 +358,23 @@ export class SetDataService {
     }
   }
 
-
   async uploadMediaFile (companyId: any, number: string, file, fileName: string) {
     const storage = firebase.storage();
     let ref =  storage.ref(`/whatsappMedia/${companyId}/${number}/${fileName}`);
     const rta = await ref.put(file);
     const url = await rta.ref.getDownloadURL();
     return url;
+  }
+
+  setMainFormUser(companyId: string, number: string, data) {
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(number)
+    .collection('form')
+    .doc(data.questionId)
+
+    return ref.set(data);
   }
 
   async sendChatComment(data) {

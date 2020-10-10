@@ -90,7 +90,7 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
     <!-- CENTER PART -->
     <mat-sidenav-content opened mode="side" position="end">
 
-    <mat-card *ngIf="showGeneralChats" style="max-height: 75%;min-height:75% ; overflow-y: auto">
+    <mat-card *ngIf="showGeneralChats" id="content-messages" style="max-height: 75%;min-height:75% ; overflow-y: auto;">
         <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
             <span class="toolbar-msg"  ># {{currentChatData.phoneNumber}}</span>
             <span class="example-spacer"></span>
@@ -109,11 +109,12 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
             <button *ngIf="currentChatData.assignedTo === userId && !showDetail" (click)="showDetail = true" color="primary" mat-raised-button class="m-r-5">Detalles</button>
             <button *ngIf="currentChatData.assignedTo === userId && showDetail" (click)="showDetail = false" color="primary" mat-raised-button class="m-r-5">Ocultar detalles</button>
         </mat-toolbar>
-        <mat-card-content class="backgroun-img" id="content-messages" style="background-color: ghostwhite;">
+        <mat-card-content class="backgroun-img" style="background-color: ghostwhite; overflow-y: visible; height: 75%;">
             
             <div class="chat"  *ngFor="let message of chatMessages" >
                 <div class="me" *ngIf="message.inbound === false">          
                     <span style="word-wrap: break-word;">{{message.message}} </span> 
+                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'short'}}</p>
                     <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                         <img 
                             [src]="message.mediaUrl" 
@@ -128,6 +129,7 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
                         Cliente
                     </span> <br>
                     <span style="word-wrap: break-word;">{{message.message}}</span>
+                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'short'}}</p>
                     <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                         <img 
                             [src]="message.mediaUrl" 
@@ -193,12 +195,15 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
         <!-- /*******
     ASSIGNED CHAT
     *******/ -->    
-    <mat-card *ngIf="showAssignedChats" style="max-height: 75%;min-height:75% ; overflow-y: auto" >
+    <mat-card *ngIf="showAssignedChats" id="content-messages-private" style="max-height: 75%;min-height:75% ; overflow-y: auto" >
         <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
             <span class="toolbar-msg"  >{{currentChatData.phoneNumber}}</span>
-
-            <button mat-raised-button color="primary" class="example-icon m-l-10"  [matMenuTriggerFor]="animals">Tags</button>
-            <mat-menu  #animals="matMenu">
+            <button mat-raised-button color="primary" class="example-icon m-l-10" [matMenuTriggerFor]="forms">Enviar Formulario</button>
+            <mat-menu  #forms="matMenu">
+                <button *ngFor="let form of formsAlias" (click)="sendForm(form.formId)" mat-menu-item>{{form.alias}}</button>
+            </mat-menu>
+            <button mat-raised-button color="primary" class="example-icon m-l-10"  [matMenuTriggerFor]="tagsMenu">Tags</button>
+            <mat-menu  #tagsMenu="matMenu">
               <button *ngFor="let category of tagsCategoriesNames" (click)="getSpecificTags(category)"
                mat-menu-item (mouseenter)="getSpecificTags(category)" [matMenuTriggerFor]="categories">{{category.name}}</button>
             </mat-menu>
@@ -228,12 +233,11 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
                 </mat-chip>
             </mat-chip-list>      
           </div>
-        <mat-card-content id="content-messages-private" style="background-color:ghostwhite">
-
+        <mat-card-content style="background-color:ghostwhite; overflow-y: visible; height: 75%;">
             <div class="chat"  *ngFor="let message of chatMessages" >
                 <div class="me"  *ngIf="message.inbound === false">          
-                    <span style="word-wrap: break-word;">                                 
-                        {{message.message}} </span>  
+                    <span style="word-wrap: break-word;">{{message.message}} </span>  
+                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'short'}}</p>
                     <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                         <img 
                             [src]="message.mediaUrl" 
@@ -248,6 +252,7 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
                         Cliente
                     </span> <br>
                     <span style="word-wrap: break-word;">{{message.message}}</span>
+                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'short'}}</p>
                     <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                         <img 
                             [src]="message.mediaUrl" 

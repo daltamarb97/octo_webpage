@@ -3,6 +3,8 @@
         <h4>Saldo Actual: ${{currentCompanyBalance.balance | number : '1.2-2'}} USD</h4>
         <h4>Costo actual por mensaje enviado o recibido: ${{currentCompanyBalance.MFee}} USD</h4>
         <h4>Costo actual por mensaje tipo template enviado: ${{currentCompanyBalance.TFee}} USD</h4>
+        <h4 *ngIf="currentCompanyBalance.notifications">Push Notifications disponibles: <span style="font-weight: bold;">{{currentCompanyBalance.notifications}}</span></h4>
+        <h4>Api Key: <span style="font-weight: bold;">{{companyId}}</span></h4>
     </div>
     <mat-divider></mat-divider>
     <div *ngIf="showPlans && !showEmailConf">
