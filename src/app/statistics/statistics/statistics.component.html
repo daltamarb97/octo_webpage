@@ -1,6 +1,6 @@
 <h1>Estadísticas</h1>
 <div >
-    <div class="card text-left" >
+    <div class="card text-left" *ngIf="pie">
         <div #containerRef class="card-body">
             <h4 class="card-title border-bottom"> Categoría {{category.name}}</h4>
             <h4 class="card-title border-bottom"> {{total}} conversaciones fueron taggeadas en esta categoría</h4>
@@ -13,5 +13,21 @@
             [labels]="true" >
         </ngx-charts-pie-chart>
       </div>
+    </div>
+    <div *ngIf="!pie">
+        <div #containerRef class="card-body">
+            <h4 class="card-title border-bottom"> Notificaciones enviadas VS Notificaciones vistas</h4>
+            <ngx-charts-bar-vertical
+            [view]="[700, 400]"
+            [scheme]="colorScheme"
+            [results]="notsStatistics"
+            [gradient]="false"
+            [xAxis]="true"
+            [yAxis]="true"
+            [legend]="true"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true">
+            </ngx-charts-bar-vertical>
+        </div>
     </div>
   </div>

@@ -6,13 +6,16 @@
     <mat-list>
         <div mat-subheader> Categorías de Tags</div>
         <mat-list-item *ngFor="let category of tagsCategoriesNames">
-          <mat-icon mat-list-icon>analytics
-          </mat-icon>
+          <mat-icon mat-list-icon>analytics</mat-icon>
           <div mat-line>{{category.name}}</div> 
-                    <button  mat-raised-button color="accent" class="example-icon m-r-10 " (click)="seeStatistics(category)" >Ver estadísticas</button>
-
+          <button mat-raised-button color="accent" class="example-icon m-r-10 " (click)="seeStatistics(category)">Ver estadísticas</button>
         </mat-list-item>
-          
-        <mat-divider></mat-divider>
-        
-      </mat-list></mat-card>
+        <mat-divider></mat-divider>   
+        <div mat-subheader>Notificaciones</div>
+        <mat-list-item>
+          <mat-icon mat-list-icon>analytics</mat-icon>
+          <div mat-line>Notificaciones</div> 
+          <button mat-raised-button color="accent" class="example-icon m-r-10 " (click)="seeStatistics('notifications')" *ngIf="notsAllowed">Ver estadísticas</button>
+        </mat-list-item>
+    </mat-list>
+</mat-card>

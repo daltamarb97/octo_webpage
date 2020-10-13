@@ -1,21 +1,23 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { WhatsappRoutingModule } from './whatsapp-routing.module';
 
-import {  WhatsappComponent } from './whatsapp/whatsapp.component';
+import { TicketsRoutingModule } from './tickets-routing.module';
+import { TicketsListComponent } from './tickets-list/tickets-list.component';
+
 import { DemoMaterialModule } from '../demo-material-module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FlexLayoutModule } from '@angular/flex-layout';
+
 
 @NgModule({
-  declarations: [WhatsappComponent],
+  declarations: [TicketsListComponent],
   imports: [
     CommonModule,
+    TicketsRoutingModule,
     DemoMaterialModule,
     FlexLayoutModule,
-    WhatsappRoutingModule,
     FormsModule,
     ReactiveFormsModule,
   ]
 })
-export class WhatsappComponentModule { }
+export class TicketsModule { }

@@ -39,6 +39,26 @@ export const AppRoutes: Routes = [
           () => import('./whatsapp/whatsapp.module').then(m => m.WhatsappComponentModule)
       },
       {
+        path: 'tickets',
+        canActivate: [
+          CurrentUserGuard,
+          EmailVerifiedGuardService,
+          UserinfoGuard,
+        ],
+        loadChildren:
+          () => import('./tickets/tickets.module').then(m => m.TicketsModule)
+      },
+      {
+        path: 'forms',
+        canActivate: [
+          CurrentUserGuard,
+          EmailVerifiedGuardService,
+          UserinfoGuard,
+        ],
+        loadChildren:
+          () => import('./forms/forms.module').then(m => m.FormsModule)
+      },
+      {
         path: 'no-comp',
         canActivate: [
           CurrentUserGuard,

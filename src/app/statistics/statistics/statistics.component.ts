@@ -10,7 +10,9 @@ import { Subject } from 'rxjs';
 export class StatisticsComponent implements OnInit {
   tagsArray:Array<any> = [];
   tagsStatistics:Array<any> = [];
+  notsStatistics: Array<any> = [];
   info:any;
+  pie: boolean;
   category:any;
   view: any[] = [1000, 300];
   saleData:any =[];
@@ -31,16 +33,28 @@ export class StatisticsComponent implements OnInit {
       //getting params from navigation
       this.route.queryParams.subscribe(() => {
         if (this.router.getCurrentNavigation().extras.state) {
-          this.info = this.router.getCurrentNavigation().extras.state.statistics;
-          this.total = this.info.total
-          this.tagsStatistics = this.info.array;
-          this.category = this.info.category;
-          this.tagsStatistics.forEach(tag=>{
-            tag.value = (tag.value/this.info.total)*100                  
-          })
-        }
-        
-          
+          if (this.router.getCurrentNavigation().extras.state.statistics) {
+            this.pie = true;
+            this.info = this.router.getCurrentNavigation().extras.state.statistics;
+            this.total = this.info.total
+            this.tagsStatistics = this.info.array;
+            this.category = this.info.category;
+            this.tagsStatistics.forEach(tag=>{
+              tag.value = (tag.value/this.info.total)*100                  
+            })
+          } else if (this.router.getCurrentNavigation().extras.state.category) {
+            const dataNot =this.router.getCurrentNavigation().extras.state.data;
+            this.pie = false;
+            this.notsStatistics = [{
+              "name": "Notificaciones enviadas",
+              "value": dataNot.sent
+            },
+            {
+              "name": "Notificaciones vistas",
+              "value": dataNot.saw
+            }]
+          }
+        }    
       });
      }
   ngOnInit(): void { 

@@ -14,9 +14,10 @@ export class TagMetricsComponent implements OnInit {
   tagsCategories:any = [];
   tagsCategoriesNames:any = [];
   companyId:string;
-  
+  notsAllowed: boolean = false;
+  notTotal: any;
+  notSaw: number = 0;
   view: any[] = [1000, 300];
-  saleData:any =[];
   // options
   gradient: boolean = true;
   showLegend: boolean = true;
@@ -33,22 +34,18 @@ export class TagMetricsComponent implements OnInit {
   constructor(private fetchData: FecthDataService,
     private holdData: HoldDataService,
     private router: Router,
-    ) { 
-      this.saleData = [
-        { name: "Mobiles", value: 105000 },
-        { name: "Laptop", value: 55000 },
-        { name: "AC", value: 15000 },
-        { name: "Headset", value: 150000 },
-        { name: "Fridge", value: 20000 }
-      ];
-    }
+    ) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     if (!this.holdData.companyInfo) {
       this.router.navigate(['no-comp'])
     }
     this.companyId = this.holdData.userInfo.companyId;
- 
+    const notAllowed =  await this.fetchData.getBalanceCompanyInfo(this.companyId).toPromise();
+    if (notAllowed.data().notifications) {
+      this.notsAllowed = true;
+      this.notTotal = await this.fetchData.getNotifications(this.companyId).toPromise();
+    }
     this.getCategories();
   }
 
@@ -59,7 +56,9 @@ export class TagMetricsComponent implements OnInit {
       takeUntil(this.destroy$)
     )
     .subscribe(data => {
-      this.tagsCategoriesNames = data;
+      data.forEach(d => {
+        if (d.categoryId) this.tagsCategoriesNames.push(d);
+      })
       this.tagsCategories = [];
     })
   }
@@ -71,31 +70,50 @@ export class TagMetricsComponent implements OnInit {
       takeUntil(this.destroy$)
     )
     .subscribe(data => {
+      // this.tagsCategories = data.map(d => d)      
       this.tagsCategories = data;
     })
   }
 
-  seeStatistics(category){
-    //get tags from category and send them in the correct format for statistics
-    this.fetchData.getSpecificTag(category.categoryId,this.companyId)
-    .pipe(
-      takeUntil(this.destroy$)
-    )
-    .subscribe(data => {
-      this.tagsCategories = data;
-      this.tagsCategories.forEach(tag => {
-        let statisticTagFormat = {name:tag.name,value:tag.times}
-        this.tagsStatistics.push(statisticTagFormat);
-        this.total = tag.times + this.total
+  async seeStatistics(category){
+    if (category !== 'notifications') {
+      //get tags from category and send them in the correct format for statistics
+      this.fetchData.getSpecificTag(category.categoryId,this.companyId)
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe(data => {
+        this.tagsCategories = data;
+        this.tagsCategories.forEach(tag => {
+          let statisticTagFormat = {name:tag.name,value:tag.times}
+          this.tagsStatistics.push(statisticTagFormat);
+          this.total = tag.times + this.total
+        })
+        let tagsAndCategory = { array:this.tagsStatistics,category:category,total:this.total}
+        let navigationExtras: NavigationExtras = {
+          state: {
+            statistics: tagsAndCategory
+          }
+        };
+        this.router.navigate(['statistics'],navigationExtras);
       })
-      let tagsAndCategory = { array:this.tagsStatistics,category:category,total:this.total}
+    } else {
+      this.notTotal.forEach(d => {
+        if(d.data().status === 'read') {
+          this.notSaw++;
+        }
+      })
       let navigationExtras: NavigationExtras = {
         state: {
-          statistics: tagsAndCategory
+          data: {
+            saw: this.notSaw, 
+            sent: this.notTotal.docs.length
+          },
+          category: 'notifications'
         }
       };
       this.router.navigate(['statistics'],navigationExtras);
-    })
+    }
   }
 
   ngOnDestroy(){
