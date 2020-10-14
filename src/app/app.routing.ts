@@ -56,7 +56,7 @@ export const AppRoutes: Routes = [
           UserinfoGuard,
         ],
         loadChildren:
-          () => import('./forms/forms.module').then(m => m.FormsModule)
+          () => import('./forms/forms.module').then(m => m.FormModule)
       },
       {
         path: 'no-comp',

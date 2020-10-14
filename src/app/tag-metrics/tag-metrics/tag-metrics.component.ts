@@ -41,8 +41,7 @@ export class TagMetricsComponent implements OnInit {
       this.router.navigate(['no-comp'])
     }
     this.companyId = this.holdData.userInfo.companyId;
-    const notAllowed =  await this.fetchData.getBalanceCompanyInfo(this.companyId).toPromise();
-    if (notAllowed.data().notifications) {
+    if (this.holdData.companyInfo.notifications) {
       this.notsAllowed = true;
       this.notTotal = await this.fetchData.getNotifications(this.companyId).toPromise();
     }
