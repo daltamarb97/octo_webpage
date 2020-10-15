@@ -396,6 +396,17 @@ export class FecthDataService {
     return response;
   }
 
+  async getSingleFormInfo(companyId: string, formId: string) {
+    let ref = await this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('forms')
+    .doc(formId)
+    .collection('content', ref => ref.orderBy('order', "asc"))
+    .get()
+    .toPromise();
+    return ref;
+  }
+
   async getResultsForms(companyId: string, formId: string) {
     let ref = await this.db.collection('whatsapp')
     .doc(companyId)

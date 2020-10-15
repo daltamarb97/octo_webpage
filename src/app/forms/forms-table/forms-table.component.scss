@@ -46,6 +46,51 @@ table {
     opacity: 0.5;
   }
 
+  .bubble{
+    display:flex;
+    flex-direction: column;
+    .me{
+        position: relative;
+        margin: 3px 5px 0px;
+        max-width:80%;
+        align-self: flex-start;
+        padding:  9px 10px 9px 16px;
+        border-radius: 15px 15px 0;
+        box-shadow: 0 4px 8px 0 rgba (0,0,0,0.2);
+        font-size: 12px;
+        background:#DCF8C6;
+  
+        line-height: 1.1;
+        z-index: 2;
+    }
+    #autosize {
+        width: calc(100% - 10px);
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        min-height: 40px;
+        min-width: 80%;
+  
+    }
+    .time-left{
+        color:darkgray;
+        display: inline-grid;
+        margin-left: 7px;  
+        margin-bottom: 0;
+        margin-top: 0;
+        font-size: small;
+  
+    }
+    .time-right{
+        color:darkgray;
+        display: inline-grid;
+        margin-right: 10px;  
+        margin-bottom: 0;
+        margin-top: 0;
+        font-size: small;
+    }
+  }
+
   .header-drop{
     display: flex;
     flex-direction: row;
@@ -54,5 +99,18 @@ table {
 
     mat-form-field {
       max-width: 300px;
+    }
+  }
+
+  .header-drop-sub {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .edit-buttons {
+    display: flex;
+    flex-direction: row;
+    button {
+      margin-right: 10px;
     }
   }

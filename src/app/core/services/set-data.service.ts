@@ -627,6 +627,25 @@ export class SetDataService {
         message: data.message
       })
   }
+
+  async updateFormMessage(data) {
+    let ref = this.db.collection('whatsapp')
+      .doc(data.companyId)
+      .collection('forms')
+      .doc(data.formId)
+      .collection('content')
+      .doc(data.questionId)
+      if (data.responseType) {
+        return ref.update({
+          message: data.message,
+          responseType: data.responseType
+        })
+      } else {
+        return ref.update({
+          message: data.message
+        })
+      }
+  }
   // END OF FLOW SERVICES
 }
 
