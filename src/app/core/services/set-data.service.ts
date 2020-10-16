@@ -99,7 +99,18 @@ export class SetDataService {
       .doc(userData.userId);
 
     await companyRef.set(userData)
-     // set companyId on new user
+     // set userInfo in agents weight for whatsapp
+     let weightRef = this.db.collection('whatsapp')
+      .doc(companyData.companyId)
+      .collection('weights')
+      .doc(userData.userId);
+
+    await weightRef.set({
+      email: userData.email,
+      name: userData.name,
+      userId: userData.userId,
+      weight: 0
+    })
   }
 
   async setInviteEmails(data) {
