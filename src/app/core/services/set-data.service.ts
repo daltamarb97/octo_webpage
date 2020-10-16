@@ -63,6 +63,18 @@ export class SetDataService {
       .collection('employees')
       .doc(userData.userId)
       .set(userData)
+    // set userInfo of admin in agents weight for whatsapp
+    let weightRef = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('weights')
+    .doc(userData.userId);
+
+    await weightRef.set({
+      email: userData.email,
+      name: userData.name,
+      userId: userData.userId,
+      weight: 0
+    })
     // create default hat room
     // await this.createChatRoom(
     //   companyId, 
