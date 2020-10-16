@@ -429,6 +429,18 @@ export class SetDataService {
     return;
   }
 
+  async createQuickResponse(companyId: string, message: string) {
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('quickResponses')
+    const rta = await ref.add({
+      message: message
+    });
+    return ref.doc(rta.id).update({
+      quickId: rta.id
+    })
+  }
+
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
   sendTag(companyId, chatId, tag){
     // send tag to firestore

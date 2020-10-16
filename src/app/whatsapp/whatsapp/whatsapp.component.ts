@@ -11,7 +11,7 @@ import { HoldDataService } from '../../core/services/hold-data.service';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { Router } from '@angular/router';
 
-import { Howl } from 'howler';
+import { QuickResponsesDialogComponent } from '../../material-component/quick-responses-dialog/quick-responses-dialog.component';
 
 export class currentChatData {
   phoneNumber:string;
@@ -137,13 +137,6 @@ getCompanyEmployees() {
     })
 }
 
-allowSound() {
-  const audioHowl = new Howl({
-    src: ['../../../assets/images/sounds/piece-of-cake.mp3']
-  });
-  audioHowl.play();
-}
-
 getWhatsappTemplateMessages() {
   // get whatsapp approve templates  
   if (this.holdData.companyInfo.api_url) {
@@ -188,14 +181,31 @@ getChatWhatsappNames(){
     takeUntil(this.destroy$)
   )
   .subscribe(data => {
-    this.chatWhatsapp = data;
-    this.chatWhatsappAssigned = this.chatWhatsapp.filter(c => c.assignedTo === this.userId);  
+    this.chatWhatsapp = [];
+    this.chatWhatsappAssigned = [];
+    data.forEach(d => {
+      if(d.agent) {
+        this.chatWhatsapp.push(d);
+        for (let j = 0; j < d.assignTo.length; j++) {
+          if (d.assignTo[j].userId === this.userId) {
+            this.chatWhatsappAssigned.push(d);
+          }
+        }
+      }
+    }) 
   });
 }
 
 async getMessagesFromChatOnclick(data, assigned: boolean) {
   if (this.messageSubscription) this.messageSubscription.unsubscribe();
   if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
+  let currentAgentAssigned: boolean = false;
+  for (let i = 0; i < data.assignTo.length; i++) {
+    if (data.assignTo[i].userId === this.userId) {
+      currentAgentAssigned = true;
+      break;
+    }
+  }
   this.templatesActivated = false;
   this.templatesActivatedOptions = false;
   // get comments of this chat
@@ -221,7 +231,7 @@ async getMessagesFromChatOnclick(data, assigned: boolean) {
     this.currentChatData = {
       phoneNumber: data.number,
       finished: (data.finished) ? data.finished : false,
-      assignedTo: (data.assignedTo) ? data.assignedTo : 'null'
+      assignedTo: (currentAgentAssigned) ? this.userId : 'null'
     }
     if (assigned === true) {
       this.showAssignedChats=true;
@@ -236,7 +246,6 @@ async getMessagesFromChatOnclick(data, assigned: boolean) {
       data.number
     )
     .subscribe((dataRta) => {
-      if(data.agent && !data.assignedTo) this.allowSound();
       if (this.showGeneralChats) {
         const el = document.getElementById('content-messages');
         el.scrollTop = el.scrollHeight;
@@ -497,7 +506,21 @@ goToStatistics(){
       companyId: this.companyId,
       number: this.currentChatData.phoneNumber
     })
+    // hide user interface 
     this.showDetail = false;
+    this.showAssignedChats = false;
+    this.showGeneralChats = false;
+  }
+
+  showQuickResponses() {
+    // show pre-saved messages (quick responses)
+    const dialogRef = this.dialog.open(QuickResponsesDialogComponent);
+    dialogRef.afterClosed()
+      .subscribe(result => {
+        if(result.event !== 'cancel') {
+          this.currentMessage = result.data;
+        }
+      })
   }
 }
 

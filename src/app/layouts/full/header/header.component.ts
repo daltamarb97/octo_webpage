@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 import { SetDataService } from '../../../core/services/set-data.service';
@@ -21,7 +20,6 @@ export class AppHeaderComponent {
   compId: boolean = false;
 
   constructor(
-    private router: Router,
     private dialog: MatDialog,
     // services
     private fetchData: FecthDataService,
@@ -38,11 +36,14 @@ export class AppHeaderComponent {
     this.fetchData.getWhatsappChatsSound(this.holdData.companyInfo.companyId)
       .subscribe(data => {
         data.map(d => {
-          if (
-            this.showNot && 
-            d.payload.doc.data().agent &&
-            !d.payload.doc.data().assignedTo &&
-            !d.payload.doc.data().finished) document.documentElement.dispatchEvent(this.event);
+          if (this.showNot) {
+            for (let i = 0; i < d.payload.doc.data().assignTo.length; i++) {
+              if (d.payload.doc.data().assignTo[i].userId === this.holdData.userId) {
+                document.documentElement.dispatchEvent(this.event);
+                break;
+              }
+            }
+          } 
         })
       })
   }

@@ -1,4 +1,8 @@
-<div fxLayout="row wrap">
+<div *ngIf="!companyInfo.forms">
+    <h1>Tu empresa no tiene formularios activos en este momento</h1>
+    <h3>Contáctanos a <a href="https://weareocto.web.app/front/pages/contact.html" target="_blank" style="color: #EF78A0">octo.colombia@gmail.com</a> para cear tu primer formulario</h3>
+</div>
+<div fxLayout="row wrap" *ngIf="companyInfo.forms">
     <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
         <mat-card>
         <mat-card-content>

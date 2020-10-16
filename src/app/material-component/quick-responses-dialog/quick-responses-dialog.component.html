@@ -1,0 +1,28 @@
+<div>
+    <mat-list style="max-height: 300px; max-width: 400px; overflow-y: auto">
+        <div mat-subheader>Escoge una respuesta rápida</div>
+        <mat-list-item *ngFor="let qr of quickResponses" (click)="chooseResponse(qr)">
+            <mat-icon mat-list-icon>chat</mat-icon>
+            <div mat-line>{{qr.message}}</div>
+        </mat-list-item>
+    </mat-list>
+    <div *ngIf="showInput">
+        <mat-form-field class="example-full-width">
+            <mat-label>Respuesta rápida</mat-label>
+            <textarea matInput
+            cdkTextareaAutosize
+            #autosize="cdkTextareaAutosize"
+            cdkAutosizeMinRows="3"
+            cdkAutosizeMaxRows="9"
+            [(ngModel)]="newQR" 
+            placeholder="Ex. Hola, tu opinión es muy importante para nosotros"></textarea>
+        </mat-form-field>
+        <p style="color: red;" *ngIf="showQRError">Falta información para crear respuesta rápida</p>
+        <button mat-stroked-button color="primary" (click)="createResponse()" style="margin-right: 10px;">Confirmar</button>
+        <button mat-stroked-button (click)="showInput = false">Cancelar</button>
+    </div>
+    <div style="display: flex; flex-direction: row;" *ngIf="!showInput">
+        <button mat-stroked-button color="primary" style="margin-right: 10px;" (click)="showInput = true">Crear respuesta rápida</button>
+        <button mat-stroked-button (click)="onNoClick()">Cancelar</button>
+    </div>
+</div>

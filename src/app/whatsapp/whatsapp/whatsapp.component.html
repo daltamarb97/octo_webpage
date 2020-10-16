@@ -35,8 +35,8 @@
                                         account_circle
                                     </span > {{chat.number}} 
                                     <mat-chip-list  style="margin-left: auto;" >
-                                        <mat-chip color="accent" class="chip" selected *ngIf="chat.assignedName">{{chat.assignedName | slice:0:5}}</mat-chip>
-                                        <mat-chip color="warn" class="chip" selected *ngIf="!chat.assignedName && !chat.finished">N/A</mat-chip>
+                                        <!-- <mat-chip color="accent" class="chip" selected *ngIf="chat.assignTo">{{'variosss' | slice:0:5}}</mat-chip> -->
+                                        <!-- <mat-chip color="warn" class="chip" selected *ngIf="!chat.assignTo && !chat.finished">N/A</mat-chip> -->
                                         <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
                                     </mat-chip-list>
                                 </mat-list-item>
@@ -170,17 +170,20 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
                         class="example-button-container" 
                         *ngIf="currentChatData.assignedTo === userId && templatesActivated !== true">
                         <div style="display: flex; flex-direction: row">
-                            <button mat-mini-fab>
+                            <button mat-mini-fab style="background-color: #3197F3">
                                 <mat-icon (click)="sendMessage()">send</mat-icon>
                             </button>
                             <button mat-mini-fab color="warn">
                                 <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
                             </button>
+                            <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
+                                <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
+                            </button>
                         </div>
                         <p>{{fileName}}</p>
                     </div>
                 </div>
-                <input *ngIf="currentChatData.assignedTo !== userId && !currentChatData.finished" matInput value="Si el chat no está asignado a nadie, asígnatelo para responder" readonly>
+                <input *ngIf="currentChatData.assignedTo !== userId && !currentChatData.finished" matInput value="Asígnate este chat para responder" readonly>
                 <input *ngIf="currentChatData.finished" matInput value="Este chat fue cerrado, si el cliente vuelve a escribir a la empresa, el chat será reanudado" readonly>
                 <input 
                     *ngIf="templatesActivated === true  && currentChatData.assignedTo === userId" 
@@ -292,11 +295,14 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
                         class="example-button-container"
                         *ngIf="templatesActivated !== true">
                         <div style="display: flex; flex-direction: row">
-                            <button mat-mini-fab>
+                            <button mat-mini-fab style="background-color: #3197F3">
                                 <mat-icon (click)="sendMessage()">send</mat-icon>
                             </button>
                             <button mat-mini-fab color="warn">
                                 <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
+                            </button>
+                            <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
+                                <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
                             </button>
                         </div>
                         <p>{{fileName}}</p>

@@ -252,6 +252,13 @@ export class FecthDataService {
 
     return ref.valueChanges();
   }
+
+  getQuickResponses(companyId: string) {
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('quickResponses')
+    return ref.valueChanges();
+  }
   // END OF WHATSAPP
 
   // END OF CHATS AND COMUNICATIONS SERVICES
@@ -419,4 +426,15 @@ export class FecthDataService {
   }
 
   // END OF FORMS SERVICES
+
+  // TICKETS SERVICES
+
+  getTickets(companyId: string) {
+    let ref = this.db.collection('tickets')
+      .doc(companyId)
+      .collection('tickets')
+      .get()
+    return ref;
+  }
+  // END OF TICKETS SERVICES
 }

@@ -4,7 +4,7 @@
           <mat-card>
             <div class="box p-20 bg-info text-center" (click)= "btnCategoryClick('')">
               <h1 class="font-light text-white m-0">{{totalCount}}</h1>
-              <h6 class="text-white m-0">Total Tickets</h6>
+              <h6 class="text-white m-0">Tickets totales</h6>
             </div>
           </mat-card>
         </div>
@@ -14,7 +14,7 @@
           <mat-card>
             <div class="box p-20 bg-warning text-center" (click)= "btnCategoryClick('In Progress')">
               <h1 class="font-light text-white m-0">{{Inprogress}}</h1>
-              <h6 class="text-white m-0">In Progress</h6>
+              <h6 class="text-white m-0">En progreso</h6>
             </div>
           </mat-card>
         </div>
@@ -24,7 +24,7 @@
           <mat-card>
             <div class="box p-20 bg-success text-center" (click)= "btnCategoryClick('Open')">
               <h1 class="font-light text-white m-0">{{Open}}</h1>
-              <h6 class="text-white m-0">Open</h6>
+              <h6 class="text-white m-0">Abiertos</h6>
             </div>
           </mat-card>
         </div>
@@ -34,7 +34,7 @@
           <mat-card>
             <div class="box p-20 bg-danger text-center" (click)= "btnCategoryClick('Closed')">
               <h1 class="font-light text-white m-0">{{Closed}}</h1>
-              <h6 class="text-white m-0">Closed</h6>
+              <h6 class="text-white m-0">Cerrados</h6>
             </div>
           </mat-card>
         </div>
@@ -47,12 +47,12 @@
               <div fxLayout="row wrap" class="align-items-center">
                 <div fxFlex.gt-md="25" fxFlex.gt-lg="25" fxFlex="100">
                   <mat-form-field>
-                      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+                      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filtro">
                     </mat-form-field>
                 </div>
-                <div fxFlex.gt-md="75" class="text-right">
+                <!-- <div fxFlex.gt-md="75" class="text-right">
                   <button mat-raised-button color="primary">Add Ticket</button>
-                </div>
+                </div> -->
               </div>
             </mat-card-content>
           </mat-card>
@@ -65,50 +65,47 @@
               <div class="table-responsive">
                 <table mat-table [dataSource]="dataSource" class="table  ticket-list no-wrap">
       
-                  
-      
                   <ng-container matColumnDef="creator">
-                    <th mat-header-cell *matHeaderCellDef> Creator </th>
+                    <th mat-header-cell *matHeaderCellDef> Creador </th>
                     <td mat-cell *matCellDef="let element"> {{element.creator}} </td>
                   </ng-container>
       
                   <ng-container matColumnDef="title">
-                    <th mat-header-cell *matHeaderCellDef> Title </th>
+                    <th mat-header-cell *matHeaderCellDef> Título </th>
                     <td mat-cell *matCellDef="let element"> {{element.title}} </td>
                   </ng-container>
       
                   <ng-container matColumnDef="assignee">
-                    <th mat-header-cell *matHeaderCellDef> Assignee </th>
+                    <th mat-header-cell *matHeaderCellDef> Asignado a </th>
                     <td mat-cell *matCellDef="let element"> {{element.assignee}} </td>
                   </ng-container>
       
                   <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef> Status </th>
+                    <th mat-header-cell *matHeaderCellDef> Estatus </th>
                     <td mat-cell *matCellDef="let element"> {{element.status}} </td>
                   </ng-container>
       
                   <ng-container matColumnDef="product">
-                    <th mat-header-cell *matHeaderCellDef> Product </th>
+                    <th mat-header-cell *matHeaderCellDef> Producto </th>
                     <td mat-cell *matCellDef="let element"> {{element.product}} </td>
                   </ng-container>
       
                   <ng-container matColumnDef="date">
-                    <th mat-header-cell *matHeaderCellDef> Date </th>
-                    <td mat-cell *matCellDef="let element"> {{element.date}} </td>
-                        </ng-container>
+                    <th mat-header-cell *matHeaderCellDef> Fecha </th>
+                    <td mat-cell *matCellDef="let element"> {{element.date | date: 'short'}} </td>
+                  </ng-container>
                         
-                        <ng-container matColumnDef="action">
-                            <th mat-header-cell *matHeaderCellDef> Action </th>
-                            <td mat-cell *matCellDef="let element" class="action-link"> 
-                              <a (click)="openDialog('Update',element)" class="m-r-10 cursor-pointer"><i class="fa fa-pencil"></i></a>  
-                              <a (click)="openDialog('Delete',element)" class="m-r-10 cursor-pointer">
-                        <i class="fa fa-trash text-danger"></i>
-                      </a>  
-                            </td>
-                        </ng-container>
+                  <ng-container matColumnDef="action">
+                      <th mat-header-cell *matHeaderCellDef> Acciones </th>
+                      <td mat-cell *matCellDef="let element" class="action-link"> 
+                        <a (click)="goWhatsApp(element)" class="m-r-10 cursor-pointer">
+                          <mat-icon>chat</mat-icon>
+                        </a>    
+                      </td>
+                  </ng-container>
       
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                  <tr mat-row *matRowDef="let element; columns: displayedColumns;"></tr>
                 </table>
               </div>
             </mat-card-content>
