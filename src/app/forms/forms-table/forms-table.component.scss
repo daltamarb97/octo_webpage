@@ -114,3 +114,15 @@ table {
       margin-right: 10px;
     }
   }
+
+  .search-field {
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
+    mat-form-field {
+      max-width: 300px;
+    }
+    button {
+      margin-left: 20px; 
+    }
+  }

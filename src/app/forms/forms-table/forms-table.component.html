@@ -9,10 +9,10 @@
             <div class="header-drop">
                 <div class="header-drop-sub">
                     <mat-card-title *ngIf="currentForm">Resumen de información de: {{currentForm.alias | titlecase}}</mat-card-title>
-                    <mat-card-subtitle *ngIf="showTable">Para abrir Octo Form Builder, 
+                    <mat-card-subtitle *ngIf="showTable && currentForm && !currentForm.foreign">Para abrir Octo Form Builder, 
                         <span style="color: #E83D5E" (click)="showTable = false">haz click aqui</span> 
                     </mat-card-subtitle>
-                    <mat-card-subtitle *ngIf="!showTable">Para ver tabla de resultados, 
+                    <mat-card-subtitle *ngIf="!showTable && currentForm && !currentForm.foreign">Para ver tabla de resultados, 
                         <span style="color: #E83D5E" (click)="showTable = true">haz click aqui</span> 
                     </mat-card-subtitle>
                 </div>
@@ -28,12 +28,17 @@
                     <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search (Filter)">
                 </mat-form-field>
             </div>
-    
+            <div class="search-field" *ngIf="currentForm && currentForm.foreign">
+                <mat-form-field>
+                    <input matInput type="number" [(ngModel)]="sortNumber" placeholder="¿cuántos campos quieres buscar?">
+                </mat-form-field>
+                <button mat-stroked-button color="primary" (click)="searchFields()">Confirmar</button>
+            </div>
             <div class="responsive-table" *ngIf="showTable">
                 <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
                     <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
                         <th mat-header-cell *matHeaderCellDef> {{column}} </th>
-                        <td mat-cell *matCellDef="let element"> {{(column !== 'acciones') 
+                        <td mat-cell *matCellDef="let element" (click)="viewData(element)"> {{(column !== 'acciones') 
                             ? element[column] 
                             : ''}}
                             <button mat-stroked-button (click)="openTicket(element)" *ngIf="column === 'acciones'">Abrir Ticket</button>

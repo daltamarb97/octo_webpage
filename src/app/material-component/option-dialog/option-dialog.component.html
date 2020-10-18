@@ -11,10 +11,22 @@
     <input *ngIf="input.event !== 'first'" type="file" (change)="selectImage($event)" placeholder="Selecciona un archivo..." accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
     text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx" style="display: block">
     <div *ngIf="input.event !== 'first'" style="display: flex; flex-direction: column; margin-top: 15px;">
-      <mat-slide-toggle [(ngModel)]="agent">Contactar con agentes</mat-slide-toggle>
-      <p style="font-size: 10px;">Al activar esta opción, después de este mensaje la conversación será dirijida a Octo para que sea atendida por uno de tus agentes.</p>
-      <mat-slide-toggle [(ngModel)]="options">Esta opción tendrá más opciones anidadas</mat-slide-toggle>
-      <mat-slide-toggle [(ngModel)]="mainMenu">Esta opción llevará al cliente/usuario al menú inicial del Bot</mat-slide-toggle>
+      <mat-slide-toggle [(ngModel)]="agent" (change)="agentToggle()">Contactar con agentes</mat-slide-toggle>
+      <p style="font-size: 10px;">Al activar esta opción, posterior a este mensaje, la conversación será dirijida a Octo para que sea atendida por uno de los agentes de tu empresa.</p>
+      <mat-form-field appearance="fill" *ngIf="agent">
+        <mat-label>Asignar a</mat-label>
+        <mat-select [(ngModel)]="assignedTo">
+          <mat-option *ngFor="let agent of availableAgents" [value]="agent">
+            {{agent.name}} {{agent.lastname}}
+          </mat-option>
+          <mat-option value="any">Asignación automática</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-slide-toggle [(ngModel)]="options" (change)="optToggle()">Esta opción tendrá más opciones anidadas</mat-slide-toggle>
+      <p style="font-size: 10px;">Al activar esta opción, estás indicando que posterior a este mensaje, habrán más opciones disponibles para la persona.</p>
+      <mat-slide-toggle [(ngModel)]="mainMenu" (change)="optToggle()">Esta opción llevará al cliente/usuario al menú inicial del Bot</mat-slide-toggle>
+      <p style="font-size: 10px;">Al activar esta opción, posterior a este mensaje, la persona será redirigida al primer mensaje del flujo del Bot.</p>
+      <p style="color: red" *ngIf="showError">Seleccionar agente o desactivar opción de contácto con agentes</p>
     </div>
   <div mat-dialog-actions>
     <button mat-button (click)="onNoClick()">Cancelar</button>

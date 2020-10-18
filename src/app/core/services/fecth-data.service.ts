@@ -232,8 +232,8 @@ export class FecthDataService {
 
 
   checkWhatsapp24HourWindow(data) {
-      const api_url = "http://localhost:5000/message/check-user"
-      // const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
+      // const api_url = "http://localhost:5000/message/check-user"
+      const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
       const finalData = {
         companyId: data.companyId,
         number: data.number
@@ -376,54 +376,77 @@ export class FecthDataService {
     return response;
   }
 
-  async getFormCols(companyId: string, formId: string) {
-    interface column {
-      alias: string,
-      order: number,
-      message: string
-    }
-    let response: Array<column> = [];
-    let ref = await this.db.collection('whatsapp')
-    .doc(companyId)
-    .collection('forms')
-    .doc(formId)
-    .collection('content')
-    .get()
-    .toPromise()
-    ref.forEach(c => {
-      if(!c.data().end) {
-        const data = {
-          alias: c.data().alias,
-          order: c.data().order,
-          message: c.data().message
-        }
-        response.push(data);
+  async getFormCols(companyId: string, formData: any) {
+    if (formData.foreign) {
+      let response = [];
+      let ref = await this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('forms')
+      .doc(formData.formId)
+      .get()
+      .toPromise()
+      const rta: Object = ref.data().template;
+      Object.keys(rta).forEach(k => {
+        response.push(k)
+      });
+      return response;
+    } else {
+      interface column {
+        alias: string,
+        order: number,
+        message: string
       }
-    })
-    return response;
+      let response: Array<column> = [];
+      let ref = await this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('forms')
+      .doc(formData.formId)
+      .collection('content')
+      .get()
+      .toPromise()
+      ref.forEach(c => {
+        if(!c.data().end) {
+          const data = {
+            alias: c.data().alias,
+            order: c.data().order,
+            message: c.data().message
+          }
+          response.push(data);
+        }
+      })
+      return response;
+    }
   }
 
-  async getSingleFormInfo(companyId: string, formId: string) {
-    let ref = await this.db.collection('whatsapp')
-    .doc(companyId)
-    .collection('forms')
-    .doc(formId)
-    .collection('content', ref => ref.orderBy('order', "asc"))
-    .get()
-    .toPromise();
-    return ref;
+  async getSingleFormInfo(companyId: string, formData: any) {
+      let ref = await this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('forms')
+      .doc(formData.formId)
+      .collection('content', ref => ref.orderBy('order', "asc"))
+      .get()
+      .toPromise();
+      return ref;
   }
 
-  async getResultsForms(companyId: string, formId: string) {
-    let ref = await this.db.collection('whatsapp')
-    .doc(companyId)
-    .collection('forms')
-    .doc(formId)
-    .collection('responses')
-    .get()
-    .toPromise()
-    return ref;
+  async getResultsForms(companyId: string, formData: any) {
+      let ref = await this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('forms')
+      .doc(formData.formId)
+      .collection('responses')
+      .get()
+      .toPromise()
+      return ref;
   }
+
+  getResultsFormsForeign(data) {
+    // const api_url = `http://localhost:5000/foreigndb/encuesta/${number}`
+      const api_url = (data.api_url) ? `${data.api_url}/foreigndb/encuesta/${data.number}` : `https://octo-api-wa.herokuapp.com/foreigndb/encuesta/${data.number}`;
+    let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
+    const req = this.httpClient.get(api_url, {headers: headers, responseType: 'json'});
+    return req;
+}
 
   // END OF FORMS SERVICES
 

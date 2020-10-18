@@ -71,7 +71,7 @@ export class SetDataService {
 
     await weightRef.set({
       email: userData.email,
-      name: userData.name,
+      name: `${userData.name} ${userData.lastname}`,
       userId: userData.userId,
       weight: 0
     })
@@ -119,7 +119,7 @@ export class SetDataService {
 
     await weightRef.set({
       email: userData.email,
-      name: userData.name,
+      name: `${userData.name} ${userData.lastname}`,
       userId: userData.userId,
       weight: 0
     })
@@ -349,8 +349,8 @@ export class SetDataService {
 
   sendWhatsappMessageHttp(data){
      const responseId = this.holdData.createRandomId(); 
-     const api_url = "http://localhost:5000/message/sendFromOcto"
-    // const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
+    //  const api_url = "http://localhost:5000/message/sendFromOcto"
+    const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {
           message: data.message,
@@ -603,6 +603,7 @@ export class SetDataService {
       options: dataChildOption.options,
       mainMenuRedirect: dataChildOption.mainMenu,
       mediaUrl: dataChildOption.mediaUrl,
+      assignTo: (dataChildOption.assignTo !== 'any') ? [dataChildOption.assignTo] : 'any'
     })
     await ref.doc(flowCreation.id)
       .update({flowId: flowCreation.id})

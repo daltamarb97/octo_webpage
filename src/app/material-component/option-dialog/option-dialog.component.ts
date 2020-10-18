@@ -18,6 +18,9 @@ export class OptionComponent {
   options: boolean = false;
   mainMenu: boolean = false;
   input: any;
+  assignedTo: any = null;
+  showError: boolean = false;
+  availableAgents: Array<any> = [];
   constructor(
     public dialogRef: MatDialogRef<OptionComponent>,
     private fetchData: FecthDataService,
@@ -30,6 +33,10 @@ export class OptionComponent {
       message: '',
       file: null
     }
+    this.fetchData.getCompanyEmployees(this.holdData.companyInfo.companyId)
+      .subscribe(data => {
+        data.map(d => {this.availableAgents.push(d.payload.doc.data())});
+      })
   }
 
   onNoClick(): void {
@@ -39,11 +46,50 @@ export class OptionComponent {
   }
 
   addOption() {
-    this.dialogRef.close({event: this.input.event, data: this.local_data, agent: this.agent, options: this.options, mainMenu: this.mainMenu});
+    this.showError = false;
+    if (this.agent) {
+      if (this.assignedTo) {
+        this.dialogRef.close(
+          {
+            event: this.input.event, 
+            data: this.local_data, 
+            agent: this.agent, 
+            assignedTo: this.assignedTo, 
+            options: this.options, 
+            mainMenu: this.mainMenu
+          }
+        );
+      } else {
+        this.showError = true;
+      }
+    } else {
+      this.dialogRef.close(
+        {
+          event: this.input.event, 
+          data: this.local_data, 
+          agent: this.agent, 
+          assignedTo: this.assignedTo, 
+          options: this.options, 
+          mainMenu: this.mainMenu
+        }
+      );
+    }
   }
 
   selectImage(file) {
     this.local_data.file = file.target.files[0];
+  }
+
+  agentToggle(){
+    this.mainMenu = false;
+    this.options = false;
+    this.showError = false;
+  }
+
+  optToggle(){
+    this.agent = false;
+    this.assignedTo = null;
+    this.showError = false;
   }
 }
 

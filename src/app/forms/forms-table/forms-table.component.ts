@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { SetDataService } from '../../core/services/set-data.service';
 import { Router } from '@angular/router';
+import { MatPaginator } from '@angular/material/paginator';
 
 const ELEMENT_DATA: Element[] = [];
 
@@ -35,6 +36,7 @@ export class FormsTableComponent implements OnInit {
   messageEdition: string = null;
   typeMessageEdition: string = null;
   missingEditInfo: boolean = false;
+  sortNumber: number = 0;
 
   constructor(
     private fetchData: FecthDataService,
@@ -56,18 +58,36 @@ export class FormsTableComponent implements OnInit {
     ELEMENT_DATA.splice(0, ELEMENT_DATA.length);
     this.forms = await this.fetchData.getFormsInfo(this.companyId);  
     this.currentForm = this.forms[0];
-    const formFlow = await this.fetchData.getSingleFormInfo(this.companyId, this.currentForm.formId);
-    const cols = await this.fetchData.getFormCols(this.companyId, this.forms[0].formId);
-    const data =  await this.fetchData.getResultsForms(this.companyId, this.forms[0].formId);
-    formFlow.forEach(d => {
-      this.formFlow.push(d.data());
-    })
-    cols.forEach(c => {
-      this.columnsToDisplay.unshift(c.alias);
-    })
-    data.forEach(i => {
-      ELEMENT_DATA.push(i.data().results);
-    })
+    const cols = await this.fetchData.getFormCols(this.companyId, this.currentForm);    
+    let data = null;
+    let formFlow = null;
+    if (!this.currentForm.foreign) {
+      data =  await this.fetchData.getResultsForms(this.companyId, this.currentForm);
+      formFlow = await this.fetchData.getSingleFormInfo(this.companyId, this.currentForm);
+      cols.forEach(c => {
+        (c.alias)
+          ? this.columnsToDisplay.unshift(c.alias)
+          : this.columnsToDisplay.unshift(c);
+      })
+      formFlow.forEach(d => {
+        this.formFlow.push(d.data());
+      })
+      data.forEach(i => {
+        ELEMENT_DATA.push(i.data().results);
+      })
+    } else {
+      this.fetchData.getResultsFormsForeign(30)
+        .subscribe(dataRta => {
+        cols.forEach(c => {
+          (c.alias)
+            ? this.columnsToDisplay.unshift(c.alias)
+            : this.columnsToDisplay.unshift(c);
+        }) 
+        Object.keys(dataRta).forEach(k => {
+          ELEMENT_DATA.push(dataRta[k])
+        })
+      })
+    }
   }
 
   applyFilter(filterValue: string) {
@@ -82,19 +102,48 @@ export class FormsTableComponent implements OnInit {
     this.columnsToDisplay = ['acciones'];
     ELEMENT_DATA.splice(0, ELEMENT_DATA.length);
     this.formFlow = [];
+    this.sortNumber = 0;
     // 
-    const formFlow = await this.fetchData.getSingleFormInfo(this.companyId, this.currentForm.formId);
-    const cols = await this.fetchData.getFormCols(this.companyId, this.currentForm.formId);
-    const data =  await this.fetchData.getResultsForms(this.companyId, this.currentForm.formId);
-    formFlow.forEach(d => {
-      this.formFlow.push(d.data());
+    let data = null;
+    let formFlow = null;
+    if (!this.currentForm.foreign) {
+      const cols = await this.fetchData.getFormCols(this.companyId, this.currentForm);
+      data =  await this.fetchData.getResultsForms(this.companyId, this.currentForm);
+      formFlow = await this.fetchData.getSingleFormInfo(this.companyId, this.currentForm);
+      cols.forEach(c => {
+        (c.alias)
+          ? this.columnsToDisplay.unshift(c.alias)
+          : this.columnsToDisplay.unshift(c);
+      })
+      formFlow.forEach(d => {
+        this.formFlow.push(d.data());
+      })
+      data.forEach(i => {
+        ELEMENT_DATA.push(i.data().results);
+      })      
+    }
+  }
+
+  searchFields() {
+    this.columnsToDisplay = ['acciones'];
+    ELEMENT_DATA.splice(0, ELEMENT_DATA.length);
+    this.formFlow = [];
+    const searchNumber = (this.sortNumber !== 0) ? this.sortNumber : 30;
+    this.fetchData.getResultsFormsForeign({
+      api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null,
+      number: searchNumber
     })
-    cols.forEach(c => {
-      this.columnsToDisplay.unshift(c.alias);
-    })
-    data.forEach(i => {
-      ELEMENT_DATA.push(i.data().results);
-    })
+        .subscribe(async dataRta => {
+          const cols = await this.fetchData.getFormCols(this.companyId, this.currentForm);
+          cols.forEach(c => {
+            (c.alias)
+              ? this.columnsToDisplay.unshift(c.alias)
+              : this.columnsToDisplay.unshift(c);
+          })
+          Object.keys(dataRta).forEach(k => {
+            ELEMENT_DATA.push(dataRta[k])
+          })
+        })
   }
 
   openTicket(element) {
@@ -135,6 +184,11 @@ export class FormsTableComponent implements OnInit {
     this.typeMessageEdition = null;
     this.messageEdition = null;
     this.edition = false;
+  }
+
+  viewData(element){
+    console.log(element);
+    
   }
   
 }
