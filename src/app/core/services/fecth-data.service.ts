@@ -97,7 +97,14 @@ export class FecthDataService {
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 
   // CHATS AND COMUNICATIONS SERVICES
+  getTicket(companyId,ticketId){
+    let ref = this.db.collection('tickets')
+    .doc(companyId)
+    .collection('tickets')
+    .doc(ticketId)
 
+    return ref.get();
+  }
   getChatRooms(userId, companyId){
     // getting chatrooms info
     let ref = this.db.collection('users')
@@ -232,7 +239,7 @@ export class FecthDataService {
 
 
   checkWhatsapp24HourWindow(data) {
-      const api_url = "http://localhost:5000/message/check-user"
+      const api_url = "https://246e4ab7c478.ngrok.io/message/check-user"
       // const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
       const finalData = {
         companyId: data.companyId,
@@ -244,9 +251,9 @@ export class FecthDataService {
   }
 
   getCommentsChat(data) {
-    let ref = this.db.collection('whatsapp')
+    let ref = this.db.collection('tickets')
     .doc(data.companyId)
-    .collection('chats')
+    .collection('tickets')
     .doc(data.number)
     .collection('comments', ref => ref.orderBy('timestamp', "asc"));
 

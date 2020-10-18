@@ -326,7 +326,7 @@ export class SetDataService {
 
   sendWhatsappMessageHttp(data){
      const responseId = this.holdData.createRandomId(); 
-     const api_url = "http://localhost:5000/message/sendFromOcto"
+     const api_url = "https://246e4ab7c478.ngrok.io/message/sendFromOcto"
     // const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {
@@ -378,9 +378,9 @@ export class SetDataService {
   }
 
   async sendChatComment(data) {
-    let ref = this.db.collection('whatsapp')
+    let ref = this.db.collection('tickets')
     .doc(data.companyId)
-    .collection('chats')
+    .collection('tickets')
     .doc(data.number)
     .collection('comments')
     const comment = await ref.add({
@@ -399,12 +399,75 @@ export class SetDataService {
     .doc(data.companyId)
     .collection('chats')
     .doc(data.number)
-    return ref.set({
-      number: data.number,
+    return ref.update({
       finished: true,
     })
   }
+  async archiveTicket(data) {
+    let ref = this.db.collection('tickets')
+    .doc(data.companyId)
+    .collection('tickets')
+    .doc(data.number)
+    return ref.update({
+      finished: true,
+    })
+  }
+  async sendTicketIdToChat(number,companyId,ticketId) {
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(number)
+    return ref.update({
+      ticketId: ticketId,
+    })
+  }
+  async sendHasTicket(number,companyId) {
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(number)
+    return ref.update({
+      hasTicket: true,
+    })
+  }
+  async makeChatPrivate(number,companyId) {
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(number)
+    return ref.set({
+      private: true,
+    })
+  }
+  async makeChatPublic(number,companyId) {
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(number)
+    return ref.set({
+      private: false,
+    })
+  }
+  async createTicket(ticket,companyId,number){
+    // generate ticket in firestore
+    let ref = this.db.collection('tickets')
+    .doc(companyId)
+    .collection('tickets')
+    .doc(number)
 
+    return ref.set(ticket);
+  //  .then(docRef => {
+  //    const ticketId: string = docRef.id;
+  //    ref.doc(ticketId)
+  //    .update({
+  //      ticketId:ticketId,
+  //    });
+    //  this.sendTicketIdToChat(ticket.phone,companyId,ticketId)
+   
+   
+   
+   //send the ticketId to the chatId
+ }
   async changeOptionNumber(data) {
     let ref = this.db.collection('whatsapp')
       .doc(data.companyId)
@@ -461,7 +524,30 @@ export class SetDataService {
     ;
     
   }
+  setAssignedpeople(companyId,chatId,people){
+    //add person to assigned Chats
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(chatId)
+    
 
+    return ref.update({
+      assignTo:people
+    });
+  }
+  setStatus(companyId,chatId,status){
+    // change ticket status
+
+    let ref = this.db.collection('tickets')
+    .doc(companyId)
+    .collection('tickets')
+    .doc(chatId)
+    
+    return ref.update({
+      status:status
+    });
+  }
 
   // sendTagToCategories(companyId, categoryId, name, trainingPhrases){
   //   // send tag to Categories to firestore

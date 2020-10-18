@@ -12,11 +12,16 @@ import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { Router } from '@angular/router';
 
 import { Howl } from 'howler';
+import { TicketDialogComponent } from 'app/material-component/ticket-dialog/ticket-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export class currentChatData {
   phoneNumber:string;
-  assignedTo:string = 'null';
-  finished: boolean = false
+  finished: boolean = false;
+  ticketId: string = 'null';
+  assignTo:any = [];
+  hasTicket:boolean = false;
+  
 }
 
 @Component({
@@ -37,7 +42,7 @@ export class WhatsappComponent implements OnInit {
   chatMessages: Array<any> = []; // array of messages of specific room
   currentMessage:string = null; // message to be send
   currentChatData: currentChatData;  // information of selected room chat
-  showDetail: boolean = false;
+  showTicket: boolean = false;
   showAssignedChats:boolean=false;
   showGeneralChats:boolean=false;
   WMessages: number;
@@ -54,6 +59,8 @@ export class WhatsappComponent implements OnInit {
   firstTimeMsgLoad: boolean = false;
   commentsChat: Array<any> = [];
   isAdmin: boolean = false;
+  showChip: boolean = false;
+
   tagsCategories:any = [];
   tagsCategoriesNames:any = [];
   tagsFromConversation:any = [];
@@ -65,9 +72,13 @@ export class WhatsappComponent implements OnInit {
   visible = true;
   selectable = true;
   removable = true;
-
+  employees:any = [];
+  employeesAssignated:any = [];
   event: Event = new Event('not');
-
+  ticket:any;
+  status:string;
+  showDetail:boolean = false;
+  privateChat:boolean = false;
   constructor(
     private fetchData: FecthDataService,
     private setData: SetDataService,
@@ -77,6 +88,7 @@ export class WhatsappComponent implements OnInit {
     public dialog: MatDialog,
     private _ngZone: NgZone,
     private router: Router,
+    private _snackBar: MatSnackBar
   ) { }
 
   ngOnDestroy(){
@@ -133,6 +145,8 @@ getCompanyEmployees() {
           name: `${rta.name} ${rta.lastname}`
         }
         this.employeesList.push(data);
+        console.log(this.employeesList);
+        
       })
     })
 }
@@ -182,6 +196,7 @@ getWhatsappQuota() {
 ROOM CHAT
 *******************/
 getChatWhatsappNames(){
+  this.createTicket()
   // get chat rooms names
   this.fetchData.getWhatsappChats(this.companyId)
   .pipe(
@@ -189,85 +204,123 @@ getChatWhatsappNames(){
   )
   .subscribe(data => {
     this.chatWhatsapp = data;
-    this.chatWhatsappAssigned = this.chatWhatsapp.filter(c => c.assignedTo === this.userId);  
+
+    this.chatWhatsappAssigned = this.chatWhatsapp.filter(c => c.assignTo === this.userId);
+      this.showChip = true;  
+      console.log(this.chatWhatsapp);
+      
   });
 }
 
 async getMessagesFromChatOnclick(data, assigned: boolean) {
-  if (this.messageSubscription) this.messageSubscription.unsubscribe();
-  if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
-  this.templatesActivated = false;
-  this.templatesActivatedOptions = false;
-  // get comments of this chat
-  this.chatNote = null;
-  this.commentsSubscription = this.fetchData.getCommentsChat({
-    companyId: this.companyId,
-    number: data.number
-  }).subscribe(data => {
-    this.commentsChat = data;
-  })
-  this.fetchData.checkWhatsapp24HourWindow({
-    companyId: this.companyId,
-    number: data.number,
-    api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
-  }).toPromise()
-  .then(dataSession => {
-    if(dataSession === 'false') {
-      this.templatesActivated = true;
-      this.templatesActivatedOptions = true;
-    } 
-    this.firstTimeMsgLoad = true;
-    this.chatMessages = [];
-    this.currentChatData = {
-      phoneNumber: data.number,
-      finished: (data.finished) ? data.finished : false,
-      assignedTo: (data.assignedTo) ? data.assignedTo : 'null'
-    }
-    if (assigned === true) {
-      this.showAssignedChats=true;
-      this.showGeneralChats=false;
-    }else {
-      this.showGeneralChats=true;
-      this.showAssignedChats=false;
-    }
-    this.getTagsFromConversation(data.number);
-    this.messageSubscription = this.fetchData.getMessagesFromSpecificWChat(
-      this.companyId, 
-      data.number
-    )
-    .subscribe((dataRta) => {
-      if(data.agent && !data.assignedTo) this.allowSound();
-      if (this.showGeneralChats) {
-        const el = document.getElementById('content-messages');
-        el.scrollTop = el.scrollHeight;
-      } else if (this.showAssignedChats) {
-        const el = document.getElementById('content-messages-private');
-        el.scrollTop = el.scrollHeight;
-      }
-      dataRta.map(d => {
-        if (this.firstTimeMsgLoad === true) {
-          this.chatMessages.unshift({
-            ...d.payload.doc.data(),
-            MediaContentType: (d.payload.doc.data().MediaContentType) 
-              ? (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file'
-              : null
-          });
-        } else{
-          this.chatMessages.push({
-            ...d.payload.doc.data(),
-            MediaContentType: (d.payload.doc.data().MediaContentType) 
-              ? (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file'
-              : null
-          });
-        }
-        
-      })      
-      this.firstTimeMsgLoad = false;
+
+   // ask if i have permision to see this chat 
+   if(data.allowEnter !== undefined || data.allowEnter !== null){
+     console.log("puedes ver esto");
+     this.employeesAssignated = [];
+
+    if (this.messageSubscription) this.messageSubscription.unsubscribe();
+    if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
+    this.templatesActivated = false;
+    this.templatesActivatedOptions = false;
+    // get comments of this chat
+    this.chatNote = null;
+  
+   
+    
+    this.commentsSubscription = this.fetchData.getCommentsChat({
+      companyId: this.companyId,
+      number: data.number
+    }).subscribe(data => {
+      this.commentsChat = data;
     })
-  })
-  // .catch(error => {
-  //   console.error(error);
-  // })
+    this.fetchData.checkWhatsapp24HourWindow({
+      companyId: this.companyId,
+      number: data.number,
+      api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
+    }).toPromise()
+    .then(dataSession => {
+      if(dataSession === 'false') {
+        this.templatesActivated = true;
+        this.templatesActivatedOptions = true;
+      } 
+      this.firstTimeMsgLoad = true;
+      this.chatMessages = [];
+      console.log(data);
+      
+      this.currentChatData = {
+        phoneNumber: data.number,
+        finished: (data.finished) ? data.finished : false,
+        ticketId: (data.ticketId) ? data.ticketId : 'null',
+        assignTo: (data.assignTo) ? data.assignTo : 'null',
+        hasTicket: (data.hasTicket) ? data.hasTicket : false
+
+     }
+     //if the current chat has no one assigned do nothing
+     if(this.currentChatData.assignTo === 'null' || this.currentChatData.assignTo === undefined ){
+
+     }else{
+      this.employeesAssignated = this.currentChatData.assignTo;
+     }
+      // fetch the ticket of the specific Chat
+      
+  
+      if (assigned === true) {
+        this.showAssignedChats=true;
+        this.showGeneralChats=false;
+      }else {
+        this.showGeneralChats=true;
+        this.showAssignedChats=false;
+      }
+      this.getTagsFromConversation(data.number);
+      this.messageSubscription = this.fetchData.getMessagesFromSpecificWChat(
+        this.companyId, 
+        data.number
+      )
+      .subscribe((dataRta) => {
+        if(data.agent && !data.assignedTo) this.allowSound();
+        if (this.showGeneralChats) {
+          const el = document.getElementById('content-messages');
+          el.scrollTop = el.scrollHeight;
+        } else if (this.showAssignedChats) {
+          const el = document.getElementById('content-messages-private');
+          el.scrollTop = el.scrollHeight;
+        }
+        dataRta.map(d => {
+          if (this.firstTimeMsgLoad === true) {
+            this.chatMessages.unshift({
+              ...d.payload.doc.data(),
+              MediaContentType: (d.payload.doc.data().MediaContentType) 
+                ? (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file'
+                : null
+            });
+          } else{
+            this.chatMessages.push({
+              ...d.payload.doc.data(),
+              MediaContentType: (d.payload.doc.data().MediaContentType) 
+                ? (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file'
+                : null
+            });
+          }
+          
+        })      
+        this.firstTimeMsgLoad = false;
+      })
+    })
+    // .catch(error => {
+    //   console.error(error);
+    // })
+  }else{
+    data.allowEnter.forEach(element => {
+      if (element.userId === this.holdData.userId) {
+        
+      }else{
+    // put snackbar
+      }
+    });
+  }
+
+ 
 }
 
 sendForm(formId: string) {
@@ -384,17 +437,7 @@ END OF ROOM CHAT
   }
 
 
-  assignChat(data){
-    //if chat is not assigned can be assigned    
-    this.setData.assignWhatsappChat(this.companyId, this.currentChatData.phoneNumber, {
-      userId: data.userId,
-      name: data.name
-    });
-    this.currentChatData.assignedTo = data.userId;
-    this.showAssignedChats = false;
-    this.showGeneralChats = false;
-    this.showDetail = false;
-  }
+
 
   getCategories(){
     // get categories 
@@ -497,7 +540,131 @@ goToStatistics(){
       companyId: this.companyId,
       number: this.currentChatData.phoneNumber
     })
-    this.showDetail = false;
+    await this.setData.archiveTicket({
+      companyId: this.companyId,
+      number: this.currentChatData.phoneNumber
+    })
+    this.showTicket = false;
   }
-}
+  
+  getEmployees(){
+      //get all the company employees
+      this.fetchData.getCompanyEmployees(this.holdData.userInfo.companyId)
+      .subscribe(data => {
+        data.map(e => {
+          const data = e.payload.doc.data(); 
+          this.employees.push(data);
+        })
+      })
+  }
+  getTicket(){
+    //get a ticket from current chat
+    console.log(this.currentChatData);  
+    this.fetchData.getTicket(this.companyId,this.currentChatData.phoneNumber)
+    .pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(data => {
+      this.ticket = data.data();
+      console.log(this.ticket);
+      //make the select component show the status automaticly
+      this.status = this.ticket.status
+      this.showTicket = true;
+  })
+  }
+  createTicket(){
+    console.log(this.currentChatData);  
+    
+    const dialogRef = this.dialog.open(TicketDialogComponent);
+    dialogRef.afterClosed()
+    .subscribe(result =>{
+      // create new chat room 
+      console.log(result);
+   
+      if(result.event === 'Cancel' || result.event === undefined){
+      }else if(result.event === 'Success'){
+        let ticket = result.data;
+        ticket.phone = this.currentChatData.phoneNumber;
+        ticket.status = 'Pendiente';
+        this.setData.createTicket(ticket,this.companyId,this.currentChatData.phoneNumber);
+        
+        this.setData.sendHasTicket(this.currentChatData.phoneNumber,this.companyId)
+        this.showTicket = true;
+        //agregar snackbar
+        this.getTicket();
+        this._snackBar.open('Creación exitosa', 'Ok', {
+          duration: 3000,
+        }); 
+      }
+    });   
+  }
+  addPerson(person){
+    console.log(person);
+    this.employeesAssignated.push(person);
+    console.log(this.employeesAssignated);
+    
+    this.setData.setAssignedpeople(this.companyId,this.currentChatData.phoneNumber,this.employeesAssignated)
+    this.showAssignedChats = false;
+    this.showGeneralChats = false;
+    this.showTicket = false;
+    this._snackBar.open('Nueva persona agregada al chat', 'Ok', {
+      duration: 3000,
+    }); 
+  }
+
+  removePersonAssigned(person) {
+    const index = this.employeesAssignated.indexOf(person);
+  
+    if (index >= 0) {
+      this.employeesAssignated.splice(index, 1);
+      console.log(this.employeesAssignated);
+      this.setData.setAssignedpeople(this.companyId,this.currentChatData.phoneNumber,this.employeesAssignated)
+    }
+  }
+  chatPrivateMode(){
+    //make the chat go into private mode 
+    this.currentChatData.assignTo.forEach(element => {
+      // verify if user is assigned to the chat
+      if(element.userId === this.holdData.userId){
+        this.setData.makeChatPrivate(this.currentChatData.phoneNumber,this.companyId)
+        this._snackBar.open('Este chat esta en modo privado, sólo las personas asignadas podrán tener acceso', 'Ok', {
+          duration: 3000,
+        }); 
+        this.privateChat = true;
+
+      }else{
+        this._snackBar.open('Necesitas estar asignado a este chat antes de cambiarlo a modo público', 'Ok', {
+          duration: 3000,
+        });
+      }
+    });
+  }
+  chatPublicMode(){
+    //make the chat go into public mode 
+    this.currentChatData.assignTo.forEach(element => {
+      // verify if user is assigned to the chat
+      if(element.userId === this.holdData.userId){
+        this.setData.makeChatPublic(this.currentChatData.phoneNumber,this.companyId)
+        this._snackBar.open('Este chat esta en modo público, todo tu equipo podrá acceder a el', 'Ok', {
+          duration: 3000,
+        }); 
+        this.privateChat = false;
+      }else{
+        this._snackBar.open('Necesitas estar asignado a este chat antes de cambiarlo a modo privado', 'Ok', {
+          duration: 3000,
+        });
+      }
+    });
+  }
+  ticketStatus(status){
+      this.setData.setStatus(this.companyId,this.currentChatData.phoneNumber,status)
+      this.ticket.status = status
+      console.log(this.ticket);
+      
+    
+  }
+  showDetails(){
+    this.showDetail = true;
+  }
+  
+} 
 
