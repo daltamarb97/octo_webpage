@@ -79,9 +79,8 @@ export class WhatsappComponent implements OnInit {
   status:string;
   showDetail:boolean = false;
   privateChat:boolean = false;
-  group:any;
-  private:any;
-  public:any;
+  showPrivateChat:boolean=false;
+  iAmAssigned: boolean =false;
   constructor(
     private fetchData: FecthDataService,
     private setData: SetDataService,
@@ -217,36 +216,39 @@ getChatWhatsappNames(){
 
 async getMessagesFromChatOnclick(data, assigned: boolean) {
   console.log(data);
-  
+    this.showPrivateChat = false;
+    this.iAmAssigned = false;
+     //only allow users that has been asigned
+     data.assignTo.forEach(element => {
+      if (element.userId === this.holdData.userId) {
+        this.iAmAssigned = true;      
+      }
+    });
    // ask if i have permision to see this chat 
-   if(data.private === undefined || data.private === null || data.private === false){
+   if(!data.private){
        //chat is public
     this.allowGetChatInformation(data, assigned);
     this.privateChat= false;
+    if(this.iAmAssigned) this.showPrivateChat = true;
+    
   }else if (data.private === true){
-    //only allow users that has been asigned
-    data.assignTo.forEach(element => {
-      if (element.userId === this.holdData.userId) {
-        this._snackBar.open('Haz sido asignado :)', 'Ok', {
-          duration: 5000,
-        }); 
+    if(this.iAmAssigned){
       this.allowGetChatInformation(data, assigned);
       this.privateChat = true;
-
-      }else{
-    // put snackbar
-    this._snackBar.open('Este chat es privado y sólo podran acceder las personas asignadas', 'Ok', {
-      duration: 5000,
-    }); 
-      }
-    });
+      this.showPrivateChat = true;
+    }else{
+      this._snackBar.open('Este chat es privado y sólo podran acceder las personas asignadas', 'Ok', {
+        duration: 5000,
+      }); 
+    }
+    
   }
 
  
 }
 
 allowGetChatInformation(data, assigned: boolean){
-   //chat is public
+   //chat is allowed to see
    console.log("puedes ver esto");
    this.employeesAssignated = [];
 
@@ -259,12 +261,7 @@ allowGetChatInformation(data, assigned: boolean){
 
  
   
-  this.commentsSubscription = this.fetchData.getCommentsChat({
-    companyId: this.companyId,
-    number: data.number
-  }).subscribe(data => {
-    this.commentsChat = data;
-  })
+  
 
     this.firstTimeMsgLoad = true;
     this.chatMessages = [];
@@ -583,6 +580,14 @@ goToStatistics(){
       this.showDetail = false;
 
   })
+    this.commentsSubscription = this.fetchData.getCommentsChat({
+      companyId: this.companyId,
+      number: this.currentChatData.phoneNumber
+    }).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(data => {
+      this.commentsChat = data;
+    })
   }
   createTicket(){
     console.log(this.currentChatData);  
@@ -618,8 +623,8 @@ goToStatistics(){
     
     this.setData.setAssignedpeople(this.companyId,this.currentChatData.phoneNumber,this.employeesAssignated)
     this.showAssignedChats = false;
-    this.showGeneralChats = false;
     this.showTicket = false;
+    if(person.userId === this.holdData.userId) this.showPrivateChat = true;
     this._snackBar.open('Nueva persona agregada al chat', 'Ok', {
       duration: 5000,
     }); 
@@ -636,34 +641,22 @@ goToStatistics(){
   }
   chatPrivateMode(){
     //make the chat go into private mode 
-    this.currentChatData.assignTo.forEach(element => {
-      // verify if user is assigned to the chat
-      if(element.userId === this.holdData.userId){
-        this.setData.makeChatPrivate(this.currentChatData.phoneNumber,this.companyId)
+
+    this.setData.makeChatPrivate(this.currentChatData.phoneNumber,this.companyId)
         this._snackBar.open('Este chat esta en modo privado, sólo las personas asignadas podrán tener acceso', 'Ok', {
           duration: 5000,
         }); 
-      }else{
-        this._snackBar.open('Necesitas estar asignado a este chat antes de cambiarlo a modo público', 'Ok', {
-          duration: 5000,
-        });
-      }
-    });
+      
   }
   chatPublicMode(){
     //make the chat go into public mode 
-    this.currentChatData.assignTo.forEach(element => {
       // verify if user is assigned to the chat
-      if(element.userId === this.holdData.userId){
         this.setData.makeChatPublic(this.currentChatData.phoneNumber,this.companyId);
         this._snackBar.open('Este chat esta en modo público, todo tu equipo podrá acceder a el', 'Ok', {
           duration: 5000,
         }); 
 
-      }else{
         
-      }
-    });
   }
   checkboxEvent(){
     if(this.privateChat === true){

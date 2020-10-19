@@ -117,24 +117,24 @@
                 </div>           
             </mat-card-header>
               <mat-card-content>
-                  <p style="font-size: 11px;" *ngIf="privateChat">
-                     *Este chat es privado y sólo tendrán acceso las personas asignadas.</p>
-                 <p style="font-size: 11px;" *ngIf="!privateChat" >
-                      *Este chat es público y cualquiera de tu equipo tendrá acceso.</p>      
-                
-                
-                     Modo  
-                     <section class="example-section">
-                        <mat-checkbox class="example-margin"  [(ngModel)]="privateChat" (click)="checkboxEvent()">
-                           <p *ngIf="!privateChat">
-                            <i class="material-icons">
-                                lock_open
-                               </i>Público</p> 
-                           <p *ngIf="privateChat" > <i class="material-icons">
-                            lock
-                           </i> Privado</p> 
-                         </mat-checkbox>
-                      </section>
+                 <ng-container *ngIf="showPrivateChat">
+                    <p style="font-size: 11px;" *ngIf="privateChat">
+                        *Este chat es privado y sólo tendrán acceso las personas asignadas.</p>
+                    <p style="font-size: 11px;" *ngIf="!privateChat" >
+                         *Este chat es público y cualquiera de tu equipo tendrá acceso.</p>                               
+                        <section class="example-section">
+                           <mat-checkbox class="example-margin"  [(ngModel)]="privateChat" (click)="checkboxEvent()">
+                              <p *ngIf="!privateChat">
+                               <i class="material-icons">
+                                   lock_open
+                                  </i>Modo Público</p> 
+                              <p *ngIf="privateChat" > <i class="material-icons">
+                               lock
+                              </i>Modo Privado</p> 
+                            </mat-checkbox>
+                         </section>
+                   </ng-container>
+                  
                     <!-- <mat-button-toggle-group name="group" aria-label="group" #group="matButtonToggleGroup">
                     <mat-button-toggle color="primary" value="privado"  (click)="chatPrivateMode()">
                         <i class="material-icons">
