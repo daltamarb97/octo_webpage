@@ -121,6 +121,8 @@ export class FormsTableComponent implements OnInit {
       data.forEach(i => {
         ELEMENT_DATA.push(i.data().results);
       })      
+    } else {
+      this.showTable = true;
     }
   }
 
@@ -167,7 +169,7 @@ export class FormsTableComponent implements OnInit {
             : (message.responseType) ? message.responseType : null
       }
       await this.setData.updateFormMessage(data);
-      const formFlow = await this.fetchData.getSingleFormInfo(this.companyId, this.currentForm.formId);
+      const formFlow = await this.fetchData.getSingleFormInfo(this.companyId, this.currentForm);
       this.formFlow = [];
       this.missingEditInfo = false;
       this.typeMessageEdition = null;

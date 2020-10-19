@@ -10,10 +10,10 @@ export interface TicketElement {
   id: string;
   creator: string;
   title: string;
-  assignee: string;
+  assignTo: Array<any>;
   status: string;
-  labelbg: string;
-  product: string;
+  description: string;
+  phone: string;
   date: any;
 }
 
@@ -29,7 +29,7 @@ let TICKETS: TicketElement[] = [];
 export class TicketsListComponent implements OnInit {
 
     dataSource = new MatTableDataSource<TicketElement>(TICKETS); 
-    displayedColumns: string[] = ['creator', 'title', 'assignee', 'status', 'product', 'date', 'action'];
+    displayedColumns: string[] = ['creator', 'title', 'assignee', 'phone', 'status', 'date', 'action'];
 
     companyId: string;
     searchText: any;
@@ -60,11 +60,12 @@ export class TicketsListComponent implements OnInit {
                     id: t.data().ticketId,
                     creator: t.data().creator,
                     title: t.data().title,
-                    assignee: t.data().assignee,
+                    assignTo: t.data().assignTo,
                     status: t.data().status,
-                    labelbg: t.data().labelbg,
-                    product: t.data().product,
-                    date: t.data().date.toDate(),
+                    description: t.data().description,
+                    phone: t.data().phone,
+                    // date: t.data().date.toDate(),
+                    date: t.data().date
                 }
                 TICKETS.push(data);
             })
@@ -74,6 +75,10 @@ export class TicketsListComponent implements OnInit {
             this.Inprogress = this.btnCategoryClick('progress');
             this.btnCategoryClick('');
         })
+    }
+
+    ngOnDestroy() {
+        TICKETS.splice(0, TICKETS.length);
     }
 
     applyFilter(filterValue: string) {

@@ -441,7 +441,7 @@ export class FecthDataService {
   }
 
   getResultsFormsForeign(data) {
-    // const api_url = `http://localhost:5000/foreigndb/encuesta/${number}`
+    // const api_url = `http://localhost:5000/foreigndb/encuesta/${data.number}`
       const api_url = (data.api_url) ? `${data.api_url}/foreigndb/encuesta/${data.number}` : `https://octo-api-wa.herokuapp.com/foreigndb/encuesta/${data.number}`;
     let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
     const req = this.httpClient.get(api_url, {headers: headers, responseType: 'json'});
