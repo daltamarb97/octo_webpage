@@ -21,8 +21,9 @@ import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 import { CategoryComponent } from './category-dialog/category-dialog.component';
 import { OptionComponent } from './option-dialog/option-dialog.component';
 import { MessageComponent } from './message-dialog/message-dialog.component';
-import { EditOptDialogComponent } from './editopt-dialog/editopt-dialog.component';
 import { QuickResponsesDialogComponent } from './quick-responses-dialog/quick-responses-dialog.component';
+import { EditOptDialogComponent } from './editopt-dialog/editopt-dialog.component';
+import { TicketDialogComponent } from './ticket-dialog/ticket-dialog.component';
 
 @NgModule({
   imports: [
@@ -48,7 +49,8 @@ import { QuickResponsesDialogComponent } from './quick-responses-dialog/quick-re
     CategoryComponent,
     OptionComponent,
     MessageComponent,
-    QuickResponsesDialogComponent
+    QuickResponsesDialogComponent,
+    TicketDialogComponent
   ]
 })
 export class MaterialComponentsModule {}

@@ -97,7 +97,14 @@ export class FecthDataService {
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
 
   // CHATS AND COMUNICATIONS SERVICES
+  getTicket(companyId,ticketId){
+    let ref = this.db.collection('tickets')
+    .doc(companyId)
+    .collection('tickets')
+    .doc(ticketId)
 
+    return ref.get();
+  }
   getChatRooms(userId, companyId){
     // getting chatrooms info
     let ref = this.db.collection('users')
@@ -232,8 +239,8 @@ export class FecthDataService {
 
 
   checkWhatsapp24HourWindow(data) {
-      // const api_url = "http://localhost:5000/message/check-user"
-      const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
+      const api_url = "http://localhost:5000/message/check-user"
+      // const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
       const finalData = {
         companyId: data.companyId,
         number: data.number
@@ -244,9 +251,9 @@ export class FecthDataService {
   }
 
   getCommentsChat(data) {
-    let ref = this.db.collection('whatsapp')
+    let ref = this.db.collection('tickets')
     .doc(data.companyId)
-    .collection('chats')
+    .collection('tickets')
     .doc(data.number)
     .collection('comments', ref => ref.orderBy('timestamp', "asc"));
 
@@ -441,8 +448,8 @@ export class FecthDataService {
   }
 
   getResultsFormsForeign(data) {
-    // const api_url = `http://localhost:5000/foreigndb/encuesta/${data.number}`
-      const api_url = (data.api_url) ? `${data.api_url}/foreigndb/encuesta/${data.number}` : `https://octo-api-wa.herokuapp.com/foreigndb/encuesta/${data.number}`;
+    const api_url = `http://localhost:5000/foreigndb/encuesta/${data.number}`
+      // const api_url = (data.api_url) ? `${data.api_url}/foreigndb/encuesta/${data.number}` : `https://octo-api-wa.herokuapp.com/foreigndb/encuesta/${data.number}`;
     let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
     const req = this.httpClient.get(api_url, {headers: headers, responseType: 'json'});
     return req;

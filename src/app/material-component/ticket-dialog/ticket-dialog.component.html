@@ -1,0 +1,55 @@
+<h2 mat-dialog-title>Crea un ticket <strong>{{action}}</strong></h2>
+<mat-dialog-content class="mat-typography" >
+    <mat-form-field>
+      <input type="text" matInput disabled id="creator" name="creator" [(ngModel)]="local_data.creator"
+        placeholder="Creado por">
+    </mat-form-field>
+    
+    <mat-form-field>
+      <input type="text" matInput required id="title" name="title" [(ngModel)]="local_data.title"
+        placeholder="Título">
+    </mat-form-field>
+    <!-- <mat-form-field>
+      <input type="text" matInput required id="assignee" name="assignee" [(ngModel)]="local_data.assignee"
+        placeholder="Asignado a">
+    </mat-form-field> -->
+    <mat-form-field appearance="fill">
+      <mat-label>Asignado a</mat-label>
+      <mat-select>
+        <mat-option *ngFor="let person of employees" [value]="person" (click)="addPerson(person)">
+          {{person.name}} {{person.lastname}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+
+    <mat-chip-list #chipList aria-label="Tags">   
+      <mat-chip
+          *ngFor="let person of employeesAssignated"
+          [selectable]="selectable"
+          [removable]="removable"
+          (removed)="remove(person)">
+          {{person.name}} {{person.lastname}}
+          <mat-icon matChipRemove >cancel</mat-icon>
+      </mat-chip>
+  </mat-chip-list> 
+</mat-form-field>
+ 
+
+    <mat-form-field>
+      
+        <textarea placeholder="Descripción del problema" matInput [(ngModel)]="local_data.description"  cols="1" rows="5"></textarea>
+
+    </mat-form-field>
+    <mat-form-field>
+      <input type="date" matInput required id="date" name="date" [(ngModel)]="local_data.date" placeholder="date">
+    </mat-form-field>
+</mat-dialog-content>
+<ng-template #elseTemplate>
+  Estas seguro que deseas eliminarlo <b>{{local_data.title}}</b>?
+</ng-template>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="closeDialog()" mat-flat-button>Cancelar</button>
+  <button mat-button (click)="create()" color="primary">Crear</button>
+
+</div>

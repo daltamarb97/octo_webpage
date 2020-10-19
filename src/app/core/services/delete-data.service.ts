@@ -34,7 +34,16 @@ export class DeleteDataService {
     .doc(tagId)
     return ref.delete();
   }
-
+  deletePersonAssigned(companyId, chatId){
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(chatId)
+    
+    
+    return ref.delete();
+      
+  }
   deleteTagCounter(companyId, categoryId, tagId, number){
     let refCounter = this.db.collection('whatsapp')
     .doc(companyId)
