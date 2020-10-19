@@ -21,7 +21,7 @@ export class currentChatData {
   ticketId: string = 'null';
   assignTo:any = [];
   hasTicket:boolean = false;
-  
+  private:boolean = false;
 }
 
 @Component({
@@ -79,6 +79,9 @@ export class WhatsappComponent implements OnInit {
   status:string;
   showDetail:boolean = false;
   privateChat:boolean = false;
+  group:any;
+  private:any;
+  public:any;
   constructor(
     private fetchData: FecthDataService,
     private setData: SetDataService,
@@ -142,7 +145,8 @@ getCompanyEmployees() {
         const data = {
           email: rta.email,
           userId: rta.userId,
-          name: `${rta.name} ${rta.lastname}`
+          name: `${rta.name}`,
+          lastname: `${rta.lastname}`
         }
         this.employeesList.push(data);
         console.log(this.employeesList);
@@ -196,7 +200,6 @@ getWhatsappQuota() {
 ROOM CHAT
 *******************/
 getChatWhatsappNames(){
-  this.createTicket()
   // get chat rooms names
   this.fetchData.getWhatsappChats(this.companyId)
   .pipe(
@@ -213,114 +216,122 @@ getChatWhatsappNames(){
 }
 
 async getMessagesFromChatOnclick(data, assigned: boolean) {
-
+  console.log(data);
+  
    // ask if i have permision to see this chat 
-   if(data.allowEnter !== undefined || data.allowEnter !== null){
-     console.log("puedes ver esto");
-     this.employeesAssignated = [];
-
-    if (this.messageSubscription) this.messageSubscription.unsubscribe();
-    if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
-    this.templatesActivated = false;
-    this.templatesActivatedOptions = false;
-    // get comments of this chat
-    this.chatNote = null;
-  
-   
-    
-    this.commentsSubscription = this.fetchData.getCommentsChat({
-      companyId: this.companyId,
-      number: data.number
-    }).subscribe(data => {
-      this.commentsChat = data;
-    })
-    this.fetchData.checkWhatsapp24HourWindow({
-      companyId: this.companyId,
-      number: data.number,
-      api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
-    }).toPromise()
-    .then(dataSession => {
-      if(dataSession === 'false') {
-        this.templatesActivated = true;
-        this.templatesActivatedOptions = true;
-      } 
-      this.firstTimeMsgLoad = true;
-      this.chatMessages = [];
-      console.log(data);
-      
-      this.currentChatData = {
-        phoneNumber: data.number,
-        finished: (data.finished) ? data.finished : false,
-        ticketId: (data.ticketId) ? data.ticketId : 'null',
-        assignTo: (data.assignTo) ? data.assignTo : 'null',
-        hasTicket: (data.hasTicket) ? data.hasTicket : false
-
-     }
-     //if the current chat has no one assigned do nothing
-     if(this.currentChatData.assignTo === 'null' || this.currentChatData.assignTo === undefined ){
-
-     }else{
-      this.employeesAssignated = this.currentChatData.assignTo;
-     }
-      // fetch the ticket of the specific Chat
-      
-  
-      if (assigned === true) {
-        this.showAssignedChats=true;
-        this.showGeneralChats=false;
-      }else {
-        this.showGeneralChats=true;
-        this.showAssignedChats=false;
-      }
-      this.getTagsFromConversation(data.number);
-      this.messageSubscription = this.fetchData.getMessagesFromSpecificWChat(
-        this.companyId, 
-        data.number
-      )
-      .subscribe((dataRta) => {
-        if(data.agent && !data.assignedTo) this.allowSound();
-        if (this.showGeneralChats) {
-          const el = document.getElementById('content-messages');
-          el.scrollTop = el.scrollHeight;
-        } else if (this.showAssignedChats) {
-          const el = document.getElementById('content-messages-private');
-          el.scrollTop = el.scrollHeight;
-        }
-        dataRta.map(d => {
-          if (this.firstTimeMsgLoad === true) {
-            this.chatMessages.unshift({
-              ...d.payload.doc.data(),
-              MediaContentType: (d.payload.doc.data().MediaContentType) 
-                ? (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file'
-                : null
-            });
-          } else{
-            this.chatMessages.push({
-              ...d.payload.doc.data(),
-              MediaContentType: (d.payload.doc.data().MediaContentType) 
-                ? (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file'
-                : null
-            });
-          }
-          
-        })      
-        this.firstTimeMsgLoad = false;
-      })
-    })
-    // .catch(error => {
-    //   console.error(error);
-    // })
-  }else{
-    data.allowEnter.forEach(element => {
+   if(data.private === undefined || data.private === null || data.private === false){
+       //chat is public
+    this.allowGetChatInformation(data, assigned);
+    this.privateChat= false;
+  }else if (data.private === true){
+    //only allow users that has been asigned
+    data.assignTo.forEach(element => {
       if (element.userId === this.holdData.userId) {
-        
+        this._snackBar.open('Haz sido asignado :)', 'Ok', {
+          duration: 5000,
+        }); 
+      this.allowGetChatInformation(data, assigned);
+      this.privateChat = true;
+
       }else{
     // put snackbar
+    this._snackBar.open('Este chat es privado y sólo podran acceder las personas asignadas', 'Ok', {
+      duration: 5000,
+    }); 
       }
     });
   }
 
  
+}
+
+allowGetChatInformation(data, assigned: boolean){
+   //chat is public
+   console.log("puedes ver esto");
+   this.employeesAssignated = [];
+
+  if (this.messageSubscription) this.messageSubscription.unsubscribe();
+  if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
+  this.templatesActivated = false;
+  this.templatesActivatedOptions = false;
+  // get comments of this chat
+  this.chatNote = null;
+
+ 
+  
+  this.commentsSubscription = this.fetchData.getCommentsChat({
+    companyId: this.companyId,
+    number: data.number
+  }).subscribe(data => {
+    this.commentsChat = data;
+  })
+
+    this.firstTimeMsgLoad = true;
+    this.chatMessages = [];
+    console.log(data);
+    
+    this.currentChatData = {
+      phoneNumber: data.number,
+      finished: (data.finished) ? data.finished : false,
+      ticketId: (data.ticketId) ? data.ticketId : 'null',
+      assignTo: (data.assignTo) ? data.assignTo : 'null',
+      hasTicket: (data.hasTicket) ? data.hasTicket : false,
+      private: (data.private) ? data.private : false
+   }
+   //if the current chat has no one assigned do nothing
+   if(this.currentChatData.assignTo === 'null' || this.currentChatData.assignTo === undefined ){
+
+   }else{
+    this.employeesAssignated = this.currentChatData.assignTo;
+   }
+    // fetch the ticket of the specific Chat
+    
+
+    if (assigned === true) {
+      this.showAssignedChats=true;
+      this.showGeneralChats=false;
+    }else {
+      this.showGeneralChats=true;
+      this.showAssignedChats=false;
+    }
+    this.getTagsFromConversation(data.number);
+    this.messageSubscription = this.fetchData.getMessagesFromSpecificWChat(
+      this.companyId, 
+      data.number
+    )
+    .subscribe((dataRta) => {
+      if(data.agent && !data.assignedTo) this.allowSound();
+      if (this.showGeneralChats) {
+        const el = document.getElementById('content-messages');
+        el.scrollTop = el.scrollHeight;
+      } else if (this.showAssignedChats) {
+        const el = document.getElementById('content-messages-private');
+        el.scrollTop = el.scrollHeight;
+      }
+      dataRta.map(d => {
+        if (this.firstTimeMsgLoad === true) {
+          this.chatMessages.unshift({
+            ...d.payload.doc.data(),
+            MediaContentType: (d.payload.doc.data().MediaContentType) 
+              ? (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file'
+              : null
+          });
+        } else{
+          this.chatMessages.push({
+            ...d.payload.doc.data(),
+            MediaContentType: (d.payload.doc.data().MediaContentType) 
+              ? (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file'
+              : null
+          });
+        }
+        
+      })      
+      this.firstTimeMsgLoad = false;
+    })
+  
+  // .catch(error => {
+  //   console.error(error);
+  // })
 }
 
 sendForm(formId: string) {
@@ -569,6 +580,8 @@ goToStatistics(){
       //make the select component show the status automaticly
       this.status = this.ticket.status
       this.showTicket = true;
+      this.showDetail = false;
+
   })
   }
   createTicket(){
@@ -589,6 +602,7 @@ goToStatistics(){
         
         this.setData.sendHasTicket(this.currentChatData.phoneNumber,this.companyId)
         this.showTicket = true;
+        this.showDetail = false;
         //agregar snackbar
         this.getTicket();
         this._snackBar.open('Creación exitosa', 'Ok', {
@@ -607,7 +621,7 @@ goToStatistics(){
     this.showGeneralChats = false;
     this.showTicket = false;
     this._snackBar.open('Nueva persona agregada al chat', 'Ok', {
-      duration: 3000,
+      duration: 5000,
     }); 
   }
 
@@ -627,13 +641,11 @@ goToStatistics(){
       if(element.userId === this.holdData.userId){
         this.setData.makeChatPrivate(this.currentChatData.phoneNumber,this.companyId)
         this._snackBar.open('Este chat esta en modo privado, sólo las personas asignadas podrán tener acceso', 'Ok', {
-          duration: 3000,
+          duration: 5000,
         }); 
-        this.privateChat = true;
-
       }else{
         this._snackBar.open('Necesitas estar asignado a este chat antes de cambiarlo a modo público', 'Ok', {
-          duration: 3000,
+          duration: 5000,
         });
       }
     });
@@ -643,27 +655,38 @@ goToStatistics(){
     this.currentChatData.assignTo.forEach(element => {
       // verify if user is assigned to the chat
       if(element.userId === this.holdData.userId){
-        this.setData.makeChatPublic(this.currentChatData.phoneNumber,this.companyId)
+        this.setData.makeChatPublic(this.currentChatData.phoneNumber,this.companyId);
         this._snackBar.open('Este chat esta en modo público, todo tu equipo podrá acceder a el', 'Ok', {
-          duration: 3000,
+          duration: 5000,
         }); 
-        this.privateChat = false;
+
       }else{
-        this._snackBar.open('Necesitas estar asignado a este chat antes de cambiarlo a modo privado', 'Ok', {
-          duration: 3000,
-        });
+        
       }
     });
   }
+  checkboxEvent(){
+    if(this.privateChat === true){
+      this.chatPublicMode();
+
+      console.log('a');
+    }else if(this.privateChat === false) {
+      this.chatPrivateMode();
+
+      console.log('b');
+      
+    }
+  }
   ticketStatus(status){
-      this.setData.setStatus(this.companyId,this.currentChatData.phoneNumber,status)
-      this.ticket.status = status
+      this.setData.setStatus(this.companyId,this.currentChatData.phoneNumber,status);
+      this.ticket.status = status;
       console.log(this.ticket);
       
     
   }
   showDetails(){
     this.showDetail = true;
+    this.showTicket = false;
   }
   
 } 

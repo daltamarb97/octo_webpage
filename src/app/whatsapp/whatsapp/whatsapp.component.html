@@ -2,7 +2,7 @@
 <mat-sidenav-container class="chat-sidebar-container">
   
     <mat-sidenav opened mode="side" style="width: auto; background-color: #EBF2F6; max-width:40% ;">
-        <mat-card *ngIf="!showTicket">
+        <mat-card *ngIf="!showTicket && !showDetail">
             <div class="p-20  position-relative">
                 <h4 class="card-title  m-0 font-20 font-medium">Chats de WhatsApp</h4>
             </div>
@@ -36,8 +36,8 @@
                                     </span > {{chat.number| slice:9}} 
 
                                     <mat-chip-list  >
-                                        <mat-chip color="primary" *ngIf="showChip && chat.assignTo.length > 1" class="chip"  selected>{{chat.assignTo[0].name}}+{{chat.assignTo.length}}...</mat-chip>
-                                        <mat-chip color="primary" *ngIf="showChip && chat.assignTo.length == 1" class="chip"  selected>{{chat.assignTo[0].name}}</mat-chip>
+                                        <mat-chip color="primary" style="margin-left: 10px;" *ngIf="showChip && chat.assignTo.length > 1" class="chip"  selected>{{chat.assignTo[0].name}} + {{chat.assignTo.length - 1}}...</mat-chip>
+                                        <mat-chip color="primary" style="margin-left: 10px;" *ngIf="showChip && chat.assignTo.length == 1" class="chip"  selected>{{chat.assignTo[0].name}}</mat-chip>
 
                                         <!-- <mat-chip color="warn" class="chip" selected >Juan</mat-chip>
                                         <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected >María</mat-chip> -->
@@ -61,6 +61,10 @@
                 <mat-card-title style="margin-top:5px" >Ticket</mat-card-title>
                 <mat-card-subtitle style="margin-top:5px" >{{currentChatData.phoneNumber}}</mat-card-subtitle>
                 <mat-card-subtitle style="margin-top:5px">Creador: {{ticket.creator}}</mat-card-subtitle>
+                <mat-card-subtitle style="margin-top:5px">Asignado a: <span *ngFor="let person of currentChatData.assignTo">{{person.name}} {{person.lastname}},
+
+                </span></mat-card-subtitle>
+
                 <mat-form-field style="margin-top:10px" appearance="fill">
                     <mat-label>Status</mat-label>
                     <mat-select [(value)]="status">
@@ -76,7 +80,7 @@
                     </mat-select>
                   </mat-form-field>   
             </div>           
-            <p style="margin-left:20px;" > <strong>Descripción:</strong>{{ticket.description}}</p>
+            <p style="margin-left:20px;" > <strong>Descripción:</strong> <br>{{ticket.description}}</p>
         </mat-card-header>
          <p style="margin-left:24px;">Comentarios</p> 
          <p  style="margin-top:5px; margin-bottom: 15px; " *ngIf="commentsChat.length === 0" >No hay comentarios previos</p> 
@@ -113,25 +117,49 @@
                 </div>           
             </mat-card-header>
               <mat-card-content>
-                  <p *ngIf="!privateChat"> Este chat es privado y sólo tendrán acceso las personas asignadas.
-                       <br>
-                       Haz click si de seas cambiar a </p>
-                 <p *ngIf="privateChat"> Este chat es público y cualquiera de tu equipo tendrá acceso.
-                       <br>
-                       Haz click si de seas cambiar a </p>      
-                <button  *ngIf="!privateChat" mat-raised-button color="accent" class="example-icon m-r-15" (click)="chatPrivateMode()">Modo privado</button>
-                <button  *ngIf="privateChat" mat-raised-button color="primary" class="example-icon m-r-15" (click)="chatPublicMode()">Modo público</button>
+                  <p style="font-size: 11px;" *ngIf="privateChat">
+                     *Este chat es privado y sólo tendrán acceso las personas asignadas.</p>
+                 <p style="font-size: 11px;" *ngIf="!privateChat" >
+                      *Este chat es público y cualquiera de tu equipo tendrá acceso.</p>      
+                
+                
+                     Modo  
+                     <section class="example-section">
+                        <mat-checkbox class="example-margin"  [(ngModel)]="privateChat" (click)="checkboxEvent()">
+                           <p *ngIf="!privateChat">
+                            <i class="material-icons">
+                                lock_open
+                               </i>Público</p> 
+                           <p *ngIf="privateChat" > <i class="material-icons">
+                            lock
+                           </i> Privado</p> 
+                         </mat-checkbox>
+                      </section>
+                    <!-- <mat-button-toggle-group name="group" aria-label="group" #group="matButtonToggleGroup">
+                    <mat-button-toggle color="primary" value="privado"  (click)="chatPrivateMode()">
+                        <i class="material-icons">
+                        lock
+                       </i>  Privado
+                    </mat-button-toggle>
+                      <mat-button-toggle value="público"  (click)="chatPublicMode()">
+                        <i class="material-icons">
+                            lock_open
+                           </i>  Público
+                      </mat-button-toggle>
+                    </mat-button-toggle-group> -->
 
+                  <!-- </p> -->
+                  
                 <button *ngIf="templatesActivatedOptions && !currentChatData.finished" [matMenuTriggerFor]="templates" mat-raised-button class="m-r-5">Escoger Template</button>
                 <mat-menu #templates="matMenu" class="mymegamenu" style="overflow-y: auto;">
                     <button mat-menu-item *ngFor="let t of templatesArray" (click)="templateSelected(t)">
                         {{t}}
                     </button>
                 </mat-menu>
-                <button  [matMenuTriggerFor]="assignment" mat-raised-button class="m-r-5">Asignar conversación</button>
+                <button color="primary" [matMenuTriggerFor]="assignment" mat-raised-button class="m-r-5">Asignar conversación</button>
                 <mat-menu #assignment="matMenu" class="mymegamenu" style="overflow-y: auto;">
                     <button mat-menu-item *ngFor="let e of employeesList" matTooltip="{{e.email}}" (click)="addPerson(e)">
-                        {{e.name | titlecase}}
+                        {{e.name | titlecase}} {{e.lastname | titlecase}}
                     </button>
                 </mat-menu>
                 <div style="margin:10px" >
