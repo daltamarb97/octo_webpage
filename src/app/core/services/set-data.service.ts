@@ -404,7 +404,7 @@ export class SetDataService {
     let ref = this.db.collection('tickets')
     .doc(data.companyId)
     .collection('tickets')
-    .doc(data.number)
+    .doc(data.ticketId)
     .collection('comments')
     const comment = await ref.add({
       agent: data.agent,
@@ -427,6 +427,7 @@ export class SetDataService {
       number: data.number
     })
   }
+
   async archiveTicket(data) {
     let ref = this.db.collection('tickets')
     .doc(data.companyId)
@@ -436,6 +437,7 @@ export class SetDataService {
       finished: true,
     })
   }
+
   async sendTicketIdToChat(number,companyId,ticketId) {
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
@@ -445,15 +447,18 @@ export class SetDataService {
       ticketId: ticketId,
     })
   }
-  async sendHasTicket(number,companyId) {
+
+  async sendHasTicket(number: string, companyId: string, ticketId: string) {
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
     .collection('chats')
     .doc(number)
     return ref.update({
       hasTicket: true,
+      ticketId: ticketId
     })
   }
+
   async makeChatPrivate(number,companyId) {
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
@@ -463,6 +468,7 @@ export class SetDataService {
       private: true,
     })
   }
+
   async makeChatPublic(number,companyId) {
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
@@ -472,26 +478,21 @@ export class SetDataService {
       private: false,
     })
   }
-  async createTicket(ticket,companyId,number){
+
+  async createTicket(ticket,companyId){
     // generate ticket in firestore
     let ref = this.db.collection('tickets')
     .doc(companyId)
     .collection('tickets')
-    .doc(number)
 
-    return ref.set(ticket);
-  //  .then(docRef => {
-  //    const ticketId: string = docRef.id;
-  //    ref.doc(ticketId)
-  //    .update({
-  //      ticketId:ticketId,
-  //    });
-    //  this.sendTicketIdToChat(ticket.phone,companyId,ticketId)
-   
-   
-   
-   //send the ticketId to the chatId
+    const rta = await ref.add(ticket);
+    await ref.doc(rta.id).update({
+      ticketId: rta.id
+    })
+    return rta.id;
  }
+
+
   async changeOptionNumber(data) {
     let ref = this.db.collection('whatsapp')
       .doc(data.companyId)
@@ -556,31 +557,38 @@ export class SetDataService {
 
     return ref.update({
       times:tag.times+1
-    })
-    ;
-    
+    });
   }
+
   setAssignedpeople(companyId,chatId,people){
     //add person to assigned Chats
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
     .collection('chats')
     .doc(chatId)
-    
-
+  
     return ref.update({
       assignTo:people
     });
   }
-  setStatus(companyId,chatId,status){
-    // change ticket status
 
+  async setStatus(companyId: string,ticketId: string, status: string, number: string){
+    // change ticket status
     let ref = this.db.collection('tickets')
     .doc(companyId)
     .collection('tickets')
-    .doc(chatId)
-    
-    return ref.update({
+    .doc(ticketId)
+    if(status === 'Completado') {
+      let refChat = this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('chats')
+      .doc(number)
+      await refChat.update({
+        hasTicket: false,
+        ticketId: 'no ticket'
+      });
+    }
+    await ref.update({
       status:status
     });
   }

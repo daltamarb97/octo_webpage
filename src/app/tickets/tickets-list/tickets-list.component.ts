@@ -70,9 +70,9 @@ export class TicketsListComponent implements OnInit {
                 TICKETS.push(data);
             })
             this.totalCount = this.dataSource.data.length;
-            this.Open = this.btnCategoryClick('open');
-            this.Closed = this.btnCategoryClick('closed');
-            this.Inprogress = this.btnCategoryClick('progress');
+            this.Open = this.btnCategoryClick('Pendiente');
+            this.Closed = this.btnCategoryClick('Completado');
+            this.Inprogress = this.btnCategoryClick('En progreso');
             this.btnCategoryClick('');
         })
     }

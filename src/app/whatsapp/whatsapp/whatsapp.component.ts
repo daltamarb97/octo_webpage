@@ -45,7 +45,7 @@ import {
 export class currentChatData {
   phoneNumber: string;
   finished: boolean = false;
-  ticketId: string = 'null';
+  ticketId: string;
   assignTo: any = [];
   hasTicket: boolean = false;
   private: boolean = false;
@@ -95,6 +95,8 @@ export class WhatsappComponent implements OnInit {
   commentsSubscription: any;
   messageSubscription: any;
   formsAlias: Array < any > = [];
+  sendFormOnTicketClose: boolean = false;
+  formOnTicket: any;
 
   visible = true;
   selectable = true;
@@ -138,7 +140,6 @@ export class WhatsappComponent implements OnInit {
           this.isAdmin = false;
       } else {
           this.isAdmin = true;
-          this.getWhatsappQuota();
       }
       this.getChatWhatsappNames();
       this.getCompanyEmployees();
@@ -199,18 +200,6 @@ export class WhatsappComponent implements OnInit {
       }
   }
 
-  getWhatsappQuota() {
-      // get quota of whatsapp
-      this.fetchData.getWhatsappQuota(this.companyId)
-          .pipe(
-              takeUntil(this.destroy$)
-          )
-          .subscribe(data => {
-              const rta: any = data;
-              this.WMessages = rta.messages;
-              this.WSenders = rta.senders;
-          })
-  }
   /*******************
   ROOM CHAT
   *******************/
@@ -286,13 +275,6 @@ export class WhatsappComponent implements OnInit {
       this.employeesAssignated = [];
       if (this.messageSubscription) this.messageSubscription.unsubscribe();
       if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
-      // let currentAgentAssigned: boolean = false;
-      // for (let i = 0; i < data.assignTo.length; i++) {
-      //     if (data.assignTo[i].userId === this.userId) {
-      //         currentAgentAssigned = true;
-      //         break;
-      //     }
-      // }
       // get comments of this chat
       this.chatNote = null;
       this.firstTimeMsgLoad = true;
@@ -300,8 +282,8 @@ export class WhatsappComponent implements OnInit {
       this.currentChatData = {
           phoneNumber: data.number,
           finished: (data.finished) ? data.finished : false,
-          ticketId: (data.ticketId) ? data.ticketId : 'null',
-          assignTo: (data.assignTo) ? data.assignTo : 'null',
+          ticketId: (data.ticketId) ? data.ticketId : null,
+          assignTo: (data.assignTo) ? data.assignTo : null,
           hasTicket: (data.hasTicket) ? data.hasTicket : false,
           private: (data.private) ? data.private : false
       }
@@ -355,12 +337,6 @@ export class WhatsappComponent implements OnInit {
   }
 
   sendForm(formId: string) {
-      if (this.currentChatData.hasTicket) {
-        alert('No puedes enviar un formulario o cerrar el chat si hay un ticket abierto asociado al chat');
-      } else {
-        // finish chat and remove agent from chat and send form
-        this.archiveChat();
-      }
       let formData;
       this.fetchData.getMainMessageForm(this.companyId, formId)
           .toPromise()
@@ -381,6 +357,9 @@ export class WhatsappComponent implements OnInit {
                       api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
                   }).toPromise()
                   .then(data => {
+                    this._snackBar.open('Formulario enviado. Revisa la información en la sección "formularios"', 'Ok', {
+                        duration: 4000,
+                    });
                   })
                   .catch(error => {
                       // console.log(error);
@@ -540,6 +519,34 @@ export class WhatsappComponent implements OnInit {
       this.templatesActivated = false;
   }
 
+  templateSelectedClose(template) {
+    this.setData.sendWhatsappMessageHttp({
+        message: template,
+        number: this.currentChatData.phoneNumber,
+        template: true,
+        companyId: this.companyId,
+        mediaUrl: null,
+        api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
+    }).toPromise()
+    .then(async (data) => {
+        const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
+        let dataFirebase;
+        dataFirebase = {
+            inbound: false,
+            message: template,
+            timestamp: timestamp,
+        }
+        await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
+    })
+    .catch(error => {
+        if (error.status === 400) {
+            alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
+        } else {
+            alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
+        }
+    })
+  }
+
   displayImage(url: string) {
       window.open(url, "_blank");
   }
@@ -555,7 +562,7 @@ export class WhatsappComponent implements OnInit {
               agent: `${this.holdData.userInfo.name} ${this.holdData.userInfo.lastname}`,
               body: this.chatNote,
               companyId: this.companyId,
-              number: this.currentChatData.phoneNumber,
+              ticketId: this.currentChatData.ticketId,
               timestamp: this.holdData.convertJSDateIntoFirestoreTimestamp()
           }
           // send comment
@@ -565,19 +572,15 @@ export class WhatsappComponent implements OnInit {
   }
 
   async archiveChat() {
-    if (this.currentChatData.hasTicket) {
-      alert('No puedes enviar un formulario o cerrar el chat si hay un ticket abierto asociado al chat');
-    } else {
-      // finish chat and remove agent from chat
-      await this.setData.archiveChat({
-          companyId: this.companyId,
-          number: this.currentChatData.phoneNumber
-      })
-      // hide user interface 
-      this.showDetail = false;
-      this.showAssignedChats = false;
-      this.showGeneralChats = false;
-    }
+    // finish chat and remove agent from chat
+    await this.setData.archiveChat({
+        companyId: this.companyId,
+        number: this.currentChatData.phoneNumber
+    })
+    // hide user interface 
+    this.showDetail = false;
+    this.showAssignedChats = false;
+    this.showGeneralChats = false;
   }
 
   showQuickResponses() {
@@ -604,7 +607,7 @@ export class WhatsappComponent implements OnInit {
 
   getTicket() {
       //get a ticket from current chat
-      this.fetchData.getTicket(this.companyId, this.currentChatData.phoneNumber)
+      this.fetchData.getTicket(this.companyId, this.currentChatData.ticketId)
           .pipe(
               takeUntil(this.destroy$)
           ).subscribe(data => {
@@ -616,7 +619,7 @@ export class WhatsappComponent implements OnInit {
           })
       this.commentsSubscription = this.fetchData.getCommentsChat({
           companyId: this.companyId,
-          number: this.currentChatData.phoneNumber
+          ticketId: this.currentChatData.ticketId
       }).pipe(
           takeUntil(this.destroy$)
       ).subscribe(data => {
@@ -627,17 +630,17 @@ export class WhatsappComponent implements OnInit {
   createTicket() {
       const dialogRef = this.dialog.open(TicketDialogComponent);
       dialogRef.afterClosed()
-          .subscribe(result => {
+          .subscribe(async result => {
               // create new chat room 
               if (result.event === 'Cancel' || result.event === undefined) {} else if (result.event === 'Success') {
                   let ticket = result.data;
                   ticket.phone = this.currentChatData.phoneNumber;
                   ticket.status = 'Pendiente';
-                  this.setData.createTicket(ticket, this.companyId, this.currentChatData.phoneNumber);
-                  this.setData.sendHasTicket(this.currentChatData.phoneNumber, this.companyId)
-                  this.showTicket = true;
+                  const ticketId: any = await this.setData.createTicket(ticket, this.companyId);
+                  this.setData.sendHasTicket(this.currentChatData.phoneNumber, this.companyId, ticketId);
                   this.showDetail = false;
                   //agregar snackbar
+                  this.currentChatData = {...this.currentChatData, hasTicket: true, ticketId: ticketId};
                   this.getTicket();
                   this._snackBar.open('Creación exitosa', 'Ok', {
                       duration: 3000,
@@ -691,8 +694,20 @@ export class WhatsappComponent implements OnInit {
   }
 
   ticketStatus(status) {
-      this.setData.setStatus(this.companyId, this.currentChatData.phoneNumber, status);
+      this.setData.setStatus(this.companyId, this.currentChatData.ticketId, status, this.currentChatData.phoneNumber);
       this.ticket.status = status;
+      if(status === 'Completado') {
+        this.currentChatData = {
+            ...this.currentChatData,
+            hasTicket: false,
+            ticketId: 'no ticket'
+        }
+        this.showTicket = false;
+        this.archiveChat();
+        if(this.sendFormOnTicketClose) {
+            this.sendForm(this.formOnTicket.formId);
+        }
+      }
   }
 
   showDetails() {

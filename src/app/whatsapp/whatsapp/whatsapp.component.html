@@ -71,11 +71,22 @@
                       <mat-option  (click)="ticketStatus(status)" value="En progreso">
                         En progreso
                       </mat-option>
-                      <mat-option  (click)="ticketStatus(status)" value="Completado">
+                      <mat-option  
+                        (click)="ticketStatus(status)" 
+                        value="Completado" 
+                        matTooltip="Al seleccionar la opción 'Completado', el chat y el ticket serán automáticamente cerrados">
                         Completado
                       </mat-option>
                     </mat-select>
-                  </mat-form-field>   
+                </mat-form-field>   
+                <mat-slide-toggle *ngIf="formsAlias.length > 0" [(ngModel)]="sendFormOnTicketClose">Enviar formulario al completar ticket</mat-slide-toggle>
+                <mat-form-field appearance="fill" *ngIf="sendFormOnTicketClose">
+                    <mat-select [(ngModel)]="formOnTicket">
+                        <mat-option *ngFor="let form of formsAlias" [value]="form">
+                        {{form.alias}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>           
             <p style="margin-left:20px;" > <strong>Descripción:</strong> <br>{{ticket.description}}</p>
         </mat-card-header>
@@ -130,20 +141,27 @@
                             </mat-checkbox>
                          </section>
                    </ng-container>
-                <mat-button-toggle-group name="fontStyle" aria-label="Font Style" class="detail-toggle">
-                    <mat-button-toggle *ngIf="templatesActivatedOptions && !currentChatData.finished" [matMenuTriggerFor]="templates" >
-                        <mat-icon>keyboard_arrow_down</mat-icon>
-                        Escoger Template
-                    </mat-button-toggle>
-                    <mat-button-toggle [matMenuTriggerFor]="assignment" >
-                        <mat-icon>keyboard_arrow_down</mat-icon>
-                        Asignar conversación
-                    </mat-button-toggle>
-                    <mat-button-toggle *ngIf="iAmAssigned"  [matMenuTriggerFor]="forms" matTooltip="Al enviar un formulario, el chat será automaticamente cerrado">
-                        <mat-icon>keyboard_arrow_down</mat-icon>
-                        Enviar formulario
-                    </mat-button-toggle>
-                </mat-button-toggle-group>
+                   <div style="display: flex; flex-direction: column">
+                       <mat-button-toggle-group name="fontStyle" aria-label="Font Style" class="detail-toggle">
+                           <mat-button-toggle *ngIf="templatesActivatedOptions" [matMenuTriggerFor]="templates" >
+                               <mat-icon>keyboard_arrow_down</mat-icon>
+                               Escoger Template
+                           </mat-button-toggle>
+                           <mat-button-toggle [matMenuTriggerFor]="assignment" >
+                               <mat-icon>keyboard_arrow_down</mat-icon>
+                               Asignar conversación
+                           </mat-button-toggle>
+                           <mat-button-toggle *ngIf="iAmAssigned"  [matMenuTriggerFor]="forms">
+                               <mat-icon>keyboard_arrow_down</mat-icon>
+                               Enviar formulario
+                           </mat-button-toggle>
+                       </mat-button-toggle-group>
+                       <button 
+                           mat-stroked-button 
+                           style="margin-top: 10px;"
+                           color="warn" *ngIf="iAmAssigned && !currentChatData.hasTicket"
+                           (click)="archiveChat()">Cerrar Chat</button>
+                   </div>
                 <!-- MENUS START -->
                 <mat-menu #templates="matMenu" class="mymegamenu" style="overflow-y: auto;">
                     <button mat-menu-item *ngFor="let t of templatesArray" (click)="templateSelected(t)">
@@ -189,10 +207,15 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
             <span class="toolbar-msg"  ># {{currentChatData.phoneNumber}}</span>
             <span class="example-spacer"></span>
             <button *ngIf="currentChatData.hasTicket" (click)="getTicket()" color="primary" mat-raised-button class="m-r-5">Ver Ticket</button>
-            <button *ngIf="!currentChatData.finished" (click)="showDetails()" color="primary" mat-raised-button class="m-r-5">Detalles</button>     
+            <button *ngIf="!currentChatData.finished" (click)="showDetails()" color="primary" mat-raised-button class="m-r-5">Detalles</button>  
+            <button *ngIf="currentChatData.finished" mat-raised-button class="m-r-5" [matMenuTriggerFor]="templatesClose">Enviar Template</button>     
         </mat-toolbar>
+        <mat-menu #templatesClose="matMenu" class="mymegamenu" style="overflow-y: auto;">
+            <button mat-menu-item *ngFor="let t of templatesArray" (click)="templateSelectedClose(t)">
+                {{t}}
+            </button>
+        </mat-menu>
         <mat-card-content class="backgroun-img" style=" overflow-y: visible; height: 75%;">
-            
             <div class="chat"  *ngFor="let message of chatMessages" >
                 <div class="me" *ngIf="message.inbound === false">          
                     <span style="word-wrap: break-word;">{{message.message}} </span> 
@@ -266,7 +289,7 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
                     </div>
                 </div>
                 <input *ngIf="!iAmAssigned  && !currentChatData.finished" matInput value="Asígnate este chat para responder" readonly>
-                <input *ngIf="currentChatData.finished" matInput value="Este chat fue cerrado, si el cliente vuelve a escribir a la empresa, el chat será reanudado" readonly>
+                <input *ngIf="currentChatData.finished" matInput value="Este chat fue cerrado, envía un template para reanudar la conversación" readonly>
                 <input 
                     *ngIf="templatesActivated && iAmAssigned" 
                     matInput 

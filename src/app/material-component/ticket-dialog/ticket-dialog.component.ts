@@ -40,34 +40,26 @@ export class TicketDialogComponent {
       })
   }
   
-addPerson(person){
-  console.log(person);
-  this.employeesAssignated.push(person);
-}
-addStatus(value){
-console.log(value);
-
-}
-remove(person) {
-  const index = this.employeesAssignated.indexOf(person);
-
-  if (index >= 0) {
-    this.employeesAssignated.splice(index, 1);
-    console.log(this.employeesAssignated);
-
+  addPerson(person){
+    this.employeesAssignated.push(person);
   }
-  console.log(this.employeesAssignated);
-  
-}
-create(){
-  this.local_data.assignTo = this.employeesAssignated;
-  console.log(this.local_data);
-  
-  this.dialogRef.close({ event: 'Success', data: this.local_data });
-}
-closeDialog() {
-    this.dialogRef.close({ event: 'Cancel' });
-}
+
+  remove(person) {
+    const index = this.employeesAssignated.indexOf(person);
+
+    if (index >= 0) {
+      this.employeesAssignated.splice(index, 1);
+    }
+  }
+
+  create(){
+    this.local_data.assignTo = this.employeesAssignated;
+    this.dialogRef.close({ event: 'Success', data: this.local_data });
+  }
+
+  closeDialog() {
+      this.dialogRef.close({ event: 'Cancel' });
+  }
 
 }
 

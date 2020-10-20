@@ -254,7 +254,7 @@ export class FecthDataService {
     let ref = this.db.collection('tickets')
     .doc(data.companyId)
     .collection('tickets')
-    .doc(data.number)
+    .doc(data.ticketId)
     .collection('comments', ref => ref.orderBy('timestamp', "asc"));
 
     return ref.valueChanges();
