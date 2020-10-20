@@ -1,12 +1,9 @@
 import { Component, Inject, Optional } from '@angular/core';
 import {  MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 // services
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-
 
 @Component({
   selector: 'app-ticket-dialog',
@@ -26,7 +23,6 @@ export class TicketDialogComponent {
     private fetchData: FecthDataService,
     private holdData: HoldDataService,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: any) {
-      
         this.local_data = { ...data };        
         this.local_data.creator = this.holdData.userInfo.name + this.holdData.userInfo.lastname
         this.local_data.creatorId = this.holdData.userId; 

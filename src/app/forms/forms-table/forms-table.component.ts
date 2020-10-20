@@ -5,7 +5,9 @@ import { HoldDataService } from '../../core/services/hold-data.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { SetDataService } from '../../core/services/set-data.service';
 import { Router } from '@angular/router';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatDialog } from '@angular/material/dialog';
+import { TicketDialogComponent } from '../../material-component/ticket-dialog/ticket-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 const ELEMENT_DATA: Element[] = [];
 
@@ -43,6 +45,8 @@ export class FormsTableComponent implements OnInit {
     private holdData: HoldDataService,
     private setData: SetDataService,
     private router: Router,
+    public dialog: MatDialog,
+    private _snackBar: MatSnackBar,
   ) { }
 
   ngOnInit(): void {
@@ -73,7 +77,7 @@ export class FormsTableComponent implements OnInit {
         this.formFlow.push(d.data());
       })
       data.forEach(i => {
-        ELEMENT_DATA.push(i.data().results);
+        ELEMENT_DATA.push({...i.data().results, number: i.data().number});
       })
     } else {
       this.fetchData.getResultsFormsForeign(30)
@@ -119,7 +123,7 @@ export class FormsTableComponent implements OnInit {
         this.formFlow.push(d.data());
       })
       data.forEach(i => {
-        ELEMENT_DATA.push(i.data().results);
+        ELEMENT_DATA.push({...i.data().results, number: i.data().number});
       })      
     } else {
       this.showTable = true;
@@ -149,8 +153,50 @@ export class FormsTableComponent implements OnInit {
   }
 
   openTicket(element) {
-    // here goes logic of ticket redirection
-    console.log(element);
+    // create ticket and redirect user to whatsapp
+    const dialogRef = this.dialog.open(TicketDialogComponent, {data: {
+        creator: `${this.holdData.userInfo.name} ${this.holdData.userInfo.lastname}`
+      }});
+      dialogRef.afterClosed()
+          .subscribe(async result => {
+              // create new chat room 
+              if (result.event === 'Cancel' || result.event === undefined) {} else if (result.event === 'Success') {
+                  let ticket = result.data;
+                  ticket.phone = (element.number) ? element.number : element.telefono;
+                  (ticket.phone.includes('whatsapp:')) 
+                    ? ticket.phone = ticket.phone
+                    : (this.companyInfo.name === 'Porthos') ? ticket.phone = `whatsapp:+57${ticket.phone}` : ticket.phone = `whatsapp:${ticket.phone}`
+                  ticket.status = 'Pendiente';
+                  this.fetchData.getSingleWhatsappChat(this.companyId, ticket.phone)
+                    .subscribe(async data => {
+                      if(data.data()) {
+                        if(!data.data().hasTicket) {
+                          const ticketId: any = await this.setData.createTicket(ticket, this.companyId);
+                          this.setData.sendHasTicket(ticket.phone, this.companyId, ticketId);
+                          this._snackBar.open(`Se ha creado un ticket asociado a el número: ${ticket.phone}, ve a la pestaña de WhatsApp para ver detalles del ticket`, 'Ok');
+                        } else {
+                          this._snackBar.open(`Ya existe un ticket asociado a el número: ${ticket.phone}, no es posible crear un nuevo ticket`, 'Ok');
+                        }
+                      } else {
+                        const ticketId: any = await this.setData.createTicket(ticket, this.companyId);
+                        const newChatData = {
+                          number: ticket.phone,
+                          assignTo: [{
+                            email: this.holdData.userInfo.email,
+                            name: `${this.holdData.userInfo.name} ${this.holdData.userInfo.lastname}`,
+                            userId: this.holdData.userId
+                          }],
+                          ticketId: ticketId
+                        }
+                        await this.setData.createWhatsappChatFromForms(this.companyId, newChatData);
+                        this._snackBar.open(`Se ha creado un ticket y un chat asociado a el número: ${ticket.phone}, ve a la pestaña de WhatsApp para ver detalles del ticket`, 'Ok');
+                      }
+                    })
+              }
+          });
+
+
+
   }
 
   async confirmMessageChanges(message) {
@@ -188,9 +234,4 @@ export class FormsTableComponent implements OnInit {
     this.edition = false;
   }
 
-  viewData(element){
-    console.log(element);
-    
-  }
-  
 }

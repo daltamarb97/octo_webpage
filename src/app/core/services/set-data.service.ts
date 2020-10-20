@@ -298,6 +298,22 @@ export class SetDataService {
     })
   }
 
+  async createWhatsappChatFromForms(companyId: string, data: any) {
+    let ref=  this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(data.number)
+    await ref.set({
+      agent: true,
+      assignTo: data.assignTo,
+      hasTicket: true,
+      number: data.number,
+      private: false,
+      ticketId: data.ticketId
+    });
+    return;
+  }
+
   assignWhatsappChat(companyId: string, phoneNumber: string, assignedData) {
     let ref=  this.db.collection('whatsapp')
     .doc(companyId)

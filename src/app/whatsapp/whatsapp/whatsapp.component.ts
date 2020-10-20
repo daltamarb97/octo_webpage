@@ -30,7 +30,7 @@ import {
   CdkTextareaAutosize
 } from '@angular/cdk/text-field';
 import {
-  Router
+  Router, ActivatedRoute
 } from '@angular/router';
 import {
   QuickResponsesDialogComponent
@@ -114,12 +114,42 @@ export class WhatsappComponent implements OnInit {
       private setData: SetDataService,
       private holdData: HoldDataService,
       private deleteData: DeleteDataService,
-      // UI components
+      // Angular components
       public dialog: MatDialog,
       private _ngZone: NgZone,
       private router: Router,
-      private _snackBar: MatSnackBar
-  ) {}
+      private _snackBar: MatSnackBar,
+      private route: ActivatedRoute,
+  ) {
+      //getting info of chat if comes
+    this.route.queryParams.subscribe(async() => {
+        if (this.router.getCurrentNavigation().extras.state) {
+            const currentNav = this.router.getCurrentNavigation().extras.state
+            if (currentNav.data) {
+                this.getMessagesFromChatOnclick(currentNav.data, false);
+                //get a ticket from current chat
+                this.fetchData.getTicket(currentNav.data.companyId, currentNav.data.ticketId)
+                .pipe(
+                    takeUntil(this.destroy$)
+                ).subscribe(data => {
+                    this.ticket = data.data();
+                    //make the select component show the status automaticly
+                    this.status = this.ticket.status
+                    this.showTicket = true;
+                    this.showDetail = false;
+                })
+                this.commentsSubscription = this.fetchData.getCommentsChat({
+                    companyId: currentNav.data.companyId,
+                    ticketId: currentNav.data.ticketId
+                }).pipe(
+                    takeUntil(this.destroy$)
+                ).subscribe(data => {
+                    this.commentsChat = data;
+                })
+            } 
+        }
+    });
+  }
 
   ngOnDestroy() {
       this.destroy$.next();
@@ -231,7 +261,7 @@ export class WhatsappComponent implements OnInit {
       this.templatesActivatedOptions = false;
       this.iAmAssigned = false;
       this.fetchData.checkWhatsapp24HourWindow({
-        companyId: this.companyId,
+        companyId: (this.companyId) ? this.companyId : data.companyId,
         number: data.number,
         api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
       }).toPromise()

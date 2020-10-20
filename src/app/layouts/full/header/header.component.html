@@ -2,9 +2,15 @@
 <!-- ============================================================== -->
 <!-- Profile - style you can find in header.scss -->
 <!-- ============================================================== -->
-<a class=" m-r-20 " mat-raised-button color="primary" (click)="sendSuggestion()">Sugerencias</a>
-<button *ngIf="!showNot && compId" mat-raised-button color="primary" (click)="allowSound()">Activar sonido de Notifiaciones</button>
-<button *ngIf="showNot && compId" mat-raised-button color="warm" (click)="disallowSound()">Desactivar sonido de Notifiaciones</button>
+<button [matMenuTriggerFor]="profile" mat-icon-button class="m-r-10">
+    <mat-icon style="color: white">settings</mat-icon>
+</button>
+<mat-menu #profile="matMenu" class="mymegamenu">
+    <a class=" m-r-20 " mat-menu-item style="margin-bottom: 10px;" (click)="sendSuggestion()">Sugerencias</a>
+    <button *ngIf="!showNot && compId" mat-menu-item (click)="allowSound()">Activar sonido de Notifiaciones</button>
+    <button *ngIf="showNot && compId" mat-menu-item (click)="disallowSound()">Desactivar sonido de Notifiaciones</button>
+</mat-menu>
+
 
 
 

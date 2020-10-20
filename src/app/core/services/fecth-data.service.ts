@@ -217,6 +217,16 @@ export class FecthDataService {
     return ref.valueChanges();
   }
 
+  getSingleWhatsappChat(companyId: string, number: string){
+    // getting chatrooms info
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(number)
+
+    return ref.get();
+  }
+
   getWhatsappChatsSound(companyId){
     // getting chatrooms info
     let ref = this.db.collection('whatsapp')

@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 export interface TicketElement {
@@ -16,6 +17,16 @@ export interface TicketElement {
   phone: string;
   date: any;
 }
+
+export class currentChatData {
+    number: string;
+    finished: boolean = false;
+    ticketId: string;
+    assignTo: any = [];
+    hasTicket: boolean = false;
+    private: boolean = false;
+    companyId: string;
+  }
 
 let TICKETS: TicketElement[] = [];
 
@@ -45,6 +56,7 @@ export class TicketsListComponent implements OnInit {
         private fetchData: FecthDataService,
         private holdData: HoldDataService,
         private router: Router,
+        private _snackBar: MatSnackBar,
     ) { }
 
     ngOnInit() {
@@ -91,6 +103,29 @@ export class TicketsListComponent implements OnInit {
     }
     
     goWhatsApp(element) {
-        console.log(element, 'go whatsapp');
+        this.fetchData.getSingleWhatsappChat(this.companyId, element.phone)
+            .subscribe(rta => {
+                const data: currentChatData = {
+                    number: rta.data().number,
+                    finished: (rta.data().finished) ? true : false,
+                    ticketId: rta.data().ticketId,
+                    assignTo: rta.data().assignTo,
+                    hasTicket: (rta.data().hasTicket) ? true : false,
+                    private: (rta.data().private) ? true : false,
+                    companyId: this.companyId,
+                }
+                if(data.ticketId === element.id) {
+                    let navigationExtras: NavigationExtras = {
+                        state: {
+                          data: data,       
+                        }
+                      };
+                      this.router.navigate(['/whatsapp'],navigationExtras);
+                } else {
+                    this._snackBar.open('Este ticket esta cerrado', 'Ok', {
+                        duration: 4000,
+                    });
+                }
+            })
     }
 }
