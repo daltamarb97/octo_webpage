@@ -476,8 +476,9 @@ export class WhatsappComponent implements OnInit {
               takeUntil(this.destroy$)
           )
           .subscribe(data => {
-              this.tagsCategoriesNames = data;
-
+            data.forEach(d => {
+              if (d.name) this.tagsCategoriesNames.push(d)
+            })
           })
   }
 
@@ -697,5 +698,11 @@ export class WhatsappComponent implements OnInit {
   showDetails() {
       this.showDetail = true;
       this.showTicket = false;
+  }
+
+  closeDetailsBox(){
+    this.showDetail = false;
+    this.showAssignedChats = false;
+    this.showGeneralChats = false;
   }
 }

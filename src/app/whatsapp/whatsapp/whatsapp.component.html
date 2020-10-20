@@ -104,13 +104,12 @@
         <!-- DETALLES -->
         <mat-card *ngIf="showDetail"  >
             <mat-card-header class="details-menu_header">
-                <span (click)="showDetail = false" class="material-icons">
+                <span (click)="closeDetailsBox()" class="material-icons">
                     arrow_back
                     </span>
                 <div style="margin: 20px;">
                     <mat-card-title style="margin-top:5px" >Detalles</mat-card-title>
-                    <mat-card-subtitle style="margin-top:5px" >{{currentChatData.phoneNumber}}</mat-card-subtitle>
-                     
+                    <mat-card-subtitle style="margin-top:5px" >{{currentChatData.phoneNumber}}</mat-card-subtitle>           
                 </div>           
             </mat-card-header>
               <mat-card-content>
@@ -131,19 +130,35 @@
                             </mat-checkbox>
                          </section>
                    </ng-container>
-                  
-                <button *ngIf="templatesActivatedOptions && !currentChatData.finished" [matMenuTriggerFor]="templates" mat-raised-button class="m-r-5">Escoger Template</button>
+                <mat-button-toggle-group name="fontStyle" aria-label="Font Style" class="detail-toggle">
+                    <mat-button-toggle *ngIf="templatesActivatedOptions && !currentChatData.finished" [matMenuTriggerFor]="templates" >
+                        <mat-icon>keyboard_arrow_down</mat-icon>
+                        Escoger Template
+                    </mat-button-toggle>
+                    <mat-button-toggle [matMenuTriggerFor]="assignment" >
+                        <mat-icon>keyboard_arrow_down</mat-icon>
+                        Asignar conversación
+                    </mat-button-toggle>
+                    <mat-button-toggle *ngIf="iAmAssigned"  [matMenuTriggerFor]="forms" matTooltip="Al enviar un formulario, el chat será automaticamente cerrado">
+                        <mat-icon>keyboard_arrow_down</mat-icon>
+                        Enviar formulario
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+                <!-- MENUS START -->
                 <mat-menu #templates="matMenu" class="mymegamenu" style="overflow-y: auto;">
                     <button mat-menu-item *ngFor="let t of templatesArray" (click)="templateSelected(t)">
                         {{t}}
                     </button>
                 </mat-menu>
-                <button color="primary" [matMenuTriggerFor]="assignment" mat-raised-button class="m-r-5">Asignar conversación</button>
                 <mat-menu #assignment="matMenu" class="mymegamenu" style="overflow-y: auto;">
                     <button mat-menu-item *ngFor="let e of employeesList" matTooltip="{{e.email}}" (click)="addPerson(e)">
                         {{e.name | titlecase}} {{e.lastname | titlecase}}
                     </button>
                 </mat-menu>
+                <mat-menu  #forms="matMenu">
+                    <button *ngFor="let form of formsAlias" (click)="sendForm(form.formId)" mat-menu-item>{{form.alias}}</button>
+                </mat-menu>
+                <!-- MENUS END-->
                 <div style="margin:10px" >
                     Chat Asignado a
                     <mat-chip-list  style="margin-left: auto;" #employeeList aria-label="Tags">   
@@ -167,24 +182,14 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
     </mat-sidenav>
     <!-- CENTER PART -->
     <mat-sidenav-content opened mode="side" position="end">
-        
-
 
         <!-- GENERAL CHATS -->
     <mat-card *ngIf="showGeneralChats" id="content-messages" style="max-height: 75%;min-height:75% ; overflow-y: auto;">
         <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
             <span class="toolbar-msg"  ># {{currentChatData.phoneNumber}}</span>
             <span class="example-spacer"></span>
-                        <!-- AQUIIIIIIIIII -->
-
-            
-               
-            <button *ngIf="currentChatData.hasTicket === false" (click)="createTicket()" color="primary" mat-raised-button class="m-r-5">Generar Ticker</button>
-
-            <button *ngIf="currentChatData.hasTicket === true" (click)="getTicket()" color="primary" mat-raised-button class="m-r-5">Ver Ticket</button>
-            <button  (click)="showDetails()" color="primary" mat-raised-button class="m-r-5">Detalles</button>
-
-            
+            <button *ngIf="currentChatData.hasTicket" (click)="getTicket()" color="primary" mat-raised-button class="m-r-5">Ver Ticket</button>
+            <button *ngIf="!currentChatData.finished" (click)="showDetails()" color="primary" mat-raised-button class="m-r-5">Detalles</button>     
         </mat-toolbar>
         <mat-card-content class="backgroun-img" style=" overflow-y: visible; height: 75%;">
             
@@ -276,31 +281,30 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
     ASSIGNED CHAT
     *******/ -->   
     <mat-card *ngIf="showAssignedChats" id="content-messages-private" style="max-height: 75%;min-height:75% ; overflow-y: auto" >
-        
         <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
-             
             <span class="toolbar-msg"  >{{currentChatData.phoneNumber}}</span>
-            <button mat-raised-button color="primary" class="example-icon m-l-10" [matMenuTriggerFor]="forms">Enviar Formulario</button>
+            <!-- <button mat-raised-button color="primary" class="example-icon m-l-10" [matMenuTriggerFor]="forms">Enviar Formulario</button>
             <mat-menu  #forms="matMenu">
                 <button *ngFor="let form of formsAlias" (click)="sendForm(form.formId)" mat-menu-item>{{form.alias}}</button>
-            </mat-menu>
+            </mat-menu> -->
             <button mat-raised-button color="primary" class="example-icon m-l-10"  [matMenuTriggerFor]="tagsMenu">Tags</button>
             <mat-menu  #tagsMenu="matMenu">
               <button *ngFor="let category of tagsCategoriesNames" (click)="getSpecificTags(category)"
                mat-menu-item (mouseenter)="getSpecificTags(category)" [matMenuTriggerFor]="categories">{{category.name}}</button>
-            </mat-menu>
-            
+            </mat-menu>    
             <mat-menu  #categories="matMenu"  >
                 <button  *ngFor="let tag of tagsCategories" (click)="selected(tag,category)" mat-menu-item >{{tag.name}}</button>                              
             </mat-menu>
-
-            <button *ngIf="templatesActivatedOptions" [matMenuTriggerFor]="templates" mat-raised-button class="m-r-5">Escoger Template</button>
+            <!-- <button *ngIf="templatesActivatedOptions" [matMenuTriggerFor]="templates" mat-raised-button class="m-r-5">Escoger Template</button>
             <mat-menu #templates="matMenu" class="mymegamenu" style="overflow-y: auto;">
                 <button mat-menu-item *ngFor="let t of templatesArray" (click)="templateSelected(t)">
                     {{t}}
                 </button>
-            </mat-menu>
-            <button *ngIf="!showTicket" (click)="getTicket()" color="primary" mat-raised-button class="m-r-5">Ver Ticket</button>
+            </mat-menu> -->
+            <span class="example-spacer"></span>
+            <button *ngIf="!currentChatData.finished" (click)="showDetails()" color="primary" mat-raised-button class="m-r-5">Detalles</button>     
+            <button *ngIf="!currentChatData.hasTicket" (click)="createTicket()" color="primary" mat-raised-button class="m-r-5">Generar Ticker</button>
+            <button *ngIf="currentChatData.hasTicket" (click)="getTicket()" color="primary" mat-raised-button class="m-r-5">Ver Ticket</button>
         </mat-toolbar>
         <div  style=" padding-left: 15px;padding-top:10px ; " >
             <mat-chip-list #chipList aria-label="Tags">   
