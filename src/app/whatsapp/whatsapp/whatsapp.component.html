@@ -12,29 +12,49 @@
             <mat-tab-group  mat-align-tabs="center" (selectedTabChange)="onTabChanged()"> 
                 <!-- Tab 1 -->
                 <mat-tab  label="Mis chats" >   
-                    <mat-selection-list  [multiple]="false">            
-                        <mat-list-option *ngFor="let chat of chatWhatsappAssigned; index as i" (click)="getMessagesFromChatOnclick(chat, true)">
-                            <mat-list-item>
-                                <span class="material-icons m-r-15 b-b">
-                                    account_circle
-                                </span > {{chat.number }} 
-                                <mat-chip-list  style="margin-left: auto;" >
-                                    <mat-chip color="accent" class="chip" selected *ngIf="chat.assignedName">{{chat.assignedName | slice:0:5}}</mat-chip>
-                                </mat-chip-list>
-                            </mat-list-item>
-                        </mat-list-option>
+                    <mat-selection-list  [multiple]="false">   
+                        <ng-container *ngFor="let chat of chatWhatsappAssigned; index as i" >
+                            <mat-list-option *ngIf="chat.finished" (click)="getMessagesFromChatOnclick(chat, true)">                          
+                                <mat-list-item>
+                                    <span class="material-icons m-r-15 b-b">
+                                        account_circle
+                                    </span > {{chat.number | slice:9}} 
+                                    <mat-chip-list  style="margin-left: auto;" >
+                                        <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
+                                        <mat-chip style="background-color: rgb(47, 248, 124)" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
+                                    </mat-chip-list>
+                                </mat-list-item>
+                            </mat-list-option>
+                        </ng-container>
+                        <ng-container *ngFor="let chat of chatWhatsappAssigned; index as i">
+                            <mat-list-option *ngIf="!chat.finished" (click)="getMessagesFromChatOnclick(chat, true)">                          
+                                <mat-list-item>
+                                    <span class="material-icons m-r-15 b-b">
+                                        account_circle
+                                    </span > {{chat.number | slice:9}} 
+                                    <mat-chip-list  style="margin-left: auto;" >
+                                        <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
+                                        <mat-chip style="background-color: rgb(47, 248, 124)" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
+                                    </mat-chip-list>
+                                </mat-list-item>
+                            </mat-list-option>
+                        </ng-container>
                         </mat-selection-list>
                 </mat-tab> 
                 <!-- End Tab 1 -->
                 <!-- Tab 2 -->
                 <mat-tab label="Todos los chats">
                         <mat-selection-list  [multiple]="false">
-                            <mat-list-option *ngFor="let chat of chatWhatsapp; index as i" (click)="getMessagesFromChatOnclick(chat, false)">
+                        <ng-container *ngFor="let chat of chatWhatsapp; index as i" >
+
+                            <mat-list-option *ngIf="!chat.finished" (click)="getMessagesFromChatOnclick(chat, false)">
                                 <mat-list-item style="font-size: 12 !important;">
                                     <span class="material-icons m-r-10 b-b">
                                         account_circle
-                                    </span > {{chat.number}} 
+                                    </span > {{chat.number | slice:9}} 
                                     <mat-chip-list  style="margin-left: auto;" >
+                                        <mat-chip style="background-color: #44DB5E" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
+
                                         <!-- <mat-chip color="accent" class="chip" selected *ngIf="chat.assignTo">{{'variosss' | slice:0:5}}</mat-chip> -->
                                         <!-- <mat-chip color="warn" class="chip" selected *ngIf="!chat.assignTo && !chat.finished">N/A</mat-chip> -->
                                         <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
@@ -42,6 +62,25 @@
                                 </mat-list-item>
                                 
                             </mat-list-option>
+                        </ng-container>
+                        <ng-container *ngFor="let chat of chatWhatsapp; index as i" >
+
+                            <mat-list-option *ngIf="chat.finished" (click)="getMessagesFromChatOnclick(chat, false)">
+                                <mat-list-item style="font-size: 12 !important;">
+                                    <span class="material-icons m-r-10 b-b">
+                                        account_circle
+                                    </span > {{chat.number | slice:9}} 
+                                    <mat-chip-list  style="margin-left: auto;" >
+                                        <mat-chip style="background-color: #44DB5E" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
+
+                                        <!-- <mat-chip color="accent" class="chip" selected *ngIf="chat.assignTo">{{'variosss' | slice:0:5}}</mat-chip> -->
+                                        <!-- <mat-chip color="warn" class="chip" selected *ngIf="!chat.assignTo && !chat.finished">N/A</mat-chip> -->
+                                        <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
+                                    </mat-chip-list>
+                                </mat-list-item>
+                                
+                            </mat-list-option>
+                        </ng-container>
                         </mat-selection-list>
                 </mat-tab>
             </mat-tab-group>
@@ -96,7 +135,7 @@
             <mat-card-header>
                 <mat-card-subtitle style="font-weight: 600;">{{c.agent | titlecase}} 
                  </mat-card-subtitle> 
-                <p style="color: gray; font-size: 11px;" *ngIf="c.timestamp">{{c.timestamp.toDate() | date: 'short'}}</p>
+                <p style="color: gray; font-size: 11px;" *ngIf="c.timestamp">{{c.timestamp.toDate() | date:'sho rt'}}</p>
             </mat-card-header>
             <mat-card-content style="margin-left:24px;padding: 0;">
                 <p style="font-size: 12px;" >{{c.body}}</p>
@@ -219,7 +258,7 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
             <div class="chat"  *ngFor="let message of chatMessages" >
                 <div class="me" *ngIf="message.inbound === false">          
                     <span style="word-wrap: break-word;">{{message.message}} </span> 
-                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'short'}}</p>
+                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
                     <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                         <img 
                             [src]="message.mediaUrl" 
@@ -234,7 +273,7 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
                         Cliente
                     </span> <br>
                     <span style="word-wrap: break-word;">{{message.message}}</span>
-                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'short'}}</p>
+                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
                     <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                         <img 
                             [src]="message.mediaUrl" 
@@ -259,7 +298,7 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
         </mat-card-content>
         <footer>
             <mat-spinner *ngIf="showSpinner"></mat-spinner>
-            <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px; max-width: 760px;">
+            <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;">
                 <div style="display: flex;">
                     <textarea matInput
                     cdkTextareaAutosize
@@ -345,7 +384,7 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
             <div class="chat"  *ngFor="let message of chatMessages" >
                 <div class="me"  *ngIf="message.inbound === false">          
                     <span style="word-wrap: break-word;">{{message.message}} </span>  
-                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'short'}}</p>
+                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
                     <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                         <img 
                             [src]="message.mediaUrl" 
@@ -360,7 +399,7 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
                         Cliente
                     </span> <br>
                     <span style="word-wrap: break-word;">{{message.message}}</span>
-                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'short'}}</p>
+                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
                     <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                         <img 
                             [src]="message.mediaUrl" 
@@ -384,7 +423,7 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
         </mat-card-content>
         <footer>
             <mat-spinner *ngIf="showSpinner"></mat-spinner>
-            <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px; max-width: 760px;">
+            <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;">
                 <div style="display: flex;">
                     <textarea matInput
                     cdkTextareaAutosize
