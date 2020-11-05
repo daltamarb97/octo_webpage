@@ -1,13 +1,13 @@
 <div style="width: 800px; height: 700px;; overflow-y: auto;">
     <div *ngIf="showPlans && !showEmailConf">
-        <h4>Saldo Actual: ${{currentCompanyBalance.balance | number : '1.2-2'}} USD</h4>
+        <!-- <h4>Saldo Actual: ${{currentCompanyBalance.balance | number : '1.2-2'}} USD</h4>
         <h4>Costo actual por mensaje enviado o recibido: ${{currentCompanyBalance.MFee}} USD</h4>
-        <h4>Costo actual por mensaje tipo template enviado: ${{currentCompanyBalance.TFee}} USD</h4>
+        <h4>Costo actual por mensaje tipo template enviado: ${{currentCompanyBalance.TFee}} USD</h4> -->
         <h4 *ngIf="currentCompanyBalance.notifications">Push Notifications disponibles: <span style="font-weight: bold;">{{currentCompanyBalance.notifications}}</span></h4>
         <h4>Api Key: <span style="font-weight: bold;">{{companyId}}</span></h4>
     </div>
     <mat-divider></mat-divider>
-    <div *ngIf="showPlans && !showEmailConf">
+    <!-- <div *ngIf="showPlans && !showEmailConf">
         <h2>Escoge el plan</h2>
         <div *ngFor="let plan of plans">
             <mat-card class="plan-card">
@@ -28,7 +28,7 @@
                 </mat-card-content>
             </mat-card>
         </div>
-    </div>
+    </div> -->
     <div *ngIf="!showPlans && !showEmailConf">
         <h3>Monto a recargar - Plan {{chosenPlan.name}}</h3>
         <div style="display: flex; flex-direction: column;">
@@ -51,4 +51,3 @@
         <button mat-raised-button color="basic" (click)="onNoClick()" style="width: 300px; margin: 25px;">Cerrar</button>
     </div>
 </div>
-
