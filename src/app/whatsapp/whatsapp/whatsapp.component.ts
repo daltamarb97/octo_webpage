@@ -242,8 +242,6 @@ export class WhatsappComponent implements OnInit {
             takeUntil(this.destroy$)
         )
         .subscribe(data => {
-            console.log(data);
-            
             this.chatWhatsapp = [];
             this.chatWhatsappAssigned = [];
             data.forEach(d => {
@@ -601,7 +599,7 @@ export class WhatsappComponent implements OnInit {
               timestamp: this.holdData.convertJSDateIntoFirestoreTimestamp()
           }
           // send comment
-          this.setData.sendChatComment(data);
+          this.setData.sendChatComment(data).catch(e => {console.error(e)})
           this.chatNote = null;
       }
   }
