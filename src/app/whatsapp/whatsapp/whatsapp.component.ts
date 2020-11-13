@@ -49,6 +49,7 @@ export class currentChatData {
   assignTo: any = [];
   hasTicket: boolean = false;
   private: boolean = false;
+  chatName?:string; 
 }
 
 @Component({
@@ -109,6 +110,7 @@ export class WhatsappComponent implements OnInit {
   privateChat: boolean = false;
   showPrivateChat: boolean = false;
   iAmAssigned: boolean = false;
+  name:string;
   constructor(
       private fetchData: FecthDataService,
       private setData: SetDataService,
@@ -240,6 +242,8 @@ export class WhatsappComponent implements OnInit {
             takeUntil(this.destroy$)
         )
         .subscribe(data => {
+            console.log(data);
+            
             this.chatWhatsapp = [];
             this.chatWhatsappAssigned = [];
             data.forEach(d => {
@@ -315,7 +319,8 @@ export class WhatsappComponent implements OnInit {
           ticketId: (data.ticketId) ? data.ticketId : null,
           assignTo: (data.assignTo) ? data.assignTo : null,
           hasTicket: (data.hasTicket) ? data.hasTicket : false,
-          private: (data.private) ? data.private : false
+          private: (data.private) ? data.private : false,
+          chatName: (data.chatName) ? data.chatName:'Sin nombre'
       }
       //if the current chat has no one assigned do nothing
       if (this.currentChatData.assignTo) this.employeesAssignated = this.currentChatData.assignTo;
@@ -749,5 +754,14 @@ export class WhatsappComponent implements OnInit {
     this.showDetail = false;
     this.showAssignedChats = false;
     this.showGeneralChats = false;
+  }
+  createAlias(name){
+      //create a name for the chat
+      this.setData.changeNameOfChat(this.currentChatData.phoneNumber, this.companyId,name)
+      this._snackBar.open('Cambio exitoso', 'Ok', {
+          duration: 5000,
+      });
+      this.currentChatData.chatName = name;
+      this.name = '';
   }
 }

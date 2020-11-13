@@ -484,6 +484,15 @@ export class SetDataService {
       private: true,
     })
   }
+  async changeNameOfChat(number,companyId,name) {
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(number)
+    return ref.update({
+      chatName: name,
+    })
+  }
 
   async makeChatPublic(number,companyId) {
     let ref = this.db.collection('whatsapp')
