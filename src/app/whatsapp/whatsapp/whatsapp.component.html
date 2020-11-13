@@ -18,7 +18,13 @@
                                 <mat-list-item>
                                     <span class="material-icons m-r-15 b-b">
                                         account_circle
-                                    </span > {{chat.number | slice:9}} 
+                                    </span > 
+                                    <ng-container *ngIf="chat.chatName === undefined">
+                                        {{chat.number | slice:9}} 
+                                    </ng-container>
+                                    <ng-container>
+                                        {{chat.chatName }} 
+                                    </ng-container>
                                     <mat-chip-list  style="margin-left: auto;" >
                                         <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
                                         <mat-chip style="background-color: rgb(47, 248, 124)" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
@@ -31,7 +37,13 @@
                                 <mat-list-item>
                                     <span class="material-icons m-r-15 b-b">
                                         account_circle
-                                    </span > {{chat.number | slice:9}} 
+                                    </span > 
+                                    <ng-container *ngIf="chat.chatName === undefined">
+                                        {{chat.number | slice:9}} 
+                                    </ng-container>
+                                    <ng-container>
+                                        {{chat.chatName }} 
+                                    </ng-container>
                                     <mat-chip-list  style="margin-left: auto;" >
                                         <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
                                         <mat-chip style="background-color: rgb(47, 248, 124)" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
@@ -51,7 +63,13 @@
                                 <mat-list-item style="font-size: 12 !important;">
                                     <span class="material-icons m-r-10 b-b">
                                         account_circle
-                                    </span > {{chat.number | slice:9}} 
+                                    </span > 
+                                    <ng-container *ngIf="chat.chatName === undefined">
+                                        {{chat.number | slice:9}} 
+                                    </ng-container>
+                                    <ng-container>
+                                        {{chat.chatName }} 
+                                    </ng-container> 
                                     <mat-chip-list  style="margin-left: auto;" >
                                         <mat-chip style="background-color: #44DB5E" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
 
@@ -69,7 +87,13 @@
                                 <mat-list-item style="font-size: 12 !important;">
                                     <span class="material-icons m-r-10 b-b">
                                         account_circle
-                                    </span > {{chat.number | slice:9}} 
+                                    </span >
+                                    <ng-container *ngIf="chat.chatName === undefined">
+                                        {{chat.number | slice:9}} 
+                                    </ng-container>
+                                    <ng-container>
+                                        {{chat.chatName }} 
+                                    </ng-container>
                                     <mat-chip-list  style="margin-left: auto;" >
                                         <mat-chip style="background-color: #44DB5E" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
 
@@ -159,10 +183,22 @@
                     </span>
                 <div style="margin: 20px;">
                     <mat-card-title style="margin-top:5px" >Detalles</mat-card-title>
+                    <mat-card-title style="margin-top:5px" >{{currentChatData.chatName}}</mat-card-title>
                     <mat-card-subtitle style="margin-top:5px" >{{currentChatData.phoneNumber}}</mat-card-subtitle>           
                 </div>           
             </mat-card-header>
               <mat-card-content>
+                
+                <mat-form-field class="example-full-width">
+                    <mat-label>Agregar nombre a chat</mat-label>
+                    <input matInput placeholder="Escribe un nombre para el chat" [(ngModel)]="name" value="name">
+                    <button matSuffix
+                    mat-stroked-button 
+                    style="margin-top: 10px;"
+                    color="primary" 
+                    (click)="createAlias(name)">Guardar</button>  
+                </mat-form-field>
+                  
                  <ng-container *ngIf="showPrivateChat">
                     <p style="font-size: 11px;" *ngIf="privateChat">
                         *Este chat es privado y sólo tendrán acceso las personas asignadas.</p>
