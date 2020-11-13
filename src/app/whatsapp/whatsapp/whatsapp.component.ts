@@ -50,6 +50,7 @@ export class currentChatData {
   hasTicket: boolean = false;
   private: boolean = false;
   chatName?:string; 
+  timestamp: any;
 }
 
 @Component({
@@ -318,7 +319,8 @@ export class WhatsappComponent implements OnInit {
           assignTo: (data.assignTo) ? data.assignTo : null,
           hasTicket: (data.hasTicket) ? data.hasTicket : false,
           private: (data.private) ? data.private : false,
-          chatName: (data.chatName) ? data.chatName:'Sin nombre'
+          chatName: (data.chatName) ? data.chatName:'Sin nombre',
+          timestamp: data.timestamp
       }
       //if the current chat has no one assigned do nothing
       if (this.currentChatData.assignTo) this.employeesAssignated = this.currentChatData.assignTo;
@@ -608,7 +610,8 @@ export class WhatsappComponent implements OnInit {
     // finish chat and remove agent from chat
     await this.setData.archiveChat({
         companyId: this.companyId,
-        number: this.currentChatData.phoneNumber
+        number: this.currentChatData.phoneNumber,
+        timestamp: this.currentChatData.timestamp
     })
     // hide user interface 
     this.showDetail = false;

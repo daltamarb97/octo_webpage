@@ -440,7 +440,8 @@ export class SetDataService {
     .doc(data.number)
     return ref.set({
       finished: true,
-      number: data.number
+      number: data.number,
+      timestamp: data.timestamp
     })
   }
 
