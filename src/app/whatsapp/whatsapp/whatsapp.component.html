@@ -1,7 +1,7 @@
 <!-- left side menu -->
 <mat-sidenav-container class="chat-sidebar-container">
   
-    <mat-sidenav opened mode="side" style="width: auto; background-color: #EBF2F6; max-width:40% ;">
+    <mat-sidenav opened mode="side" style="width: auto; background-color: #EBF2F6;">
         <mat-card *ngIf="!showTicket && !showDetail">
             <div class="p-20  position-relative">
                 <h4 class="card-title  m-0 font-20 font-medium">Chats de WhatsApp</h4>
@@ -27,7 +27,6 @@
                                     </ng-container>
                                     <mat-chip-list  style="margin-left: auto;" >
                                         <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
-                                        <mat-chip style="background-color: rgb(47, 248, 124)" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
                                     </mat-chip-list>
                                 </mat-list-item>
                             </mat-list-option>
@@ -45,8 +44,7 @@
                                         {{chat.chatName }} 
                                     </ng-container>
                                     <mat-chip-list  style="margin-left: auto;" >
-                                        <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
-                                        <mat-chip style="background-color: rgb(47, 248, 124)" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
+                                        <mat-chip style="background-color: #44DB5E" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
                                     </mat-chip-list>
                                 </mat-list-item>
                             </mat-list-option>
@@ -75,7 +73,6 @@
 
                                         <!-- <mat-chip color="accent" class="chip" selected *ngIf="chat.assignTo">{{'variosss' | slice:0:5}}</mat-chip> -->
                                         <!-- <mat-chip color="warn" class="chip" selected *ngIf="!chat.assignTo && !chat.finished">N/A</mat-chip> -->
-                                        <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
                                     </mat-chip-list>
                                 </mat-list-item>
                                 
@@ -95,7 +92,6 @@
                                         {{chat.chatName }} 
                                     </ng-container>
                                     <mat-chip-list  style="margin-left: auto;" >
-                                        <mat-chip style="background-color: #44DB5E" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
 
                                         <!-- <mat-chip color="accent" class="chip" selected *ngIf="chat.assignTo">{{'variosss' | slice:0:5}}</mat-chip> -->
                                         <!-- <mat-chip color="warn" class="chip" selected *ngIf="!chat.assignTo && !chat.finished">N/A</mat-chip> -->
@@ -159,7 +155,7 @@
             <mat-card-header>
                 <mat-card-subtitle style="font-weight: 600;">{{c.agent | titlecase}} 
                  </mat-card-subtitle> 
-                <p style="color: gray; font-size: 11px;" *ngIf="c.timestamp">{{c.timestamp.toDate() | date:'short'}}</p>
+                <p style="color: gray; font-size: 11px;" *ngIf="c.timestamp">{{c.timestamp.toDate() | date:'sho rt'}}</p>
             </mat-card-header>
             <mat-card-content style="margin-left:24px;padding: 0;">
                 <p style="font-size: 12px;" >{{c.body}}</p>
@@ -183,7 +179,7 @@
                     </span>
                 <div style="margin: 20px;">
                     <mat-card-title style="margin-top:5px" >Detalles</mat-card-title>
-                    <mat-card-title style="margin-top:5px" >{{currentChatData.chatName}}</mat-card-title>
+                    <mat-card-title style="margin-top:5px" >Nombre: {{currentChatData.chatName}}</mat-card-title>
                     <mat-card-subtitle style="margin-top:5px" >{{currentChatData.phoneNumber}}</mat-card-subtitle>           
                 </div>           
             </mat-card-header>
@@ -334,7 +330,7 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
         </mat-card-content>
         <footer>
             <mat-spinner *ngIf="showSpinner"></mat-spinner>
-            <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;">
+            <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;max-width: 720px; " >
                 <div style="display: flex;">
                     <textarea matInput
                     cdkTextareaAutosize
@@ -378,9 +374,10 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
         <!-- /*******
     ASSIGNED CHAT
     *******/ -->   
-    <mat-card *ngIf="showAssignedChats" id="content-messages-private" style="max-height: 75%;min-height:75% ; overflow-y: auto" >
+    <mat-card *ngIf="showAssignedChats" id="content-messages-private" style="max-height: 75%;min-height:75% ; overflow-y: auto;" >
         <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
             <span class="toolbar-msg"  >{{currentChatData.phoneNumber}}</span>
+
             <!-- <button mat-raised-button color="primary" class="example-icon m-l-10" [matMenuTriggerFor]="forms">Enviar Formulario</button>
             <mat-menu  #forms="matMenu">
                 <button *ngFor="let form of formsAlias" (click)="sendForm(form.formId)" mat-menu-item>{{form.alias}}</button>
@@ -459,7 +456,7 @@ text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">
         </mat-card-content>
         <footer>
             <mat-spinner *ngIf="showSpinner"></mat-spinner>
-            <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;">
+            <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;max-width: 720px;">
                 <div style="display: flex;">
                     <textarea matInput
                     cdkTextareaAutosize
