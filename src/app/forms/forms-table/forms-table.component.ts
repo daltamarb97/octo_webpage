@@ -60,6 +60,8 @@ export class FormsTableComponent implements OnInit {
 
   async getForms() {
     ELEMENT_DATA.splice(0, ELEMENT_DATA.length);
+    console.log(ELEMENT_DATA);
+
     this.forms = await this.fetchData.getFormsInfo(this.companyId);  
     this.currentForm = this.forms[0];
     const cols = await this.fetchData.getFormCols(this.companyId, this.currentForm);    
@@ -89,6 +91,7 @@ export class FormsTableComponent implements OnInit {
         }) 
         Object.keys(dataRta).forEach(k => {
           ELEMENT_DATA.push(dataRta[k])
+          
         })
       })
     }

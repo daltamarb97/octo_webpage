@@ -441,7 +441,9 @@ export class SetDataService {
     return ref.set({
       finished: true,
       number: data.number,
-      timestamp: data.timestamp
+      timestamp: data.timestamp,
+      hasTicket: true,
+      ticketId: data.ticketId
     })
   }
 
@@ -604,16 +606,16 @@ export class SetDataService {
     .doc(companyId)
     .collection('tickets')
     .doc(ticketId)
-    if(status === 'Completado') {
-      let refChat = this.db.collection('whatsapp')
-      .doc(companyId)
-      .collection('chats')
-      .doc(number)
-      await refChat.update({
-        hasTicket: false,
-        ticketId: 'no ticket'
-      });
-    }
+    // if(status === 'Completado') {
+    //   let refChat = this.db.collection('whatsapp')
+    //   .doc(companyId)
+    //   .collection('chats')
+    //   .doc(number)
+    //   await refChat.update({
+    //     hasTicket: true,
+    //     ticketId: 
+    //   });
+    // }
     await ref.update({
       status:status
     });

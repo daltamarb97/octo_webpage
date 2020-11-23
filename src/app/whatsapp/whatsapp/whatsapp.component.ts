@@ -112,6 +112,9 @@ export class WhatsappComponent implements OnInit {
   showPrivateChat: boolean = false;
   iAmAssigned: boolean = false;
   name:string;
+  showDate:boolean;
+  hideDate:boolean;
+  date:number;
   constructor(
       private fetchData: FecthDataService,
       private setData: SetDataService,
@@ -607,11 +610,15 @@ export class WhatsappComponent implements OnInit {
   }
 
   async archiveChat() {
+      console.log('me ejecute');
+      
     // finish chat and remove agent from chat
     await this.setData.archiveChat({
         companyId: this.companyId,
         number: this.currentChatData.phoneNumber,
-        timestamp: this.currentChatData.timestamp
+        timestamp: this.currentChatData.timestamp,
+        ticketId: this.currentChatData.ticketId
+
     })
     // hide user interface 
     this.showDetail = false;
@@ -733,11 +740,7 @@ export class WhatsappComponent implements OnInit {
       this.setData.setStatus(this.companyId, this.currentChatData.ticketId, status, this.currentChatData.phoneNumber);
       this.ticket.status = status;
       if(status === 'Completado') {
-        this.currentChatData = {
-            ...this.currentChatData,
-            hasTicket: false,
-            ticketId: 'no ticket'
-        }
+        
         this.showTicket = false;
         this.archiveChat();
         if(this.sendFormOnTicketClose) {
@@ -765,4 +768,12 @@ export class WhatsappComponent implements OnInit {
       this.currentChatData.chatName = name;
       this.name = '';
   }
+  showDates(chat){
+      this.date = chat.timestamp;
+      this.showDate = true;
+
+  }
+  hideDates(){
+    this.showDate = false;
+}
 }

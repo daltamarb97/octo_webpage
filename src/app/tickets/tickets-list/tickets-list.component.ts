@@ -114,6 +114,9 @@ export class TicketsListComponent implements OnInit {
                     private: (rta.data().private) ? true : false,
                     companyId: this.companyId,
                 }
+                console.log(data.ticketId );
+                
+
                 if(data.ticketId === element.id) {
                     let navigationExtras: NavigationExtras = {
                         state: {
