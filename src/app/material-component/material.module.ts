@@ -24,6 +24,7 @@ import { MessageComponent } from './message-dialog/message-dialog.component';
 import { QuickResponsesDialogComponent } from './quick-responses-dialog/quick-responses-dialog.component';
 import { EditOptDialogComponent } from './editopt-dialog/editopt-dialog.component';
 import { TicketDialogComponent } from './ticket-dialog/ticket-dialog.component';
+import { ClosedTicketDialogComponent } from './closedticket-dialog/closedticket-dialog.component';
 
 @NgModule({
   imports: [
@@ -50,7 +51,8 @@ import { TicketDialogComponent } from './ticket-dialog/ticket-dialog.component';
     OptionComponent,
     MessageComponent,
     QuickResponsesDialogComponent,
-    TicketDialogComponent
+    TicketDialogComponent,
+    ClosedTicketDialogComponent
   ]
 })
 export class MaterialComponentsModule {}

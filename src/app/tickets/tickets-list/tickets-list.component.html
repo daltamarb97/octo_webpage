@@ -98,10 +98,12 @@
                         <button (click)="goWhatsApp(element)" mat-icon-button >
                           <mat-icon>chat</mat-icon>
                         </button>
-                           
+                        <button (click)="showClosedTicket(element)" mat-icon-button >
+                          <mat-icon>info</mat-icon>
+                        </button>
                       </td>
                   </ng-container>
-      
+                  
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                   <tr mat-row *matRowDef="let element; columns: displayedColumns;"></tr>
                 </table>

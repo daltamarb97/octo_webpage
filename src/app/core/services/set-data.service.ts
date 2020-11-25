@@ -442,9 +442,8 @@ export class SetDataService {
       finished: true,
       number: data.number,
       timestamp: data.timestamp,
-      hasTicket: true,
-      ticketId: data.ticketId
     })
+
   }
 
   async archiveTicket(data) {
@@ -606,21 +605,31 @@ export class SetDataService {
     .doc(companyId)
     .collection('tickets')
     .doc(ticketId)
-    // if(status === 'Completado') {
-    //   let refChat = this.db.collection('whatsapp')
-    //   .doc(companyId)
-    //   .collection('chats')
-    //   .doc(number)
-    //   await refChat.update({
-    //     hasTicket: true,
-    //     ticketId: 
-    //   });
-    // }
+    if(status === 'Completado') {
+      let refChat = this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('chats')
+      .doc(number)
+      await refChat.update({
+        hasTicket: false,
+        ticketId: 'no ticket'
+      });
+    }
     await ref.update({
       status:status
     });
   }
-
+  async setCommentsOnChatClosed(companyId: string,ticketId: string, comments){
+    // change comments when the chat is closed
+    let ref = this.db.collection('tickets')
+    .doc(companyId)
+    .collection('tickets')
+    .doc(ticketId)
+   
+    await ref.update({
+      comments:comments
+    });
+  }
   // sendTagToCategories(companyId, categoryId, name, trainingPhrases){
   //   // send tag to Categories to firestore
   //   let ref = this.db.collection('whatsapp')
