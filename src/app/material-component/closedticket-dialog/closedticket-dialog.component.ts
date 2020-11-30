@@ -4,6 +4,8 @@ import { FormBuilder } from '@angular/forms';
 // services
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-closedticket-dialog',
@@ -13,23 +15,34 @@ import { HoldDataService } from '../../core/services/hold-data.service';
 export class ClosedTicketDialogComponent {
   action: string;
   local_data: any;
- 
+  destroy$: Subject < void > = new Subject();
+  commentsChat: Array<any> = [];
   constructor(
     public dialogRef: MatDialogRef<ClosedTicketDialogComponent>,
-    private formBuilder: FormBuilder,
     private fetchData: FecthDataService,
-    private holdData: HoldDataService,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: any) {
-        this.local_data = { ...data };        
-        console.log(this.local_data);
-        
-        
+        this.local_data = { ...data }; 
+        this.getComments();       
   }
   
-  
+  getComments() {
+    this.fetchData.getCommentsChat({
+      companyId: this.local_data.companyId,
+      ticketId: this.local_data.id
+    }).pipe(
+        takeUntil(this.destroy$)
+    ).subscribe(data => {
+        this.commentsChat = data;
+    })
+  }
 
   closeDialog() {
-      this.dialogRef.close({ event: 'Cancel' });
+      this.dialogRef.close({ event: 'cancel' });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

@@ -814,6 +814,14 @@ export class SetDataService {
         })
       }
   }
+
+  setSendFormOnClose(companyId: string, ticketId: string, toggle: boolean) {
+    let ref = this.db.collection('tickets')
+      .doc(companyId)
+      .collection('tickets')
+      .doc(ticketId);
+    return (toggle) ? ref.update({formClose: true}) : ref.update({formClose: true});
+  }
   // END OF FLOW SERVICES
 }
 

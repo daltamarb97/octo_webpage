@@ -31,6 +31,7 @@
                     <mat-datepicker #picker1></mat-datepicker>
                 </mat-form-field>
                 <button mat-stroked-button color="primary" (click)="searchFields()">Confirmar</button>
+                <button id="download-button" mat-stroked-button color="primary" *ngIf="dataSource.length >= 1" (click)="downloadData()">Descargar datos en Excel</button>
             </div>
             <div class="responsive-table" *ngIf="showTable">
                 <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">

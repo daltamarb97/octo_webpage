@@ -115,6 +115,8 @@ export class WhatsappComponent implements OnInit {
   showDate:boolean;
   hideDate:boolean;
   date:number;
+  datePick: any;
+  chatInfoSubscription: any;
   constructor(
       private fetchData: FecthDataService,
       private setData: SetDataService,
@@ -134,24 +136,7 @@ export class WhatsappComponent implements OnInit {
             if (currentNav.data) {
                 this.getMessagesFromChatOnclick(currentNav.data, false);
                 //get a ticket from current chat
-                this.fetchData.getTicket(currentNav.data.companyId, currentNav.data.ticketId)
-                .pipe(
-                    takeUntil(this.destroy$)
-                ).subscribe(data => {
-                    this.ticket = data.data();
-                    //make the select component show the status automaticly
-                    this.status = this.ticket.status
-                    this.showTicket = true;
-                    this.showDetail = false;
-                })
-                this.commentsSubscription = this.fetchData.getCommentsChat({
-                    companyId: currentNav.data.companyId,
-                    ticketId: currentNav.data.ticketId
-                }).pipe(
-                    takeUntil(this.destroy$)
-                ).subscribe(data => {
-                    this.commentsChat = data;
-                })
+                this.getTicket(currentNav.data.companyId, currentNav.data.ticketId);
             } 
         }
     });
@@ -241,7 +226,32 @@ export class WhatsappComponent implements OnInit {
   *******************/
   getChatWhatsappNames() {
       // get chat rooms names
-      this.fetchData.getWhatsappChats(this.companyId)
+      const timestamp = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(new Date("December 31, 1970 00:00:00"));
+      this.chatInfoSubscription = this.fetchData.getWhatsappChats(this.companyId, timestamp)
+        .pipe(
+            takeUntil(this.destroy$)
+        )
+        .subscribe(data => {
+            this.chatWhatsapp = [];
+            this.chatWhatsappAssigned = [];
+            data.forEach(d => {
+                if(!d.agent && d.finished) this.chatWhatsapp.push(d);
+                if (d.agent) {
+                    this.chatWhatsapp.push(d);
+                    for (let j = 0; j < d.assignTo.length; j++) {
+                        if (d.assignTo[j].userId === this.userId && !d.finished) {
+                            this.chatWhatsappAssigned.push(d);
+                        }
+                    }
+                }
+            })
+        });
+  }
+
+  dateFilter(){
+    if (this.chatInfoSubscription) this.chatInfoSubscription.unsubscribe();
+    const timestamp = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(this.datePick);
+      this.chatInfoSubscription = this.fetchData.getWhatsappChats(this.companyId, timestamp)
         .pipe(
             takeUntil(this.destroy$)
         )
@@ -324,7 +334,7 @@ export class WhatsappComponent implements OnInit {
           private: (data.private) ? data.private : false,
           chatName: (data.chatName) ? data.chatName:'Sin nombre',
           timestamp: data.timestamp
-      }
+      }      
       //if the current chat has no one assigned do nothing
       if (this.currentChatData.assignTo) this.employeesAssignated = this.currentChatData.assignTo;
       // fetch the ticket of the specific Chat
@@ -610,14 +620,13 @@ export class WhatsappComponent implements OnInit {
   }
 
   async archiveChat() {
-      console.log('me ejecute');
-     
     // finish chat and remove agent from chat
+    console.log(this.currentChatData);
+    
     await this.setData.archiveChat({
         companyId: this.companyId,
         number: this.currentChatData.phoneNumber,
         timestamp: this.currentChatData.timestamp,
-
     })
     // hide user interface 
     this.showDetail = false;
@@ -647,26 +656,48 @@ export class WhatsappComponent implements OnInit {
           })
   }
 
-  getTicket() {
-      //get a ticket from current chat
-      this.fetchData.getTicket(this.companyId, this.currentChatData.ticketId)
-          .pipe(
-              takeUntil(this.destroy$)
-          ).subscribe(data => {
-              this.ticket = data.data();
-              //make the select component show the status automaticly
-              this.status = this.ticket.status
-              this.showTicket = true;
-              this.showDetail = false;
-          })
-      this.commentsSubscription = this.fetchData.getCommentsChat({
-          companyId: this.companyId,
-          ticketId: this.currentChatData.ticketId
-      }).pipe(
-          takeUntil(this.destroy$)
-      ).subscribe(data => {
-          this.commentsChat = data;
-      })
+  getTicket(companyId?: string, ticketId?: string) {
+    if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
+    //get a ticket from current chat
+    if (companyId && ticketId) {
+        this.fetchData.getTicket(companyId, ticketId)
+            .pipe(
+                takeUntil(this.destroy$)
+            ).subscribe(data => {
+                this.ticket = data.data();
+                //make the select component show the status automaticly
+                this.status = this.ticket.status
+                this.showTicket = true;
+                this.showDetail = false;
+            })
+        this.fetchData.getCommentsChat({
+            companyId: companyId,
+            ticketId: ticketId
+        }).pipe(
+            takeUntil(this.destroy$)
+        ).subscribe(data => {
+            this.commentsChat = data;
+        })
+    } else {
+        this.fetchData.getTicket(this.companyId, this.currentChatData.ticketId)
+        .pipe(
+            takeUntil(this.destroy$)
+        ).subscribe(data => {
+            this.ticket = data.data();
+            //make the select component show the status automaticly
+            this.status = this.ticket.status
+            this.showTicket = true;
+            this.showDetail = false;
+        })
+        this.commentsSubscription = this.fetchData.getCommentsChat({
+            companyId: this.companyId,
+            ticketId: this.currentChatData.ticketId
+        }).pipe(
+            takeUntil(this.destroy$)
+        ).subscribe(data => {
+            this.commentsChat = data;
+        })
+    }
   }
 
   createTicket() {
@@ -735,11 +766,8 @@ export class WhatsappComponent implements OnInit {
       }
   }
 
-  ticketStatus(status) {
-      console.log(this.commentsChat);
-      
+  ticketStatus(status) {      
       this.setData.setStatus(this.companyId, this.currentChatData.ticketId, status, this.currentChatData.phoneNumber);
-
       this.ticket.status = status;
       if(status === 'Completado') {
           let ticketId =this.currentChatData.ticketId
@@ -749,9 +777,7 @@ export class WhatsappComponent implements OnInit {
             hasTicket: false,
             ticketId: 'no ticket',
         }
-        
         this.showTicket = false;
-
         this.archiveChat();
         if(this.sendFormOnTicketClose) {
             this.sendForm(this.formOnTicket.formId);

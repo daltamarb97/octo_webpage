@@ -86,7 +86,7 @@ export class FormsTableComponent implements OnInit {
     if (!this.currentForm.foreign) {
       if (this.isActive) this.isActive.unsubscribe();
       this.isActive = this.fetchData.getResultsForms(this.companyId, this.currentForm)
-        .subscribe(dataRta => {
+        .subscribe(dataRta => {          
           this.dataSource = dataRta;
         })
       formFlow = await this.fetchData.getSingleFormInfo(this.companyId, this.currentForm);
@@ -107,7 +107,7 @@ export class FormsTableComponent implements OnInit {
         api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null,
         date: translatedDate
       })
-        .subscribe(dataRta => {
+        .subscribe(dataRta => {          
           Object.keys(dataRta).forEach(k => {
             tempArr.push(dataRta[k]);
           })
@@ -223,6 +223,57 @@ export class FormsTableComponent implements OnInit {
         this.expandedDataNames.push(k)
       })
     }
+  }
+
+  downloadData() {
+    let csvData;
+    if (!this.currentForm.foreign) {
+      const flattenedArray = this.flattenArrayOfResults();
+      csvData = this.ConvertToCSV( flattenedArray);
+    } else {
+      csvData = this.ConvertToCSV( this.dataSource);
+    }
+    const a = document.createElement("a");
+    a.setAttribute('style', 'display:none;');
+    document.body.appendChild(a);
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url= window.URL.createObjectURL(blob);
+    a.href = url;
+    const x:Date = new Date();
+    const link:string ="filename_" + x.getMonth() +  "_" +  x.getDay() + '.csv';
+    a.download = link.toLocaleLowerCase();
+    a.click();
+  }
+
+  ConvertToCSV(objArray) {
+    let array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+    let str = '';
+    let row = "";
+    for (let index in objArray[0]) {
+        row += index + ',';
+    }
+    row = row.slice(0, -1);
+    str += row + '\r\n';
+    for (let i = 0; i < array.length; i++) {
+        let line = '';
+        for (let index in array[i]) {
+            if (line != '') line += ','
+
+            line += array[i][index];
+        }
+        str += line + '\r\n';
+    }
+    return str;
+  }
+
+  flattenArrayOfResults() {
+    console.log('me estoy procesando');
+    let responseArray = [];
+    for (let i = 0; i < this.dataSource.length; i++ ){
+      const rta = {...this.dataSource[i].results, number: this.dataSource[i].number};
+      responseArray.push(rta);
+    }
+    return responseArray;
   }
 
 }

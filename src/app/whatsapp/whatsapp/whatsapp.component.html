@@ -3,11 +3,16 @@
   
     <mat-sidenav opened mode="side" style="width: auto;max-width: 50%; background-color: #EBF2F6;">
         <mat-card *ngIf="!showTicket && !showDetail">
-            <div class="p-20  position-relative">
+            <div class="p-20  position-relative" style="display: flex; justify-content: space-between; flex-direction: row;">
                 <h4 class="card-title  m-0 font-20 font-medium">Chats de WhatsApp</h4>
-            </div>
-            <div style="display: flex; justify-content: flex-end;"> 
-                <button  mat-raised-button color="accent" class="example-icon m-r-15" (click)="goToTags()">Agregar Tags</button>
+                <button 
+                    mat-mini-fab 
+                    color="accent" 
+                    (click)="goToTags()"
+                    aria-label="dd tags button"
+                    matTooltip="Agregar Tags">
+                    <mat-icon>add</mat-icon>
+                </button>
             </div>
             <mat-tab-group  mat-align-tabs="center" (selectedTabChange)="onTabChanged()"> 
                 <!-- Tab 1 -->
@@ -57,6 +62,15 @@
                 <!-- End Tab 1 -->
                 <!-- Tab 2 -->
                 <mat-tab label="Todos los chats">
+                    <div class="date-filter">
+                        <mat-form-field id="datepicker-chats" appearance="fill">
+                            <mat-label>Filtrar por fecha</mat-label>
+                            <input matInput [matDatepicker]="picker" [(ngModel)]="datePick">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                        <button mat-raised-button color="accent" (click)="dateFilter()">Filtrar</button>
+                    </div>
                         <mat-selection-list  [multiple]="false">
                         <ng-container *ngFor="let chat of chatWhatsapp; index as i" >
 
@@ -116,7 +130,7 @@
         </mat-card>
         <!-- right side menu -->
         <!-- TICKET -->
-    <mat-card *ngIf="showTicket" style="width: auto;" >
+    <mat-card *ngIf="showTicket && currentChatData" style="width: auto;" >
         <mat-card-header class="details-menu_header">
             <span (click)="showTicket = false" class="material-icons">
                 arrow_back
@@ -147,7 +161,11 @@
                       </mat-option>
                     </mat-select>
                 </mat-form-field>   
-                <mat-slide-toggle *ngIf="formsAlias.length > 0" [(ngModel)]="sendFormOnTicketClose">Enviar formulario al completar ticket</mat-slide-toggle>
+                <mat-slide-toggle 
+                    *ngIf="formsAlias.length > 0" 
+                    [(ngModel)]="sendFormOnTicketClose">
+                    Enviar formulario al completar ticket
+                </mat-slide-toggle>
                 <mat-form-field appearance="fill" *ngIf="sendFormOnTicketClose">
                     <mat-select [(ngModel)]="formOnTicket">
                         <mat-option *ngFor="let form of formsAlias" [value]="form">
@@ -275,8 +293,8 @@
 
         </mat-card>
         <!-- ************** END OF DETALLES ************** -->
-<input hidden #fileInput type="file" class="form-control" (change)="selectImage($event)" placeholder="Upload image" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
-text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">  
+    <input hidden #fileInput type="file" class="form-control" (change)="selectImage($event)" placeholder="Upload image" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
+    text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">  
     </mat-sidenav>
     <!-- CENTER PART -->
     <mat-sidenav-content opened mode="side" position="end">

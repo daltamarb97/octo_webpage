@@ -116,9 +116,6 @@ export class TicketsListComponent implements OnInit {
                     private: (rta.data().private) ? true : false,
                     companyId: this.companyId,
                 }
-                console.log(data.ticketId);
-                
-
                 if(data.ticketId === element.id) {
                     let navigationExtras: NavigationExtras = {
                         state: {
@@ -136,11 +133,11 @@ export class TicketsListComponent implements OnInit {
     }
 
     showClosedTicket(element){
-        const dialogRef = this.dialog.open(ClosedTicketDialogComponent, {data: element});
-        dialogRef.afterClosed()
-            .subscribe(async result => {
-                // create new chat room 
-                
+        const dialogRef = this.dialog.open(ClosedTicketDialogComponent, {
+            data: {
+                ...element, 
+                companyId: this.companyId
+            }
         });
     }
 }

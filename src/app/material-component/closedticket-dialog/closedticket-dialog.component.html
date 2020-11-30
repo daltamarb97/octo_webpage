@@ -16,7 +16,7 @@
     <p>Description: {{local_data.description}}</p> <br>
     <p>Fecha: {{local_data.date}}</p>
     <p>Comentarios:</p>
-    <mat-card *ngFor="let c of local_data.comments">
+    <mat-card *ngFor="let c of commentsChat">
       <mat-card-header>
           <mat-card-subtitle style="font-weight: 600;">{{c.agent | titlecase}} 
            </mat-card-subtitle> 

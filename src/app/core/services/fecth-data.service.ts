@@ -210,12 +210,12 @@ export class FecthDataService {
 
   // WHATSAPP
 
-  getWhatsappChats(companyId){
+  getWhatsappChats(companyId: string, timestamp: any){
     
     // getting chatrooms info
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
-    .collection('chats', ref => ref.orderBy('timestamp', 'desc'))
+    .collection('chats', ref => ref.orderBy('timestamp', 'desc').where("timestamp", ">=", timestamp))
 
     return ref.valueChanges();
   }
