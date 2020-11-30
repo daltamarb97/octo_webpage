@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Ticket Cerrado</h2>
+<mat-dialog-content style="width: auto; min-height:500px; " >
+    <mat-form-field>
+      <input type="text" matInput disabled id="creator" name="creator" [(ngModel)]="local_data.creator"
+        placeholder="Creado por">
+    </mat-form-field>
+    
+    <mat-form-field>
+      <mat-label>Asignado a</mat-label>
+      <mat-chip-list #chipList aria-label="Tags">   
+            <mat-chip *ngFor="let person of local_data.assignTo">
+              {{person.name}} {{person.lastname}}
+            </mat-chip>
+      </mat-chip-list> 
+    </mat-form-field>
+    <p>Description: {{local_data.description}}</p> <br>
+    <p>Fecha: {{local_data.date}}</p>
+    <p>Comentarios:</p>
+    <mat-card *ngFor="let c of commentsChat">
+      <mat-card-header>
+          <mat-card-subtitle style="font-weight: 600;">{{c.agent | titlecase}} 
+           </mat-card-subtitle> 
+          <p style="color: gray; font-size: 11px;" *ngIf="c.timestamp">{{c.timestamp.toDate() | date:'short'}}</p>
+      </mat-card-header>
+      <mat-card-content style="margin-left:24px;padding: 0;">
+          <p style="font-size: 12px;" >{{c.body}}</p>
+      </mat-card-content>
+  </mat-card>
+</mat-dialog-content>
+

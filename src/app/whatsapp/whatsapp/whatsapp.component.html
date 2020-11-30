@@ -1,20 +1,25 @@
 <!-- left side menu -->
 <mat-sidenav-container class="chat-sidebar-container">
   
-    <mat-sidenav opened mode="side" style="width: auto; background-color: #EBF2F6;">
+    <mat-sidenav opened mode="side" style="width: auto;max-width: 50%; background-color: #EBF2F6;">
         <mat-card *ngIf="!showTicket && !showDetail">
-            <div class="p-20  position-relative">
+            <div class="p-20  position-relative" style="display: flex; justify-content: space-between; flex-direction: row;">
                 <h4 class="card-title  m-0 font-20 font-medium">Chats de WhatsApp</h4>
-            </div>
-            <div style="display: flex; justify-content: flex-end;"> 
-                <button  mat-raised-button color="accent" class="example-icon m-r-15" (click)="goToTags()">Agregar Tags</button>
+                <button 
+                    mat-mini-fab 
+                    color="accent" 
+                    (click)="goToTags()"
+                    aria-label="dd tags button"
+                    matTooltip="Agregar Tags">
+                    <mat-icon>add</mat-icon>
+                </button>
             </div>
             <mat-tab-group  mat-align-tabs="center" (selectedTabChange)="onTabChanged()"> 
                 <!-- Tab 1 -->
                 <mat-tab  label="Mis chats" >   
                     <mat-selection-list  [multiple]="false">   
                         <ng-container *ngFor="let chat of chatWhatsappAssigned; index as i" >
-                            <mat-list-option *ngIf="chat.finished" (click)="getMessagesFromChatOnclick(chat, true)">                          
+                            <mat-list-option (mouseenter)="showDates(chat)" (mouseleave)="hideDates(chat)" *ngIf="chat.finished" (click)="getMessagesFromChatOnclick(chat, true)">                          
                                 <mat-list-item>
                                     <span class="material-icons m-r-15 b-b">
                                         account_circle
@@ -32,8 +37,8 @@
                             </mat-list-option>
                         </ng-container>
                         <ng-container *ngFor="let chat of chatWhatsappAssigned; index as i">
-                            <mat-list-option *ngIf="!chat.finished" (click)="getMessagesFromChatOnclick(chat, true)">                          
-                                <mat-list-item>
+                            <mat-list-option (mouseenter)="showDates(chat)" (mouseleave)="hideDates(chat)" *ngIf="!chat.finished" (click)="getMessagesFromChatOnclick(chat, true)">                          
+                                <mat-list-item >
                                     <span class="material-icons m-r-15 b-b">
                                         account_circle
                                     </span > 
@@ -47,6 +52,9 @@
                                         <mat-chip style="background-color: #44DB5E" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
                                     </mat-chip-list>
                                 </mat-list-item>
+                                <span style="font-size: 10px; padding-left:16px; padding-top: 0; padding-bottom: 0;" *ngIf="showDate && date === chat.timestamp">
+                                    {{date.toDate() | date:'medium' }}   
+                                </span>
                             </mat-list-option>
                         </ng-container>
                         </mat-selection-list>
@@ -54,10 +62,19 @@
                 <!-- End Tab 1 -->
                 <!-- Tab 2 -->
                 <mat-tab label="Todos los chats">
+                    <div class="date-filter">
+                        <mat-form-field id="datepicker-chats" appearance="fill">
+                            <mat-label>Filtrar por fecha</mat-label>
+                            <input matInput [matDatepicker]="picker" [(ngModel)]="datePick">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                        <button mat-raised-button color="accent" (click)="dateFilter()">Filtrar</button>
+                    </div>
                         <mat-selection-list  [multiple]="false">
                         <ng-container *ngFor="let chat of chatWhatsapp; index as i" >
 
-                            <mat-list-option *ngIf="!chat.finished" (click)="getMessagesFromChatOnclick(chat, false)">
+                            <mat-list-option (mouseenter)="showDates(chat)" (mouseleave)="hideDates(chat)" *ngIf="!chat.finished" (click)="getMessagesFromChatOnclick(chat, false)">
                                 <mat-list-item style="font-size: 12 !important;">
                                     <span class="material-icons m-r-10 b-b">
                                         account_circle
@@ -68,19 +85,23 @@
                                     <ng-container>
                                         {{chat.chatName }} 
                                     </ng-container> 
+                                    
                                     <mat-chip-list  style="margin-left: auto;" >
                                         <mat-chip style="background-color: #44DB5E" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
 
                                         <!-- <mat-chip color="accent" class="chip" selected *ngIf="chat.assignTo">{{'variosss' | slice:0:5}}</mat-chip> -->
                                         <!-- <mat-chip color="warn" class="chip" selected *ngIf="!chat.assignTo && !chat.finished">N/A</mat-chip> -->
                                     </mat-chip-list>
+                                    
                                 </mat-list-item>
-                                
+                                <span style="font-size: 10px; padding-left:16px; padding-top: 0; padding-bottom: 0;" *ngIf="showDate && date === chat.timestamp">
+                                    {{date.toDate() | date:'medium' }}   
+                                </span>
                             </mat-list-option>
                         </ng-container>
                         <ng-container *ngFor="let chat of chatWhatsapp; index as i" >
 
-                            <mat-list-option *ngIf="chat.finished" (click)="getMessagesFromChatOnclick(chat, false)">
+                            <mat-list-option (mouseenter)="showDates(chat)" (mouseleave)="hideDates(chat)" *ngIf="chat.finished" (click)="getMessagesFromChatOnclick(chat, false)">
                                 <mat-list-item style="font-size: 12 !important;">
                                     <span class="material-icons m-r-10 b-b">
                                         account_circle
@@ -98,7 +119,9 @@
                                         <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
                                     </mat-chip-list>
                                 </mat-list-item>
-                                
+                                <span style="font-size: 10px; padding-left:16px; padding-top: 0; padding-bottom: 0;" *ngIf="showDate && date === chat.timestamp">
+                                    {{date.toDate() | date:'medium' }}   
+                                </span>
                             </mat-list-option>
                         </ng-container>
                         </mat-selection-list>
@@ -107,7 +130,7 @@
         </mat-card>
         <!-- right side menu -->
         <!-- TICKET -->
-    <mat-card *ngIf="showTicket"  >
+    <mat-card *ngIf="showTicket && currentChatData" style="width: auto;" >
         <mat-card-header class="details-menu_header">
             <span (click)="showTicket = false" class="material-icons">
                 arrow_back
@@ -138,7 +161,11 @@
                       </mat-option>
                     </mat-select>
                 </mat-form-field>   
-                <mat-slide-toggle *ngIf="formsAlias.length > 0" [(ngModel)]="sendFormOnTicketClose">Enviar formulario al completar ticket</mat-slide-toggle>
+                <mat-slide-toggle 
+                    *ngIf="formsAlias.length > 0" 
+                    [(ngModel)]="sendFormOnTicketClose">
+                    Enviar formulario al completar ticket
+                </mat-slide-toggle>
                 <mat-form-field appearance="fill" *ngIf="sendFormOnTicketClose">
                     <mat-select [(ngModel)]="formOnTicket">
                         <mat-option *ngFor="let form of formsAlias" [value]="form">
@@ -155,14 +182,14 @@
             <mat-card-header>
                 <mat-card-subtitle style="font-weight: 600;">{{c.agent | titlecase}} 
                  </mat-card-subtitle> 
-                <p style="color: gray; font-size: 11px;" *ngIf="c.timestamp">{{c.timestamp.toDate() | date:'sho rt'}}</p>
+                <p style="color: gray; font-size: 11px;" *ngIf="c.timestamp">{{c.timestamp.toDate() | date:'short'}}</p>
             </mat-card-header>
             <mat-card-content style="margin-left:24px;padding: 0;">
                 <p style="font-size: 12px;" >{{c.body}}</p>
             </mat-card-content>
         </mat-card>
         <mat-card-content>
-            <mat-form-field class="note-form-field">
+            <mat-form-field >
                 <textarea matInput [(ngModel)]="chatNote" (keydown.enter)="setChatNote()" cols="1" rows="5"></textarea>
                 <button mat-button matSuffix mat-icon-button (click)="setChatNote()">
                     <mat-icon>send</mat-icon>
@@ -266,8 +293,8 @@
 
         </mat-card>
         <!-- ************** END OF DETALLES ************** -->
-<input hidden #fileInput type="file" class="form-control" (change)="selectImage($event)" placeholder="Upload image" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
-text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">  
+    <input hidden #fileInput type="file" class="form-control" (change)="selectImage($event)" placeholder="Upload image" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
+    text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">  
     </mat-sidenav>
     <!-- CENTER PART -->
     <mat-sidenav-content opened mode="side" position="end">

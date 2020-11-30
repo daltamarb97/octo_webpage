@@ -2,14 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
-import { MatTableDataSource } from '@angular/material/table';
 import { SetDataService } from '../../core/services/set-data.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TicketDialogComponent } from '../../material-component/ticket-dialog/ticket-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
-const ELEMENT_DATA: Element[] = [];
 
 @Component({
   selector: 'app-forms-table',
@@ -26,8 +23,8 @@ const ELEMENT_DATA: Element[] = [];
 
 export class FormsTableComponent implements OnInit {
 
-  dataSource = new MatTableDataSource<Element>(ELEMENT_DATA);
-  columnsToDisplay = ['acciones'];
+  dataSource: Array<any> = [];
+  columnsToDisplay = ['numero','acciones'];
   companyId: string;
   companyInfo: any;
   forms: Array<any> = [];
@@ -38,7 +35,11 @@ export class FormsTableComponent implements OnInit {
   messageEdition: string = null;
   typeMessageEdition: string = null;
   missingEditInfo: boolean = false;
-  sortNumber: number = 0;
+  isActive: any;
+  expandedElement: null;
+  expandedData: Array<any> = [];
+  expandedDataNames: Array<any> = [];
+  datePick: any;
 
   constructor(
     private fetchData: FecthDataService,
@@ -59,97 +60,74 @@ export class FormsTableComponent implements OnInit {
   }
 
   async getForms() {
-    ELEMENT_DATA.splice(0, ELEMENT_DATA.length);
     this.forms = await this.fetchData.getFormsInfo(this.companyId);  
     this.currentForm = this.forms[0];
-    const cols = await this.fetchData.getFormCols(this.companyId, this.currentForm);    
-    let data = null;
     let formFlow = null;
     if (!this.currentForm.foreign) {
-      data =  await this.fetchData.getResultsForms(this.companyId, this.currentForm);
+      this.isActive = this.fetchData.getResultsForms(this.companyId, this.currentForm)
+        .subscribe(dataRta => {
+          this.dataSource = dataRta;          
+        });
       formFlow = await this.fetchData.getSingleFormInfo(this.companyId, this.currentForm);
-      cols.forEach(c => {
-        (c.alias)
-          ? this.columnsToDisplay.unshift(c.alias)
-          : this.columnsToDisplay.unshift(c);
-      })
       formFlow.forEach(d => {
         this.formFlow.push(d.data());
-      })
-      data.forEach(i => {
-        ELEMENT_DATA.push({...i.data().results, number: i.data().number});
-      })
-    } else {
-      this.fetchData.getResultsFormsForeign(30)
-        .subscribe(dataRta => {
-        cols.forEach(c => {
-          (c.alias)
-            ? this.columnsToDisplay.unshift(c.alias)
-            : this.columnsToDisplay.unshift(c);
-        }) 
-        Object.keys(dataRta).forEach(k => {
-          ELEMENT_DATA.push(dataRta[k])
-        })
       })
     }
   }
 
-  applyFilter(filterValue: string) {
-    filterValue = filterValue.trim();
-    filterValue = filterValue.toLowerCase();
-    this.dataSource.filter = filterValue;
-  }
-
   async changeForm(formInfo) {
     this.currentForm = formInfo;
+    this.dataSource = [];
+    this.datePick = null;
     // empty variables
-    this.columnsToDisplay = ['acciones'];
-    ELEMENT_DATA.splice(0, ELEMENT_DATA.length);
     this.formFlow = [];
-    this.sortNumber = 0;
-    // 
-    let data = null;
     let formFlow = null;
+    // 
     if (!this.currentForm.foreign) {
-      const cols = await this.fetchData.getFormCols(this.companyId, this.currentForm);
-      data =  await this.fetchData.getResultsForms(this.companyId, this.currentForm);
+      if (this.isActive) this.isActive.unsubscribe();
+      this.isActive = this.fetchData.getResultsForms(this.companyId, this.currentForm)
+        .subscribe(dataRta => {          
+          this.dataSource = dataRta;
+        })
       formFlow = await this.fetchData.getSingleFormInfo(this.companyId, this.currentForm);
-      cols.forEach(c => {
-        (c.alias)
-          ? this.columnsToDisplay.unshift(c.alias)
-          : this.columnsToDisplay.unshift(c);
-      })
       formFlow.forEach(d => {
         this.formFlow.push(d.data());
-      })
-      data.forEach(i => {
-        ELEMENT_DATA.push({...i.data().results, number: i.data().number});
-      })      
+      })     
     } else {
       this.showTable = true;
     }
   }
 
   searchFields() {
-    this.columnsToDisplay = ['acciones'];
-    ELEMENT_DATA.splice(0, ELEMENT_DATA.length);
     this.formFlow = [];
-    const searchNumber = (this.sortNumber !== 0) ? this.sortNumber : 30;
-    this.fetchData.getResultsFormsForeign({
-      api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null,
-      number: searchNumber
-    })
-        .subscribe(async dataRta => {
-          const cols = await this.fetchData.getFormCols(this.companyId, this.currentForm);
-          cols.forEach(c => {
-            (c.alias)
-              ? this.columnsToDisplay.unshift(c.alias)
-              : this.columnsToDisplay.unshift(c);
-          })
+    let tempArr = [];
+    if (this.currentForm.foreign) {
+      const translatedDate = this.convertDate(this.datePick);
+      this.fetchData.getResultsFormsForeign({
+        api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null,
+        date: translatedDate
+      })
+        .subscribe(dataRta => {          
           Object.keys(dataRta).forEach(k => {
-            ELEMENT_DATA.push(dataRta[k])
+            tempArr.push(dataRta[k]);
           })
+          this.dataSource = tempArr;
         })
+    } else {
+      if (this.isActive) this.isActive.unsubscribe();
+      const dateToSend =  this.holdData.convertJSCustomDateIntoFirestoreTimestamp(this.datePick)
+      this.isActive = this.fetchData.getResultsFormsWithDate(this.companyId, this.currentForm, dateToSend)
+        .subscribe(dataRta => {
+          this.dataSource = dataRta;
+        })
+    }
+  }
+
+  convertDate(str) {
+    var date = new Date(str),
+    month = ("0" + (date.getMonth() + 1)).slice(-2),
+    day = ("0" + date.getDate()).slice(-2);
+    return [date.getFullYear(), month, day].join("-");
   }
 
   openTicket(element) {
@@ -194,9 +172,6 @@ export class FormsTableComponent implements OnInit {
                     })
               }
           });
-
-
-
   }
 
   async confirmMessageChanges(message) {
@@ -232,6 +207,73 @@ export class FormsTableComponent implements OnInit {
     this.typeMessageEdition = null;
     this.messageEdition = null;
     this.edition = false;
+  }
+
+  getRowData(element){
+    this.expandedData = [];
+    this.expandedDataNames = [];
+    if (element.results) {
+      Object.keys(element.results).forEach(k => {
+        this.expandedData.push(element.results[k]);
+        this.expandedDataNames.push(k);
+      })
+    } else {
+      Object.keys(element).forEach(k => {
+        this.expandedData.push(element[k]);
+        this.expandedDataNames.push(k)
+      })
+    }
+  }
+
+  downloadData() {
+    let csvData;
+    if (!this.currentForm.foreign) {
+      const flattenedArray = this.flattenArrayOfResults();
+      csvData = this.ConvertToCSV( flattenedArray);
+    } else {
+      csvData = this.ConvertToCSV( this.dataSource);
+    }
+    const a = document.createElement("a");
+    a.setAttribute('style', 'display:none;');
+    document.body.appendChild(a);
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url= window.URL.createObjectURL(blob);
+    a.href = url;
+    const x:Date = new Date();
+    const link:string ="filename_" + x.getMonth() +  "_" +  x.getDay() + '.csv';
+    a.download = link.toLocaleLowerCase();
+    a.click();
+  }
+
+  ConvertToCSV(objArray) {
+    let array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+    let str = '';
+    let row = "";
+    for (let index in objArray[0]) {
+        row += index + ',';
+    }
+    row = row.slice(0, -1);
+    str += row + '\r\n';
+    for (let i = 0; i < array.length; i++) {
+        let line = '';
+        for (let index in array[i]) {
+            if (line != '') line += ','
+
+            line += array[i][index];
+        }
+        str += line + '\r\n';
+    }
+    return str;
+  }
+
+  flattenArrayOfResults() {
+    console.log('me estoy procesando');
+    let responseArray = [];
+    for (let i = 0; i < this.dataSource.length; i++ ){
+      const rta = {...this.dataSource[i].results, number: this.dataSource[i].number};
+      responseArray.push(rta);
+    }
+    return responseArray;
   }
 
 }

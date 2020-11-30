@@ -5,7 +5,9 @@ import { Router, NavigationExtras } from '@angular/router';
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
+import {
+    ClosedTicketDialogComponent
+  } from '../../../app/material-component/closedticket-dialog/closedticket-dialog.component';
 
 export interface TicketElement {
   id: string;
@@ -125,7 +127,17 @@ export class TicketsListComponent implements OnInit {
                     this._snackBar.open('Este ticket esta cerrado', 'Ok', {
                         duration: 4000,
                     });
+                   
                 }
             })
+    }
+
+    showClosedTicket(element){
+        const dialogRef = this.dialog.open(ClosedTicketDialogComponent, {
+            data: {
+                ...element, 
+                companyId: this.companyId
+            }
+        });
     }
 }

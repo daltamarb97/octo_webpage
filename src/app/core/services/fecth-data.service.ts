@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HoldDataService } from './hold-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ export class FecthDataService {
   constructor(
     private db: AngularFirestore,
     private httpClient: HttpClient,
+    private holdData: HoldDataService,
   ) {}
 
 
@@ -208,12 +210,12 @@ export class FecthDataService {
 
   // WHATSAPP
 
-  getWhatsappChats(companyId){
+  getWhatsappChats(companyId: string, timestamp: any){
     
     // getting chatrooms info
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
-    .collection('chats', ref => ref.orderBy('timestamp', 'desc'))
+    .collection('chats', ref => ref.orderBy('timestamp', 'desc').where("timestamp", ">=", timestamp))
 
     return ref.valueChanges();
   }
@@ -447,20 +449,29 @@ export class FecthDataService {
       return ref;
   }
 
-  async getResultsForms(companyId: string, formData: any) {
-      let ref = await this.db.collection('whatsapp')
+  getResultsForms(companyId: string, formData: any) {
+      let ref =  this.db.collection('whatsapp')
       .doc(companyId)
       .collection('forms')
       .doc(formData.formId)
       .collection('responses')
-      .get()
-      .toPromise()
+      .valueChanges();
       return ref;
   }
 
+  getResultsFormsWithDate(companyId: string, formData: any, date: any) {
+    let ref =  this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('forms')
+    .doc(formData.formId)
+    .collection('responses', ref => ref.where("timestamp", ">=", date))
+    .valueChanges();
+    return ref;
+}
+
   getResultsFormsForeign(data) {
-    // const api_url = `http://localhost:5000/foreigndb/encuesta/${data.number}`
-      const api_url = (data.api_url) ? `${data.api_url}/foreigndb/encuesta/${data.number}` : `https://octo-api-wa.herokuapp.com/foreigndb/encuesta/${data.number}`;
+    // const api_url = `http://localhost:5000/foreigndb/encuesta/${data.date}`
+      const api_url = (data.api_url) ? `${data.api_url}/foreigndb/encuesta/${data.date}` : `https://octo-api-wa.herokuapp.com/foreigndb/encuesta/${data.date}`;
     let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
     const req = this.httpClient.get(api_url, {headers: headers, responseType: 'json'});
     return req;

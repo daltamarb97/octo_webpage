@@ -441,8 +441,9 @@ export class SetDataService {
     return ref.set({
       finished: true,
       number: data.number,
-      timestamp: data.timestamp
+      timestamp: data.timestamp,
     })
+
   }
 
   async archiveTicket(data) {
@@ -618,7 +619,17 @@ export class SetDataService {
       status:status
     });
   }
-
+  async setCommentsOnChatClosed(companyId: string,ticketId: string, comments){
+    // change comments when the chat is closed
+    let ref = this.db.collection('tickets')
+    .doc(companyId)
+    .collection('tickets')
+    .doc(ticketId)
+   
+    await ref.update({
+      comments:comments
+    });
+  }
   // sendTagToCategories(companyId, categoryId, name, trainingPhrases){
   //   // send tag to Categories to firestore
   //   let ref = this.db.collection('whatsapp')
@@ -802,6 +813,14 @@ export class SetDataService {
           message: data.message
         })
       }
+  }
+
+  setSendFormOnClose(companyId: string, ticketId: string, toggle: boolean) {
+    let ref = this.db.collection('tickets')
+      .doc(companyId)
+      .collection('tickets')
+      .doc(ticketId);
+    return (toggle) ? ref.update({formClose: true}) : ref.update({formClose: true});
   }
   // END OF FLOW SERVICES
 }

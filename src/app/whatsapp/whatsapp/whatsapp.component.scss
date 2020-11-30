@@ -216,3 +216,17 @@ footer{
     font-size: 10px;
   }
 }
+
+.date-filter {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 5px;
+  #datepicker-chats {
+    width: 50%;
+  }
+  button {
+    width: 20%;
+    height: 50%;
+  }
+}

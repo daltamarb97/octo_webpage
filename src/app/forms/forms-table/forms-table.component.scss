@@ -21,6 +21,19 @@ table {
   .example-element-detail {
     overflow: hidden;
     display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    mat-list {
+      margin: 0 10px;
+    }
+  }
+
+  .element-detail__text {
+    font-weight: bold;
+  }
+
+  .mat-list-item-content {
+    align-items: flex-start;
   }
   
   .example-element-diagram {
@@ -125,4 +138,11 @@ table {
     button {
       margin-left: 20px; 
     }
+    #download-button {
+      margin-left: 20px;
+    }
+  }
+
+  .mat-form-field-wrapper {
+    width: 350px;
   }
