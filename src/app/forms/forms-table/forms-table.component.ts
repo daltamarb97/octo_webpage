@@ -40,7 +40,7 @@ export class FormsTableComponent implements OnInit {
   expandedData: Array<any> = [];
   expandedDataNames: Array<any> = [];
   datePick: any;
-
+  showCardsVersion: boolean = false;
   constructor(
     private fetchData: FecthDataService,
     private holdData: HoldDataService,
@@ -50,18 +50,21 @@ export class FormsTableComponent implements OnInit {
     private _snackBar: MatSnackBar,
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     if (!this.holdData.companyInfo) {
       this.router.navigate(['no-comp'])
     }
     this.companyInfo = this.holdData.companyInfo;
     this.companyId = this.holdData.companyInfo.companyId;
-    this.getForms();
+    await this.getForms();
   }
 
   async getForms() {
     this.forms = await this.fetchData.getFormsInfo(this.companyId);  
-    this.currentForm = this.forms[0];
+    this.currentForm = this.forms[0]; 
+    if (
+      this.currentForm.formId === 'I7vdIZKaWSs5xZuffL85' || 
+      this.currentForm.formId === '341LZce0tV0SEBqj8Qqq') this.showCardsVersion = true;   
     let formFlow = null;
     if (!this.currentForm.foreign) {
       this.isActive = this.fetchData.getResultsForms(this.companyId, this.currentForm)
@@ -76,7 +79,11 @@ export class FormsTableComponent implements OnInit {
   }
 
   async changeForm(formInfo) {
+    this.showCardsVersion = false; 
     this.currentForm = formInfo;
+    if (
+      this.currentForm.formId === 'I7vdIZKaWSs5xZuffL85' || 
+      this.currentForm.formId === '341LZce0tV0SEBqj8Qqq') this.showCardsVersion = true;
     this.dataSource = [];
     this.datePick = null;
     // empty variables
@@ -111,7 +118,7 @@ export class FormsTableComponent implements OnInit {
           Object.keys(dataRta).forEach(k => {
             tempArr.push(dataRta[k]);
           })
-          this.dataSource = tempArr;
+          this.dataSource = tempArr;                              
         })
     } else {
       if (this.isActive) this.isActive.unsubscribe();

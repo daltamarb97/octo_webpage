@@ -25,15 +25,19 @@
             </div>
             <div class="search-field" *ngIf="currentForm">
                 <mat-form-field color="accent" appearance="fill" class="date-form">
-                    <mat-label>¿Desde que fecha quieres ver los resultados?</mat-label>
-                    <input matInput [matDatepicker]="picker1" [(ngModel)]="datePick">
-                    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-label>¿Desde qué fecha quieres ver los resultados?</mat-label>
+                    <input 
+                        matInput 
+                        [matDatepicker]="picker1" 
+                        [(ngModel)]="datePick" 
+                        (focus)="picker1.open()" 
+                        readonly>
                     <mat-datepicker #picker1></mat-datepicker>
                 </mat-form-field>
                 <button mat-stroked-button color="primary" (click)="searchFields()">Confirmar</button>
                 <button id="download-button" mat-stroked-button color="primary" *ngIf="dataSource.length >= 1" (click)="downloadData()">Descargar datos en Excel</button>
             </div>
-            <div class="responsive-table" *ngIf="showTable">
+            <div class="responsive-table" *ngIf="showTable && !showCardsVersion">
                 <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
                     <ng-container matColumnDef="numero">
                         <th mat-header-cell *matHeaderCellDef> Número </th>
@@ -71,7 +75,41 @@
                     <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
                 </table>
             </div>
-
+            <!-- just for Porthos, for now -->
+            <div fxLayout="row wrap" class="course-app" *ngIf="showTable && showCardsVersion">
+                <div fxFlex.gt-md="33.33" fxFlex.gt-lg="33.33" fxFlex="100" *ngFor='let d of dataSource'>
+                    <mat-card>
+                    <mat-card-header class="response-header d-{{d.calificacion}}">
+                        <mat-card-title>
+                            <span class="response-date">
+                                <mat-icon class="m-r-10">access_time</mat-icon>{{d.fecha | slice:0:10}}
+                            </span>
+                            <span id="response-point">{{d.punto}}</span>
+                        </mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content class="text-center">
+                        <p class="m-b-5 title-bold">Calificación:  {{d.calificacion}}</p>
+                        <small>{{d.comentarios}}</small>
+                        <!-- see more details -->
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Ver más detalles</mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <p><span class="bold-subtitle">Nombre: </span>{{d.nombre}} {{d.apellido}}</p>
+                            <p><span class="bold-subtitle">Email: </span>{{d.email}}</p>
+                            <p><span class="bold-subtitle">Telefono: </span>{{d.telefono}}</p>
+                            <p><span class="bold-subtitle">Fecha de Nacimiento: </span>{{d.fecha_nacimiento | slice:0:10}}</p>
+                            <p><span class="bold-subtitle">Hora: </span>{{d.hora}}</p>
+                            <p><span class="bold-subtitle">Mesero: </span>{{d.mesero}}</p>
+                        </mat-expansion-panel>
+                    </mat-card-content>
+                    <mat-card-actions class="text-center">
+                        <button mat-button click="openTicket(d)">Abrir Ticket</button>
+                    </mat-card-actions>
+                    </mat-card>
+                </div>
+            </div>
+            <!-- form builder -->
             <div class="bubble" *ngIf="!showTable">
                 <mat-vertical-stepper [linear]="isLinear" #stepper>
                     <mat-step *ngFor="let message of formFlow">
