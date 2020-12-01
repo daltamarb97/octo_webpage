@@ -146,37 +146,37 @@ export class FormsTableComponent implements OnInit {
           .subscribe(async result => {
               // create new chat room 
               if (result.event === 'Cancel' || result.event === undefined) {} else if (result.event === 'Success') {
-                  let ticket = result.data;
-                  ticket.phone = (element.number) ? element.number : element.telefono;
-                  (ticket.phone.includes('whatsapp:')) 
-                    ? ticket.phone = ticket.phone
-                    : (this.companyInfo.name === 'Porthos') ? ticket.phone = `whatsapp:+57${ticket.phone}` : ticket.phone = `whatsapp:${ticket.phone}`
-                  ticket.status = 'Pendiente';
-                  this.fetchData.getSingleWhatsappChat(this.companyId, ticket.phone)
-                    .subscribe(async data => {
-                      if(data.data()) {
-                        if(!data.data().hasTicket) {
-                          const ticketId: any = await this.setData.createTicket(ticket, this.companyId);
-                          this.setData.sendHasTicket(ticket.phone, this.companyId, ticketId);
-                          this._snackBar.open(`Se ha creado un ticket asociado a el número: ${ticket.phone}, ve a la pestaña de WhatsApp para ver detalles del ticket`, 'Ok');
-                        } else {
-                          this._snackBar.open(`Ya existe un ticket asociado a el número: ${ticket.phone}, no es posible crear un nuevo ticket`, 'Ok');
-                        }
-                      } else {
+                let ticket = result.data;
+                ticket.phone = (element.number) ? element.number : element.telefono;
+                (ticket.phone.includes('whatsapp:')) 
+                  ? ticket.phone = ticket.phone
+                  : (this.companyInfo.name === 'Porthos') ? ticket.phone = `whatsapp:+57${ticket.phone}` : ticket.phone = `whatsapp:${ticket.phone}`
+                ticket.status = 'Pendiente';
+                this.fetchData.getSingleWhatsappChat(this.companyId, ticket.phone)
+                  .subscribe(async data => {
+                    if(data.data()) {
+                      if(!data.data().hasTicket) {
                         const ticketId: any = await this.setData.createTicket(ticket, this.companyId);
-                        const newChatData = {
-                          number: ticket.phone,
-                          assignTo: [{
-                            email: this.holdData.userInfo.email,
-                            name: `${this.holdData.userInfo.name} ${this.holdData.userInfo.lastname}`,
-                            userId: this.holdData.userId
-                          }],
-                          ticketId: ticketId
-                        }
-                        await this.setData.createWhatsappChatFromForms(this.companyId, newChatData);
-                        this._snackBar.open(`Se ha creado un ticket y un chat asociado a el número: ${ticket.phone}, ve a la pestaña de WhatsApp para ver detalles del ticket`, 'Ok');
+                        this.setData.sendHasTicket(ticket.phone, this.companyId, ticketId);
+                        this._snackBar.open(`Se ha creado un ticket asociado a el número: ${ticket.phone}, ve a la pestaña de WhatsApp para ver detalles del ticket`, 'Ok');
+                      } else {
+                        this._snackBar.open(`Ya existe un ticket asociado a el número: ${ticket.phone}, no es posible crear un nuevo ticket`, 'Ok');
                       }
-                    })
+                    } else {
+                      const ticketId: any = await this.setData.createTicket(ticket, this.companyId);
+                      const newChatData = {
+                        number: ticket.phone,
+                        assignTo: [{
+                          email: this.holdData.userInfo.email,
+                          name: `${this.holdData.userInfo.name} ${this.holdData.userInfo.lastname}`,
+                          userId: this.holdData.userId
+                        }],
+                        ticketId: ticketId
+                      }
+                      await this.setData.createWhatsappChatFromForms(this.companyId, newChatData);
+                      this._snackBar.open(`Se ha creado un ticket y un chat asociado a el número: ${ticket.phone}, ve a la pestaña de WhatsApp para ver detalles del ticket`, 'Ok');
+                    }
+                  })
               }
           });
   }
