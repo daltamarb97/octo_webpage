@@ -41,6 +41,8 @@ import {
 import {
   MatSnackBar
 } from '@angular/material/snack-bar';
+import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter } from '@angular/material/core';
+import { formatDate } from '@angular/common';
 
 export class currentChatData {
   phoneNumber: string;
@@ -53,10 +55,34 @@ export class currentChatData {
   timestamp: any;
 }
 
+export const PICK_FORMATS = {
+    parse: {dateInput: {month: 'short', year: 'numeric', day: 'numeric'}},
+    display: {
+        dateInput: 'input',
+        monthYearLabel: {year: 'numeric', month: 'short'},
+        dateA11yLabel: {year: 'numeric', month: 'long', day: 'numeric'},
+        monthYearA11yLabel: {year: 'numeric', month: 'long'}
+    }
+  };
+  
+  class PickDateAdapter extends NativeDateAdapter {
+    format(date: Date, displayFormat: Object): string {
+        if (displayFormat === 'input') {
+            return formatDate(date,'dd-MMM-yyyy',this.locale);;
+        } else {
+            return date.toDateString();
+        }
+    }
+  }
+
 @Component({
   selector: 'app-whatsapp',
   templateUrl: './whatsapp.component.html',
-  styleUrls: ['./whatsapp.component.scss']
+  styleUrls: ['./whatsapp.component.scss'],
+  providers: [
+    {provide: DateAdapter, useClass: PickDateAdapter},
+    {provide: MAT_DATE_FORMATS, useValue: PICK_FORMATS}
+  ]
 })
 export class WhatsappComponent implements OnInit {
   @ViewChild('autosize') autosize: CdkTextareaAutosize;
@@ -620,9 +646,7 @@ export class WhatsappComponent implements OnInit {
   }
 
   async archiveChat() {
-    // finish chat and remove agent from chat
-    console.log(this.currentChatData);
-    
+    // finish chat and remove agent from chat    
     await this.setData.archiveChat({
         companyId: this.companyId,
         number: this.currentChatData.phoneNumber,

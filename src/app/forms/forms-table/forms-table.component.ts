@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
@@ -7,6 +7,29 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TicketDialogComponent } from '../../material-component/ticket-dialog/ticket-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { formatDate } from '@angular/common';
+
+
+export const PICK_FORMATS = {
+  parse: {dateInput: {month: 'short', year: 'numeric', day: 'numeric'}},
+  display: {
+      dateInput: 'input',
+      monthYearLabel: {year: 'numeric', month: 'short'},
+      dateA11yLabel: {year: 'numeric', month: 'long', day: 'numeric'},
+      monthYearA11yLabel: {year: 'numeric', month: 'long'}
+  }
+};
+
+class PickDateAdapter extends NativeDateAdapter {
+  format(date: Date, displayFormat: Object): string {
+      if (displayFormat === 'input') {
+          return formatDate(date,'dd-MMM-yyyy',this.locale);
+      } else {
+          return date.toDateString();
+      }
+  }
+}
 
 @Component({
   selector: 'app-forms-table',
@@ -18,7 +41,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
         state('expanded', style({ height: '*' })),
         transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
-]
+],
+  providers: [
+    {provide: DateAdapter, useClass: PickDateAdapter},
+    {provide: MAT_DATE_FORMATS, useValue: PICK_FORMATS}
+  ]
 })
 
 export class FormsTableComponent implements OnInit {
@@ -107,7 +134,7 @@ export class FormsTableComponent implements OnInit {
 
   searchFields() {
     this.formFlow = [];
-    let tempArr = [];
+    let tempArr = [];    
     if (this.currentForm.foreign) {
       const translatedDate = this.convertDate(this.datePick);
       this.fetchData.getResultsFormsForeign({
@@ -274,7 +301,6 @@ export class FormsTableComponent implements OnInit {
   }
 
   flattenArrayOfResults() {
-    console.log('me estoy procesando');
     let responseArray = [];
     for (let i = 0; i < this.dataSource.length; i++ ){
       const rta = {...this.dataSource[i].results, number: this.dataSource[i].number};
