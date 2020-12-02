@@ -208,4 +208,22 @@ table {
     margin-top: 20px;
   }
 }
+
+.filter-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  margin-top: 10px;
+  .filter-options__select {
+    width: 50%;
+  }
+  .filter-options__text{
+    margin: 10px 0 0 30px;
+    display: inherit;
+    flex-direction: column;
+    p {
+      margin: 3px 0;
+    }
+  }
+}
  

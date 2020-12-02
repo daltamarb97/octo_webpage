@@ -24,18 +24,31 @@
                 </mat-form-field>
             </div>
             <div class="search-field" *ngIf="currentForm">
-                <mat-form-field color="accent" appearance="fill" class="date-form">
-                    <mat-label>¿Desde qué fecha quieres ver los resultados?</mat-label>
-                    <input 
-                        matInput 
-                        [matDatepicker]="picker1" 
-                        [(ngModel)]="datePick" 
-                        (focus)="picker1.open()" 
+                <mat-form-field>
+                    <input matInput
+                        placeholder="Escoge las fechas para ver resultados"
+                        [satDatepicker]="picker"
+                        [(ngModel)]="datePick"
+                        (focus)="picker.open()"
                         readonly>
-                    <mat-datepicker #picker1></mat-datepicker>
+                    <sat-datepicker #picker [rangeMode]="true"></sat-datepicker>
+                    <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
                 </mat-form-field>
                 <button mat-stroked-button color="primary" (click)="searchFields()">Confirmar</button>
                 <button id="download-button" mat-stroked-button color="primary" *ngIf="dataSource.length >= 1" (click)="downloadData()">Descargar datos en Excel</button>
+            </div>
+            <!-- filter of points, just for porthos -->
+            <div class="filter-options" *ngIf="showTable && showCardsVersion && dataSource.length >= 1">
+                <mat-form-field class="filter-options__select" appearance="fill">
+                    <mat-label>Filtra por Punto</mat-label>
+                    <mat-select [(value)]="selectedFilter" (selectionChange)="selectFilter($event)">
+                        <mat-option *ngFor="let o of filterCases" [value]="o">{{o}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div class="filter-options__text">
+                    <p><span class="bold-subtitle">Calificación promedio:   </span>{{averageRate | number:'1.2-2'}}</p>
+                    <p><span class="bold-subtitle">Total respuestas:   </span>{{responsesLength}}</p>
+                </div>
             </div>
             <div class="responsive-table" *ngIf="showTable && !showCardsVersion">
                 <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">

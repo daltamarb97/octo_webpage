@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TicketDialogComponent } from '../../material-component/ticket-dialog/ticket-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter } from 'saturn-datepicker'
 import { formatDate } from '@angular/common';
 
 
@@ -44,7 +44,7 @@ class PickDateAdapter extends NativeDateAdapter {
 ],
   providers: [
     {provide: DateAdapter, useClass: PickDateAdapter},
-    {provide: MAT_DATE_FORMATS, useValue: PICK_FORMATS}
+    {provide: MAT_DATE_FORMATS, useValue: PICK_FORMATS},
   ]
 })
 
@@ -68,6 +68,12 @@ export class FormsTableComponent implements OnInit {
   expandedDataNames: Array<any> = [];
   datePick: any;
   showCardsVersion: boolean = false;
+  filterCases: Array<number | string> = [];
+  responsesLength: number;
+  // PORTHOS EXCLUSIVE
+  averageRate: number;
+  selectedFilter: string;
+
   constructor(
     private fetchData: FecthDataService,
     private holdData: HoldDataService,
@@ -136,16 +142,22 @@ export class FormsTableComponent implements OnInit {
     this.formFlow = [];
     let tempArr = [];    
     if (this.currentForm.foreign) {
-      const translatedDate = this.convertDate(this.datePick);
       this.fetchData.getResultsFormsForeign({
         api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null,
-        date: translatedDate
+        begin: this.convertDate(this.datePick.begin),
+        end: this.convertDate(this.datePick.end)
       })
         .subscribe(dataRta => {          
           Object.keys(dataRta).forEach(k => {
             tempArr.push(dataRta[k]);
           })
-          this.dataSource = tempArr;                              
+          this.dataSource = tempArr;  
+          this.responsesLength = this.dataSource.length;
+          this.dataSource.map(d => {
+            if (!this.filterCases.includes(d.punto)) {
+              this.filterCases.push(d.punto);
+            }
+          });                     
         })
     } else {
       if (this.isActive) this.isActive.unsubscribe();
@@ -155,6 +167,18 @@ export class FormsTableComponent implements OnInit {
           this.dataSource = dataRta;
         })
     }
+  }
+
+  selectFilter(event) {
+    let rate: number = 0;
+    let counter: number = 0;
+    this.dataSource.map(d => {
+      if (d.punto === event.value) {
+        rate = rate + d.calificacion
+        counter++;
+      }
+    }); 
+    this.averageRate = rate / counter;
   }
 
   convertDate(str) {

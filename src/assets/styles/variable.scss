@@ -1,6 +1,7 @@
 
 // Variables
 @import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700');
+@import '~saturn-datepicker/theming';
 
 $bodyfont: 'Poppins', sans-serif;
 $headingfont: 'Poppins', sans-serif;
@@ -19,6 +20,8 @@ $background: map-get($theme, background);
 $foreground: map-get($theme, foreground);
 
 @include mat-core();
+@include sat-datepicker-theme($theme);
+
 
 $custom-typography: mat-typography-config(
   $font-family: 'Poppins, sans-serif'

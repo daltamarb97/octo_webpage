@@ -40,6 +40,7 @@ import {PlatformModule} from '@angular/cdk/platform';
 import {ObserversModule} from '@angular/cdk/observers';
 import {PortalModule} from '@angular/cdk/portal';
 import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { SatDatepickerModule, SatNativeDateModule } from 'saturn-datepicker';
 
 /**
  * NgModule that includes all Material modules that are required to serve the demo-app.
@@ -87,7 +88,9 @@ import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
     OverlayModule,
     PlatformModule,
     PortalModule,
-    DragDropModule
+    DragDropModule,
+    SatDatepickerModule,
+    SatNativeDateModule
   ]
 })
 export class DemoMaterialModule {}
