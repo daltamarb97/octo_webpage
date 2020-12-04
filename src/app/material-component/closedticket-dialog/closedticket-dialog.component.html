@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Ticket Cerrado</h2>
+<h2 mat-dialog-title>Ticket {{local_data.status === 'Completado' ? 'Cerrado' : (local_data.status === 'Pendiente' ? 'Abierto' : local_data.status)}}</h2>
 <mat-dialog-content style="width: auto; min-height:500px; " >
     <mat-form-field>
       <input type="text" matInput disabled id="creator" name="creator" [(ngModel)]="local_data.creator"
