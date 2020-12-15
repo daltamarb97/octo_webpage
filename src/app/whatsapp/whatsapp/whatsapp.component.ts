@@ -54,7 +54,7 @@ export class currentChatData {
   chatName?:string; 
   timestamp: any;
 }
-
+declare var MediaRecorder: any;
 export const PICK_FORMATS = {
     parse: {dateInput: {month: 'short', year: 'numeric', day: 'numeric'}},
     display: {
@@ -125,6 +125,11 @@ export class WhatsappComponent implements OnInit {
   formsAlias: Array < any > = [];
   sendFormOnTicketClose: boolean = false;
   formOnTicket: any;
+  mediaRecorder: any;
+  showMic: boolean = true;
+  timeRecorded: number = 0;
+  saveAudio: boolean = false;
+  voiceNote: any;
 
   visible = true;
   selectable = true;
@@ -408,6 +413,8 @@ export class WhatsappComponent implements OnInit {
       // .catch(error => {
       //   console.error(error);
       // })
+    // set unseen flag to false
+    this.setData.setUnseenToFalse(this.companyId, this.currentChatData.phoneNumber);
   }
 
   sendForm(formId: string) {
@@ -498,6 +505,8 @@ export class WhatsappComponent implements OnInit {
                           if (error.status === 400) {
                               alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
                           } else {
+                              console.log(error);
+                              
                               alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
                           }
                           this.currentMessage = null;
@@ -505,6 +514,44 @@ export class WhatsappComponent implements OnInit {
                           this.fileName = '';
                           this.showSpinner = false;
                       })
+              } else if(this.voiceNote) {
+                let mediaUrl;
+                const randomName = this.holdData.createRandomId();
+                mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.voiceNote, randomName);
+                this.setData.sendWhatsappMessageHttp({
+                        message: this.currentMessage,
+                        number: this.currentChatData.phoneNumber,
+                        template: this.templatesActivated,
+                        companyId: this.companyId,
+                        mediaUrl: mediaUrl,
+                        api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
+                    }).toPromise()
+                    .then(async (data) => {
+                        const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
+                        let dataFirebase;
+                        if (mediaUrl) {
+                            dataFirebase = {
+                                inbound: false,
+                                message: this.currentMessage,
+                                timestamp: timestamp,
+                                mediaUrl: mediaUrl,
+                                MediaContentType: 'file'
+                            }
+                            await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
+                        }                        
+                        this.voiceNote = null;
+                        this.showSpinner = false;
+                    })
+                    .catch(error => {
+                        if (error.status === 400) {
+                            alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
+                        } else {
+                            console.log(error);
+                            alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
+                        }
+                        this.voiceNote = null;
+                        this.showSpinner = false;
+                    })
               } else {
                   this.currentMessage = null;
               }
@@ -616,6 +663,7 @@ export class WhatsappComponent implements OnInit {
         if (error.status === 400) {
             alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
         } else {
+            console.log(error);
             alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
         }
     })
@@ -828,12 +876,50 @@ export class WhatsappComponent implements OnInit {
       this.currentChatData.chatName = name;
       this.name = '';
   }
-  showDates(chat){
-      this.date = chat.timestamp;
-      this.showDate = true;
 
-  }
-  hideDates(){
-    this.showDate = false;
-}
+    showDates(chat){
+        this.date = chat.timestamp;
+        this.showDate = true;
+    }
+
+    hideDates(){
+        this.showDate = false;
+    }
+
+    startVoiceRecording() {
+        this.showMic = false;
+        let time; 
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                this.mediaRecorder = new MediaRecorder(stream);
+                this.mediaRecorder.start();
+                const audioChunks = [];
+                this.mediaRecorder.addEventListener("dataavailable", event => {
+                  audioChunks.push(event.data);
+                });
+                this.mediaRecorder.addEventListener("stop", () => {
+                    this.voiceNote = new Blob(audioChunks, {'type': 'audio/mp3'});
+                    clearInterval(time);
+                    if(this.saveAudio) {
+                        this.sendMessage();
+                    }
+                });
+                time = setInterval(()=> {
+                    this.timeRecorded++
+                }, 1000)
+            });
+    }
+
+    sendVoiceNote() {
+        this.saveAudio = true;
+        this.mediaRecorder.stop();
+        this.timeRecorded = 0;
+        this.showMic = true;
+    }
+
+    cancelVoiceNote() {
+        this.mediaRecorder.stop();
+        this.timeRecorded = 0;
+        this.showMic = true;
+    }
 }

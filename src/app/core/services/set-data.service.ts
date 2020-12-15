@@ -3,6 +3,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { HoldDataService } from './hold-data.service';
 import * as firebase from 'firebase';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { FecthDataService } from './fecth-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ export class SetDataService {
   constructor(
     private db: AngularFirestore,
     private holdData: HoldDataService,
+    private fetchData: FecthDataService,
     private httpClient: HttpClient,
   ) {}
 
@@ -823,5 +825,32 @@ export class SetDataService {
     return (toggle) ? ref.update({formClose: true}) : ref.update({formClose: true});
   }
   // END OF FLOW SERVICES
+
+  async changeAgentAvailability(companyId: string, userId: string) {
+    const currentUserInfoWeight = await this.fetchData.getUserInfoWeightOnce(companyId, userId).toPromise();
+    let ref = this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('weights')
+      .doc(userId);
+    if (currentUserInfoWeight.data()) {
+      return ref.update({
+        available: !currentUserInfoWeight.data().available
+      })
+    } else {
+      return ref.update({
+        available: true
+      })
+    }
+  }
+
+  setUnseenToFalse(companyId: string, number: string) {
+    let ref = this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('chats')
+      .doc(number)
+    return ref.update({
+      unseen: false
+    })
+  }
 }
 

@@ -19,35 +19,46 @@
                 <mat-tab  label="Mis chats" >   
                     <mat-selection-list  [multiple]="false">   
                         <ng-container *ngFor="let chat of chatWhatsappAssigned; index as i" >
-                            <mat-list-option (mouseenter)="showDates(chat)" (mouseleave)="hideDates(chat)" *ngIf="chat.finished" (click)="getMessagesFromChatOnclick(chat, true)">                          
+                            <mat-list-option 
+                                *ngIf="chat.finished" 
+                                (mouseenter)="showDates(chat)" 
+                                (mouseleave)="hideDates(chat)"
+                                (click)="getMessagesFromChatOnclick(chat, true)">                          
                                 <mat-list-item>
-                                    <span class="material-icons m-r-15 b-b">
-                                        account_circle
-                                    </span > 
-                                    <ng-container *ngIf="chat.chatName === undefined">
+                                    <div id="new-message__point" *ngIf="chat.unseen"></div>
+                                    <h3 
+                                        *ngIf="chat.chatName === undefined"
+                                        [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }">
                                         {{chat.number | slice:9}} 
-                                    </ng-container>
-                                    <ng-container>
+                                    </h3>
+                                    <h3 [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }">
                                         {{chat.chatName }} 
-                                    </ng-container>
+                                    </h3>
                                     <mat-chip-list  style="margin-left: auto;" >
                                         <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
                                     </mat-chip-list>
                                 </mat-list-item>
+                                <span style="font-size: 10px; padding-left:16px; padding-top: 0; padding-bottom: 0;" *ngIf="showDate && date === chat.timestamp">
+                                    {{date.toDate() | date:'medium' }}   
+                                </span>
                             </mat-list-option>
                         </ng-container>
                         <ng-container *ngFor="let chat of chatWhatsappAssigned; index as i">
-                            <mat-list-option (mouseenter)="showDates(chat)" (mouseleave)="hideDates(chat)" *ngIf="!chat.finished" (click)="getMessagesFromChatOnclick(chat, true)">                          
-                                <mat-list-item >
-                                    <span class="material-icons m-r-15 b-b">
-                                        account_circle
-                                    </span > 
-                                    <ng-container *ngIf="chat.chatName === undefined">
+                            <mat-list-option 
+                                (mouseenter)="showDates(chat)" 
+                                (mouseleave)="hideDates(chat)"
+                                *ngIf="!chat.finished" 
+                                (click)="getMessagesFromChatOnclick(chat, true)">                          
+                                <mat-list-item>
+                                    <div id="new-message__point" *ngIf="chat.unseen"></div> 
+                                    <h3 
+                                        *ngIf="chat.chatName === undefined"
+                                        [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }">
                                         {{chat.number | slice:9}} 
-                                    </ng-container>
-                                    <ng-container>
+                                    </h3>
+                                    <h3 [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }">
                                         {{chat.chatName }} 
-                                    </ng-container>
+                                    </h3>
                                     <mat-chip-list  style="margin-left: auto;" >
                                         <mat-chip style="background-color: #44DB5E" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
                                     </mat-chip-list>
@@ -71,28 +82,26 @@
                         </mat-form-field>
                         <button mat-raised-button color="accent" (click)="dateFilter()">Filtrar</button>
                     </div>
-                        <mat-selection-list  [multiple]="false">
+                    <mat-selection-list  [multiple]="false">
                         <ng-container *ngFor="let chat of chatWhatsapp; index as i" >
-
-                            <mat-list-option (mouseenter)="showDates(chat)" (mouseleave)="hideDates(chat)" *ngIf="!chat.finished" (click)="getMessagesFromChatOnclick(chat, false)">
-                                <mat-list-item style="font-size: 12 !important;">
-                                    <span class="material-icons m-r-10 b-b">
-                                        account_circle
-                                    </span > 
-                                    <ng-container *ngIf="chat.chatName === undefined">
+                            <mat-list-option 
+                                *ngIf="!chat.finished"
+                                (mouseenter)="showDates(chat)" 
+                                (mouseleave)="hideDates(chat)"  
+                                (click)="getMessagesFromChatOnclick(chat, false)">
+                                <mat-list-item style="font-size: 12 !important;" >
+                                    <div id="new-message__point" *ngIf="chat.unseen"></div>
+                                    <h3 
+                                        [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }" 
+                                        *ngIf="chat.chatName === undefined">
                                         {{chat.number | slice:9}} 
-                                    </ng-container>
-                                    <ng-container>
+                                    </h3>
+                                    <h3 [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }">
                                         {{chat.chatName }} 
-                                    </ng-container> 
-                                    
+                                    </h3>  
                                     <mat-chip-list  style="margin-left: auto;" >
                                         <mat-chip style="background-color: #44DB5E" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
-
-                                        <!-- <mat-chip color="accent" class="chip" selected *ngIf="chat.assignTo">{{'variosss' | slice:0:5}}</mat-chip> -->
-                                        <!-- <mat-chip color="warn" class="chip" selected *ngIf="!chat.assignTo && !chat.finished">N/A</mat-chip> -->
                                     </mat-chip-list>
-                                    
                                 </mat-list-item>
                                 <span style="font-size: 10px; padding-left:16px; padding-top: 0; padding-bottom: 0;" *ngIf="showDate && date === chat.timestamp">
                                     {{date.toDate() | date:'medium' }}   
@@ -100,22 +109,19 @@
                             </mat-list-option>
                         </ng-container>
                         <ng-container *ngFor="let chat of chatWhatsapp; index as i" >
-
-                            <mat-list-option (mouseenter)="showDates(chat)" (mouseleave)="hideDates(chat)" *ngIf="chat.finished" (click)="getMessagesFromChatOnclick(chat, false)">
+                            <mat-list-option 
+                                *ngIf="chat.finished" 
+                                (mouseenter)="showDates(chat)" 
+                                (mouseleave)="hideDates(chat)" 
+                                (click)="getMessagesFromChatOnclick(chat, false)">
                                 <mat-list-item style="font-size: 12 !important;">
-                                    <span class="material-icons m-r-10 b-b">
-                                        account_circle
-                                    </span >
-                                    <ng-container *ngIf="chat.chatName === undefined">
+                                    <h3 
+                                        [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }"
+                                        *ngIf="chat.chatName === undefined">
                                         {{chat.number | slice:9}} 
-                                    </ng-container>
-                                    <ng-container>
-                                        {{chat.chatName }} 
-                                    </ng-container>
+                                    </h3>
+                                    <h3 [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }">{{ chat.chatName }}</h3>
                                     <mat-chip-list  style="margin-left: auto;" >
-
-                                        <!-- <mat-chip color="accent" class="chip" selected *ngIf="chat.assignTo">{{'variosss' | slice:0:5}}</mat-chip> -->
-                                        <!-- <mat-chip color="warn" class="chip" selected *ngIf="!chat.assignTo && !chat.finished">N/A</mat-chip> -->
                                         <mat-chip style="background-color: rgb(248, 47, 64)" class="chip" selected *ngIf="chat.finished">cerrado</mat-chip>
                                     </mat-chip-list>
                                 </mat-list-item>
@@ -124,79 +130,78 @@
                                 </span>
                             </mat-list-option>
                         </ng-container>
-                        </mat-selection-list>
+                    </mat-selection-list>
                 </mat-tab>
             </mat-tab-group>
         </mat-card>
         <!-- right side menu -->
         <!-- TICKET -->
-    <mat-card *ngIf="showTicket && currentChatData" style="width: auto;" >
-        <mat-card-header class="details-menu_header">
-            <span (click)="showTicket = false" class="material-icons">
-                arrow_back
-                </span>
-                
-            <div style="margin: 20px;">
-                <mat-card-title style="margin-top:5px" >Ticket</mat-card-title>
-                <mat-card-subtitle style="margin-top:5px" >{{currentChatData.phoneNumber}}</mat-card-subtitle>
-                <mat-card-subtitle style="margin-top:5px">Creador: {{ticket.creator}}</mat-card-subtitle>
-                <mat-card-subtitle style="margin-top:5px">Asignado a: <span *ngFor="let person of currentChatData.assignTo">{{person.name}} {{person.lastname}},
+        <mat-card *ngIf="showTicket && currentChatData" style="width: auto;" >
+            <mat-card-header class="details-menu_header">
+                <span (click)="showTicket = false" class="material-icons">
+                    arrow_back
+                    </span>
+                    
+                <div style="margin: 20px;">
+                    <mat-card-title style="margin-top:5px" >Ticket</mat-card-title>
+                    <mat-card-subtitle style="margin-top:5px" >{{currentChatData.phoneNumber}}</mat-card-subtitle>
+                    <mat-card-subtitle style="margin-top:5px">Creador: {{ticket.creator}}</mat-card-subtitle>
+                    <mat-card-subtitle style="margin-top:5px">Asignado a: <span *ngFor="let person of currentChatData.assignTo">{{person.name}} {{person.lastname}},</span>
+                    </mat-card-subtitle>
 
-                </span></mat-card-subtitle>
-
-                <mat-form-field style="margin-top:10px" appearance="fill">
-                    <mat-label>Status</mat-label>
-                    <mat-select [(value)]="status">
-                      <mat-option  (click)="ticketStatus(status)" value="Pendiente">
-                        Pendiente
-                      </mat-option>
-                      <mat-option  (click)="ticketStatus(status)" value="En progreso">
-                        En progreso
-                      </mat-option>
-                      <mat-option  
-                        (click)="ticketStatus(status)" 
-                        value="Completado" 
-                        matTooltip="Al seleccionar la opción 'Completado', el chat y el ticket serán automáticamente cerrados">
-                        Completado
-                      </mat-option>
-                    </mat-select>
-                </mat-form-field>   
-                <mat-slide-toggle 
-                    *ngIf="formsAlias.length > 0" 
-                    [(ngModel)]="sendFormOnTicketClose">
-                    Enviar formulario al completar ticket
-                </mat-slide-toggle>
-                <mat-form-field appearance="fill" *ngIf="sendFormOnTicketClose">
-                    <mat-select [(ngModel)]="formOnTicket">
-                        <mat-option *ngFor="let form of formsAlias" [value]="form">
-                        {{form.alias}}
+                    <mat-form-field style="margin-top:10px" appearance="fill">
+                        <mat-label>Status</mat-label>
+                        <mat-select [(value)]="status">
+                        <mat-option  (click)="ticketStatus(status)" value="Pendiente">
+                            Pendiente
                         </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>           
-            <p style="margin-left:20px;" > <strong>Descripción:</strong> <br>{{ticket.description}}</p>
-        </mat-card-header>
-         <p style="margin-left:24px;">Comentarios</p> 
-         <p  style="margin-top:5px; margin-bottom: 15px; " *ngIf="commentsChat.length === 0" >No hay comentarios previos</p> 
-        <mat-card *ngFor="let c of commentsChat">
-            <mat-card-header>
-                <mat-card-subtitle style="font-weight: 600;">{{c.agent | titlecase}} 
-                 </mat-card-subtitle> 
-                <p style="color: gray; font-size: 11px;" *ngIf="c.timestamp">{{c.timestamp.toDate() | date:'short'}}</p>
+                        <mat-option  (click)="ticketStatus(status)" value="En progreso">
+                            En progreso
+                        </mat-option>
+                        <mat-option  
+                            (click)="ticketStatus(status)" 
+                            value="Completado" 
+                            matTooltip="Al seleccionar la opción 'Completado', el chat y el ticket serán automáticamente cerrados">
+                            Completado
+                        </mat-option>
+                        </mat-select>
+                    </mat-form-field>   
+                    <mat-slide-toggle 
+                        *ngIf="formsAlias.length > 0" 
+                        [(ngModel)]="sendFormOnTicketClose">
+                        Enviar formulario al completar ticket
+                    </mat-slide-toggle>
+                    <mat-form-field appearance="fill" *ngIf="sendFormOnTicketClose">
+                        <mat-select [(ngModel)]="formOnTicket">
+                            <mat-option *ngFor="let form of formsAlias" [value]="form">
+                            {{form.alias}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>           
+                <p style="margin-left:20px;" > <strong>Descripción:</strong> <br>{{ticket.description}}</p>
             </mat-card-header>
-            <mat-card-content style="margin-left:24px;padding: 0;">
-                <p style="font-size: 12px;" >{{c.body}}</p>
+            <p style="margin-left:24px;">Comentarios</p> 
+            <p  style="margin-top:5px; margin-bottom: 15px; " *ngIf="commentsChat.length === 0" >No hay comentarios previos</p> 
+            <mat-card *ngFor="let c of commentsChat">
+                <mat-card-header>
+                    <mat-card-subtitle style="font-weight: 600;">{{c.agent | titlecase}} 
+                    </mat-card-subtitle> 
+                    <p style="color: gray; font-size: 11px;" *ngIf="c.timestamp">{{c.timestamp.toDate() | date:'short'}}</p>
+                </mat-card-header>
+                <mat-card-content style="margin-left:24px;padding: 0;">
+                    <p style="font-size: 12px;" >{{c.body}}</p>
+                </mat-card-content>
+            </mat-card>
+            <mat-card-content>
+                <mat-form-field >
+                    <textarea matInput [(ngModel)]="chatNote" (keydown.enter)="setChatNote()" cols="1" rows="5"></textarea>
+                    <button mat-button matSuffix mat-icon-button (click)="setChatNote()">
+                        <mat-icon>send</mat-icon>
+                    </button>
+                </mat-form-field>
             </mat-card-content>
         </mat-card>
-        <mat-card-content>
-            <mat-form-field >
-                <textarea matInput [(ngModel)]="chatNote" (keydown.enter)="setChatNote()" cols="1" rows="5"></textarea>
-                <button mat-button matSuffix mat-icon-button (click)="setChatNote()">
-                    <mat-icon>send</mat-icon>
-                </button>
-            </mat-form-field>
-        </mat-card-content>
-    </mat-card>
     <!-- ************** END OF TICKET ************** -->
         <!-- DETALLES -->
         <mat-card *ngIf="showDetail"  >
@@ -370,7 +375,7 @@
                     *ngIf="iAmAssigned && !templatesActivated && !currentChatData.finished"></textarea>
                     
                     <div 
-                        class="example-button-container" 
+                        class="actions-button-container" 
                         *ngIf="iAmAssigned && !templatesActivated && !currentChatData.finished">
                         <div style="display: flex; flex-direction: row">
                             <button mat-mini-fab style="background-color: #3197F3">
@@ -382,6 +387,18 @@
                             <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
                                 <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
                             </button>
+                            <!-- <button *ngIf="showMic" mat-mini-fab color="accent" matTooltip="Nota de voz">
+                                <mat-icon (click)="startVoiceRecording()">settings_voice</mat-icon>
+                            </button>
+                            <div *ngIf="!showMic" class="mic-actions">
+                                <button  mat-mini-fab id="check-voice" matTooltip="Nota de voz">
+                                    <mat-icon (click)="sendVoiceNote()">check</mat-icon>
+                                </button>
+                                <p>{{timeRecorded}}</p>
+                                <button  mat-mini-fab id="cancel-voice" matTooltip="Nota de voz">
+                                    <mat-icon (click)="cancelVoiceNote()">close</mat-icon>
+                                </button>
+                            </div> -->
                         </div>
                         <p>{{fileName}}</p>
                     </div>
@@ -496,7 +513,7 @@
                     *ngIf="!templatesActivated"></textarea>
                     
                     <div 
-                        class="example-button-container"
+                        class="actions-button-container"
                         *ngIf="!templatesActivated">
                         <div style="display: flex; flex-direction: row">
                             <button mat-mini-fab style="background-color: #3197F3">
@@ -508,6 +525,18 @@
                             <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
                                 <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
                             </button>
+                            <!-- <button *ngIf="showMic" mat-mini-fab color="accent" matTooltip="Nota de voz">
+                                <mat-icon (click)="startVoiceRecording()">settings_voice</mat-icon>
+                            </button>
+                            <div *ngIf="!showMic" class="mic-actions">
+                                <button  mat-mini-fab id="check-voice" matTooltip="Nota de voz">
+                                    <mat-icon (click)="sendVoiceNote()">check</mat-icon>
+                                </button>
+                                <p>{{timeRecorded}}</p>
+                                <button  mat-mini-fab id="cancel-voice" matTooltip="Nota de voz">
+                                    <mat-icon (click)="cancelVoiceNote()">close</mat-icon>
+                                </button>
+                            </div> -->
                         </div>
                         <p>{{fileName}}</p>
                     </div>

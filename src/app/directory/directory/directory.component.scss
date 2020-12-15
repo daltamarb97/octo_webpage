@@ -3,7 +3,6 @@
     display: flex;
     justify-content: space-between;
 }
-
 .add-contact {
 	position: absolute;
     right: 17px;
@@ -11,4 +10,11 @@
 }
 .mail-desc{
     margin-left:5px;
+}
+.actions-container {
+    display: flex;
+    flex-direction: row;
+    #chat-button {
+        margin-right: 10px;
+    }
 }

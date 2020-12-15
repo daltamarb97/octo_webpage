@@ -20,6 +20,7 @@ export class DirectoryComponent implements OnInit {
   employees :Array<any> = [];
   keyChats:any;
   companyInfo: any;
+  available: boolean = true;
   // snackbar variables
   horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
@@ -27,7 +28,7 @@ export class DirectoryComponent implements OnInit {
   constructor(
     private fecthDataService:FecthDataService,
     private setData: SetDataService,
-    private holdData:HoldDataService,
+    private holdData: HoldDataService,
     private authService: AuthService,
     // angular stuff
     private dialog: MatDialog,
@@ -39,9 +40,10 @@ export class DirectoryComponent implements OnInit {
     if (!this.holdData.companyInfo) {
       this.router.navigate(['no-comp'])
     }
-    this.user= this.holdData.userInfo;
+    this.user = this.holdData.userInfo;
     this.companyInfo = this.holdData.companyInfo;
     this.getInfoDirectory();
+    this.getUserWeightInfo();
   }
 
   getInfoDirectory() {
@@ -53,7 +55,14 @@ export class DirectoryComponent implements OnInit {
         })
       })
   }
-  
+
+  getUserWeightInfo() {
+    this.fecthDataService.getUserInfoWeightOnce(this.companyInfo.companyId, this.user.userId)
+      .toPromise()
+      .then(data => {
+        this.available = data.data().available
+      })
+  }
   
   chat(person){ 
     // verifying the user already have a conversation with the person
@@ -121,4 +130,9 @@ export class DirectoryComponent implements OnInit {
   //  set invite email in firebase
     this.setData.setInviteEmails(data);
  }
+
+ async changeAvailability() {
+   await this.setData.changeAgentAvailability(this.companyInfo.companyId, this.user.userId);
+ }
+ 
 }

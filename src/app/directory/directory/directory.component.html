@@ -1,5 +1,3 @@
-
-
 <mat-card>
     <div class="p-20 bg-info position-relative">
         <div>
@@ -11,7 +9,7 @@
     <div class="message-box contact-box p-20">
         <div class="message-widget contact-widget" *ngFor="let empl of employees">
             <!-- Message -->
-            <a >
+            <a>
                 <div class="user-img">
                     <span class="material-icons m-r-15">account_circle</span>
                     <span class="profile-status online pull-right"></span> 
@@ -20,11 +18,16 @@
                     <h5>{{empl.name}} {{empl.lastname}}</h5> 
                     <span class="mail-desc">{{empl.email}} </span>
                 </div>    
-
-                <div class="example-button-container">
-                    <button (click)="chat(empl)" mat-mini-fab  aria-label="Example icon button with a home icon">
+                <div class="actions-container">
+                    <button id="chat-button" (click)="chat(empl)" mat-mini-fab  aria-label="chat icon">
                       <mat-icon>chat</mat-icon>
                     </button>
+                    <mat-slide-toggle 
+                        [checked]="available" 
+                        (change)="changeAvailability()"
+                        *ngIf="empl.userId === user.userId"
+                        >Estoy disponible
+                    </mat-slide-toggle>
                 </div>
             </a>
         </div>

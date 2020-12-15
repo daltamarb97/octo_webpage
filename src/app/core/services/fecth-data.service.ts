@@ -23,6 +23,15 @@ export class FecthDataService {
     return ref.valueChanges();
   }
 
+  getUserInfoWeightOnce(companyId: string, userId: string){
+    // get user profile info
+    let ref = this.db.collection('whatsapp')
+      .doc(companyId)
+      .collection('weights')
+      .doc(userId)
+    return ref.get();
+  }
+
 
   // COMPANY SERVICES
 

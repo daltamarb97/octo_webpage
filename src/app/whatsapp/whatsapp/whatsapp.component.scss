@@ -5,11 +5,6 @@
   left: 0;
   right: 0;
 }
-
-// .background-img{
-//   background-image: url("C:/Users/danie\Documents\octo\web\latest\octo_webpage\src\assets\images\background-img-chat.png");
-
-// }
 .mat-select-panel mat-option.mat-option {
   height: unset;
 }
@@ -143,10 +138,10 @@ mat-drawer-content {
   width: 50px;
   color: white;
 }
-.example-button-container {
+.actions-button-container {
   display: flex;
   justify-content: center;
-  width: 140px;
+  width: 170px;
   flex-direction: column;
   button {
     margin-right: 7px;
@@ -155,6 +150,18 @@ mat-drawer-content {
     font-size: 10px;
     margin-left: 25px;
     margin-top: 5px;
+  }
+  .mic-actions{
+    display: inherit;
+    flex-direction: row;
+    #check-voice {
+      background-color: #59C153;
+      color: white;
+    }
+    #cancel-voice {
+      background-color: #E83D5E;
+      color: white;
+    }
   }
 }
 
@@ -228,5 +235,17 @@ footer{
   button {
     width: 20%;
     height: 50%;
+  }
+}
+mat-selection-list {
+  #new-message__point {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin: 0 5px 8px 0;
+    background-color: #59C153;
+  }
+  h3 {
+    margin: 0;
   }
 }
