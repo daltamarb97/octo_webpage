@@ -516,7 +516,8 @@ export class WhatsappComponent implements OnInit {
                       })
               } else if(this.voiceNote) {
                 let mediaUrl;
-                const randomName = this.holdData.createRandomId();
+                let randomName = this.holdData.createRandomId();
+                randomName = `${randomName}.mpeg`
                 mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.voiceNote, randomName);
                 this.setData.sendWhatsappMessageHttp({
                         message: this.currentMessage,
@@ -898,7 +899,7 @@ export class WhatsappComponent implements OnInit {
                   audioChunks.push(event.data);
                 });
                 this.mediaRecorder.addEventListener("stop", () => {
-                    this.voiceNote = new Blob(audioChunks, {'type': 'audio/mp3'});
+                    this.voiceNote = new Blob(audioChunks, {'type': 'audio/mpeg'});
                     clearInterval(time);
                     if(this.saveAudio) {
                         this.sendMessage();

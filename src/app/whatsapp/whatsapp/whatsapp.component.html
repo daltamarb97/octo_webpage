@@ -375,30 +375,33 @@
                     *ngIf="iAmAssigned && !templatesActivated && !currentChatData.finished"></textarea>
                     
                     <div 
-                        class="actions-button-container" 
+                        class="actions-button-container"
+                        [ngStyle]="{'width': !showMic ? '220px' : '190px'}" 
                         *ngIf="iAmAssigned && !templatesActivated && !currentChatData.finished">
                         <div style="display: flex; flex-direction: row">
-                            <button mat-mini-fab style="background-color: #3197F3">
-                                <mat-icon (click)="sendMessage()">send</mat-icon>
-                            </button>
-                            <button mat-mini-fab color="warn">
-                                <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
-                            </button>
-                            <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
-                                <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
-                            </button>
-                            <!-- <button *ngIf="showMic" mat-mini-fab color="accent" matTooltip="Nota de voz">
-                                <mat-icon (click)="startVoiceRecording()">settings_voice</mat-icon>
-                            </button>
+                            <div *ngIf="showMic" class="mic-actions">
+                                <button mat-mini-fab style="background-color: #3197F3">
+                                    <mat-icon (click)="sendMessage()">send</mat-icon>
+                                </button>
+                                <button mat-mini-fab color="warn">
+                                    <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
+                                </button>
+                                <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
+                                    <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
+                                </button>
+                                <button mat-mini-fab color="accent" matTooltip="Nota de voz">
+                                    <mat-icon (click)="startVoiceRecording()">settings_voice</mat-icon>
+                                </button>
+                            </div>
                             <div *ngIf="!showMic" class="mic-actions">
                                 <button  mat-mini-fab id="check-voice" matTooltip="Nota de voz">
                                     <mat-icon (click)="sendVoiceNote()">check</mat-icon>
                                 </button>
-                                <p>{{timeRecorded}}</p>
+                                <h4>{{timeRecorded}} seg</h4>
                                 <button  mat-mini-fab id="cancel-voice" matTooltip="Nota de voz">
                                     <mat-icon (click)="cancelVoiceNote()">close</mat-icon>
                                 </button>
-                            </div> -->
+                            </div>
                         </div>
                         <p>{{fileName}}</p>
                     </div>
@@ -514,29 +517,32 @@
                     
                     <div 
                         class="actions-button-container"
+                        [ngStyle]="{'width': !showMic ? '220px' : '190px'}" 
                         *ngIf="!templatesActivated">
                         <div style="display: flex; flex-direction: row">
-                            <button mat-mini-fab style="background-color: #3197F3">
-                                <mat-icon (click)="sendMessage()">send</mat-icon>
-                            </button>
-                            <button mat-mini-fab color="warn">
-                                <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
-                            </button>
-                            <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
-                                <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
-                            </button>
-                            <!-- <button *ngIf="showMic" mat-mini-fab color="accent" matTooltip="Nota de voz">
-                                <mat-icon (click)="startVoiceRecording()">settings_voice</mat-icon>
-                            </button>
+                            <div *ngIf="showMic" class="mic-actions">
+                                <button mat-mini-fab style="background-color: #3197F3">
+                                    <mat-icon (click)="sendMessage()">send</mat-icon>
+                                </button>
+                                <button mat-mini-fab color="warn">
+                                    <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
+                                </button>
+                                <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
+                                    <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
+                                </button>
+                                <button mat-mini-fab color="accent" matTooltip="Nota de voz">
+                                    <mat-icon (click)="startVoiceRecording()">settings_voice</mat-icon>
+                                </button>
+                            </div>
                             <div *ngIf="!showMic" class="mic-actions">
                                 <button  mat-mini-fab id="check-voice" matTooltip="Nota de voz">
                                     <mat-icon (click)="sendVoiceNote()">check</mat-icon>
                                 </button>
-                                <p>{{timeRecorded}}</p>
+                                <h4>{{timeRecorded}} seg</h4>
                                 <button  mat-mini-fab id="cancel-voice" matTooltip="Nota de voz">
                                     <mat-icon (click)="cancelVoiceNote()">close</mat-icon>
                                 </button>
-                            </div> -->
+                            </div>
                         </div>
                         <p>{{fileName}}</p>
                     </div>

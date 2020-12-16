@@ -403,6 +403,9 @@ export class SetDataService {
     const storage = firebase.storage();
     let ref =  storage.ref(`/whatsappMedia/${companyId}/${number}/${fileName}`);
     const rta = await ref.put(file);
+    const metadata = await ref.getMetadata();
+    console.log(metadata);
+    
     const url = await rta.ref.getDownloadURL();
     return url;
   }

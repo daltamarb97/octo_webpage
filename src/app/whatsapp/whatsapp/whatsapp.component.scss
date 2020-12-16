@@ -141,7 +141,7 @@ mat-drawer-content {
 .actions-button-container {
   display: flex;
   justify-content: center;
-  width: 170px;
+  width: 190px;
   flex-direction: column;
   button {
     margin-right: 7px;
@@ -151,9 +151,13 @@ mat-drawer-content {
     margin-left: 25px;
     margin-top: 5px;
   }
+  h4 {
+    margin: 0 4px;
+  }
   .mic-actions{
     display: inherit;
     flex-direction: row;
+    justify-content: space-between;
     #check-voice {
       background-color: #59C153;
       color: white;
@@ -164,7 +168,9 @@ mat-drawer-content {
     }
   }
 }
-
+.voice-note__container{
+  width: 220px;
+}
 footer{
   position: fixed;
   bottom: 0;
