@@ -403,9 +403,7 @@ export class SetDataService {
     const storage = firebase.storage();
     let ref =  storage.ref(`/whatsappMedia/${companyId}/${number}/${fileName}`);
     const rta = await ref.put(file);
-    const metadata = await ref.getMetadata();
-    console.log(metadata);
-    
+    // const metadata = await ref.getMetadata(); 
     const url = await rta.ref.getDownloadURL();
     return url;
   }
@@ -740,7 +738,9 @@ export class SetDataService {
       options: dataChildOption.options,
       mainMenuRedirect: dataChildOption.mainMenu,
       mediaUrl: dataChildOption.mediaUrl,
-      assignTo: (dataChildOption.assignTo !== 'any') ? [dataChildOption.assignTo] : 'any'
+      assignTo: (dataChildOption.assignTo !== 'any') ? [dataChildOption.assignTo] : 'any',
+      formId: dataChildOption.formId,
+      responseId: dataChildOption.responseId
     })
     await ref.doc(flowCreation.id)
       .update({flowId: flowCreation.id})

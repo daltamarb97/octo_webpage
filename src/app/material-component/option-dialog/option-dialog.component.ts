@@ -17,10 +17,14 @@ export class OptionComponent {
   agent: boolean = false;
   options: boolean = false;
   mainMenu: boolean = false;
+  form: boolean = false;
   input: any;
   assignedTo: any = null;
+  formToSend: string = null;
   showError: boolean = false;
   availableAgents: Array<any> = [];
+  formsAvailable: Array<any> = [];
+  responseId: string = null;
   constructor(
     public dialogRef: MatDialogRef<OptionComponent>,
     private fetchData: FecthDataService,
@@ -33,9 +37,15 @@ export class OptionComponent {
       message: '',
       file: null
     }
+    this.responseId = this.holdData.createRandomId();
     this.fetchData.getCompanyEmployees(this.holdData.companyInfo.companyId)
       .subscribe(data => {
         data.map(d => {this.availableAgents.push(d.payload.doc.data())});
+      })
+    
+    this.fetchData.getFormsFromCompany(this.holdData.companyInfo.companyId)
+      .subscribe(data => {
+        data.forEach(f => {this.formsAvailable.push(f.data())})
       })
   }
 
@@ -56,7 +66,9 @@ export class OptionComponent {
             agent: this.agent, 
             assignedTo: this.assignedTo, 
             options: this.options, 
-            mainMenu: this.mainMenu
+            mainMenu: this.mainMenu,
+            formId: (this.form) ? this.formToSend : null,
+            responseId: (this.form) ? this.responseId : null
           }
         );
       } else {
@@ -70,7 +82,9 @@ export class OptionComponent {
           agent: this.agent, 
           assignedTo: this.assignedTo, 
           options: this.options, 
-          mainMenu: this.mainMenu
+          mainMenu: this.mainMenu,
+          formId: (this.form) ? this.formToSend : null,
+          responseId: (this.form) ? this.responseId : null
         }
       );
     }
@@ -84,12 +98,22 @@ export class OptionComponent {
     this.mainMenu = false;
     this.options = false;
     this.showError = false;
+    this.form = false;
   }
 
   optToggle(){
     this.agent = false;
     this.assignedTo = null;
     this.showError = false;
+    this.form = false;
+  }
+
+  formToggle() {
+    this.mainMenu = false;
+    this.options = false;
+    this.showError = false;
+    this.agent = false;
+    this.assignedTo = null;
   }
 }
 

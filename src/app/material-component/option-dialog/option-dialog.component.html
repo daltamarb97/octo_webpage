@@ -4,7 +4,7 @@
       <mat-label>Nombre de la opción:</mat-label>
       <input type="text" matInput placeholder="Nombre de la opción..." [(ngModel)]="local_data.name">
     </mat-form-field>
-    <mat-form-field class="example-full-width">
+    <mat-form-field class="example-full-width" *ngIf="!form">
       <mat-label>Mensaje: </mat-label>
       <textarea cols="1" rows="5" matInput placeholder="Mensaje que aparecerá al seleccionar esta opción..." [(ngModel)]="local_data.message"></textarea>
     </mat-form-field>
@@ -27,6 +27,16 @@
       <mat-slide-toggle [(ngModel)]="mainMenu" (change)="optToggle()">Esta opción llevará al cliente/usuario al menú inicial del Bot</mat-slide-toggle>
       <p style="font-size: 10px;">Al activar esta opción, posterior a este mensaje, la persona será redirigida al primer mensaje del flujo del Bot.</p>
       <p style="color: red" *ngIf="showError">Seleccionar agente o desactivar opción de contácto con agentes</p>
+      <mat-slide-toggle [(ngModel)]="form" (change)="formToggle()">Enviar encuenta</mat-slide-toggle>
+      <p style="font-size: 10px;">Al activar esta opción, posterior a este mensaje, se le enviará a tu cliente la encuesta seleccionada.</p>
+      <mat-form-field appearance="fill" *ngIf="form">
+        <mat-label>Enviar la encuesta: </mat-label>
+        <mat-select [(ngModel)]="formToSend">
+          <mat-option *ngFor="let f of formsAvailable" [value]="f.formId">
+            {{f.alias}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
   <div mat-dialog-actions>
     <button mat-button (click)="onNoClick()">Cancelar</button>

@@ -78,7 +78,9 @@ export class ChatFlowComponent implements OnInit {
             options: result.options,
             agent: result.agent,
             mainMenu: result.mainMenu,
-            assignTo: result.assignedTo
+            assignTo: result.assignedTo,
+            formId: result.formId,
+            responseId: result.responseId
           }
           if (dataRta.file) {
             dataRta.mediaUrl = await this.setData.uploadFileForOption(this.companyId, dataRta.file.name, dataRta.file);
