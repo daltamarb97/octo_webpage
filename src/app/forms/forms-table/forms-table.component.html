@@ -50,7 +50,11 @@
                     <p><span class="bold-subtitle">Total respuestas:   </span>{{responsesLength}}</p>
                 </div>
             </div>
-            <div class="responsive-table" *ngIf="showTable && !showCardsVersion">
+
+
+
+
+            <!-- <div class="responsive-table" *ngIf="showTable && !showCardsVersion">
                 <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
                     <ng-container matColumnDef="numero">
                         <th mat-header-cell *matHeaderCellDef> Número </th>
@@ -62,11 +66,11 @@
                         <td mat-cell *matCellDef="let element"> 
                             <button mat-stroked-button (click)="openTicket(element)">Abrir Ticket</button>
                         </td>
-                    </ng-container>
+                    </ng-container> -->
                       <!-- expandable -->
-                    <ng-container matColumnDef="expandedDetail">
+                    <!-- <ng-container matColumnDef="expandedDetail">
                         <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
-                        <div class="example-element-detail"
+                        <div class="element-detail"
                             [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
                             <mat-list role="list">
                                 <mat-list-item class="element-detail__text" role="listitem" *ngFor="let j of expandedDataNames">{{j}}</mat-list-item>                               
@@ -86,7 +90,52 @@
                         ></tr>
                     <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
                 </table>
+            </div> -->
+
+
+
+
+
+            <div fxLayout="row wrap" class="course-app" *ngIf="showTable && !showCardsVersion">
+                <div fxFlex.gt-md="33.33" fxFlex.gt-lg="33.33" fxFlex="100" *ngFor='let d of dataSource'>
+                    <mat-card>
+                    <mat-card-header class="response-header d-5">
+                        <mat-card-title>
+                            <span class="response-date">
+                                <mat-icon class="m-r-10">access_time</mat-icon>
+                                {{ d.timestamp.toDate() | date: 'short' }}
+                            </span>
+                            <span id="response-point">{{d.results.sede}}</span>
+                        </mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content class="text-center">
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header (click) ="getRowData(d.results)">
+                                <mat-panel-title>Ver más detalles</mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="element-detail">
+                            <mat-list role="list">
+                                <mat-list-item class="element-detail__text" role="listitem" *ngFor="let j of expandedDataNames">{{j}}</mat-list-item>                               
+                                <mat-divider></mat-divider>
+                            </mat-list>
+                            <mat-list role="list">
+                                <mat-list-item id="rta-detail" role="listitem" *ngFor="let i of expandedData">{{i}}</mat-list-item>     
+                                <mat-divider></mat-divider>                       
+                            </mat-list>
+                        </div>
+                        </mat-expansion-panel>
+                    </mat-card-content>
+                    <mat-card-actions class="text-center">
+                        <button mat-button (click)="openTicket(d)">Abrir Ticket</button>
+                    </mat-card-actions>
+                    </mat-card>
+                </div>
             </div>
+
+
+
+
+
             <!-- just for Porthos, for now -->
             <div fxLayout="row wrap" class="course-app" *ngIf="showTable && showCardsVersion">
                 <div fxFlex.gt-md="33.33" fxFlex.gt-lg="33.33" fxFlex="100" *ngFor='let d of dataSource'>
@@ -95,7 +144,7 @@
                         <mat-card-title>
                             <span class="response-date">
                                 <mat-icon class="m-r-10">access_time</mat-icon>
-                                {{d.fecha.split('-')[2] | slice:0:2}}-{{d.fecha.split('-')[1] | slice:0:2}}-{{d.fecha.split('-')[0] | slice:0:4}}
+                                {{d.fecha.split('-')[2] | slice:0:2}}-{{d.fecha.split('-')[1] | slice:0:2}}-{{d.fecha.split('-')[0] | slice:0:4 }}
                             </span>
                             <span id="response-point">{{d.punto}}</span>
                         </mat-card-title>

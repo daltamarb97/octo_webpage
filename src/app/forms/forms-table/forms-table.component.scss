@@ -18,7 +18,7 @@ table {
     border-bottom-width: 0;
   }
   
-  .example-element-detail {
+  .element-detail {
     overflow: hidden;
     display: flex;
     flex-direction: row;
@@ -27,7 +27,9 @@ table {
       margin: 0 10px;
     }
   }
-
+#rta-detail {
+  font-size: 8px;
+}
   .element-detail__text {
     font-weight: bold;
   }

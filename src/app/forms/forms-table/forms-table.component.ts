@@ -267,7 +267,7 @@ export class FormsTableComponent implements OnInit {
     this.edition = false;
   }
 
-  getRowData(element){
+  getRowData(element){    
     this.expandedData = [];
     this.expandedDataNames = [];
     if (element.results) {
@@ -327,7 +327,14 @@ export class FormsTableComponent implements OnInit {
   flattenArrayOfResults() {
     let responseArray = [];
     for (let i = 0; i < this.dataSource.length; i++ ){
-      const rta = {...this.dataSource[i].results, number: this.dataSource[i].number};
+      const rta = {
+        nombre: this.dataSource[i].results.nombre, 
+        problema: this.dataSource[i].results.problema, 
+        producto: this.dataSource[i].results.producto, 
+        sede: this.dataSource[i].results.sede, 
+        fecha: this.dataSource[i].timestamp,
+        number: this.dataSource[i].number
+      };
       responseArray.push(rta);
     }
     return responseArray;
