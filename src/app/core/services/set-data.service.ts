@@ -328,7 +328,9 @@ export class SetDataService {
     })
   }
 
-  sendWhatsappMessageFirebase(companyId: string, number: string, messageData){
+  async sendWhatsappMessageFirebase(companyId: string, number: string, messageData){
+    // update timestamp of chat contact
+    await this.updateTimestampOnMessageSent(companyId, number, messageData.timestamp);
     // send chat message to firestore
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
@@ -363,6 +365,18 @@ export class SetDataService {
           })
         })
     }
+  }
+
+  private async updateTimestampOnMessageSent(companyId: string, number: string, timestamp: any) {
+    // update timestamp on outbound message 
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(number)
+    await ref.update({
+      timestamp: timestamp
+    })
+    return;
   }
 
   sendWhatsappMessageHttp(data){
