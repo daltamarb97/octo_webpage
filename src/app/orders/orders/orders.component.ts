@@ -8,29 +8,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import {
     ClosedTicketDialogComponent
   } from '../../material-component/closedticket-dialog/closedticket-dialog.component';
-import { NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
-import { formatDate } from '@angular/common';
 import { MatSort } from '@angular/material/sort';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { AppRoutingModule } from 'app/app.routing';
-import { SetDataService } from 'app/core/services/set-data.service';
+import { SetDataService } from '../../core/services/set-data.service';
+import { order } from '../../../interfaces/orders';
 
-
-export interface order {
-    clientName: string;
-    clientPhone: number;
-    comments: string;
-    deliverMode: string;
-    order: Array<any>;
-    orderCost:string;
-    orderId:string;
-    packageCost:string;
-    paymentMethod:string;
-    state:string;
-    timestamp:any;
-    unseen:boolean;
-}
-const ListOfOrders: order[] = [];
+// let ListOfOrders: order[] = [];
 
 @Component({
   selector: 'app-orders',
@@ -41,11 +24,13 @@ const ListOfOrders: order[] = [];
 
 export class OrdersComponent implements OnInit {
     displayedColumns = ['orderId',  'deliverMode', 'timestamp','actions'];
-    dataSource = new MatTableDataSource<order>(ListOfOrders);
-
+    dataSource: any[] = [];
+    dataSourceBack: any[] = []; // used to filter
     orderInformation:any;
     order:order;
     showTable:boolean = false;
+    ordersSubscriber: any;
+    filterValue: string = '';
     // listOfOrders:Array<order>;
     @ViewChild(MatSort, { static: true }) sort: MatSort = Object.create(null);
 /**
@@ -61,62 +46,46 @@ export class OrdersComponent implements OnInit {
         private _snackBar: MatSnackBar,
         breakpointObserver: BreakpointObserver
     ) {
-      breakpointObserver.observe(['(max-width: 600px)']).subscribe(result => {
-        this.displayedColumns = result.matches ?
-            ['orderId',  'deliverMode', 'timestamp','actions'] :
-            ['orderId',  'deliverMode', 'timestamp','actions'];
-    });
+      // breakpointObserver.observe(['(max-width: 600px)']).subscribe(result => {
+      //   this.displayedColumns = result.matches ?
+      //       ['orderId',  'deliverMode', 'timestamp','actions'] :
+      //       ['orderId',  'deliverMode', 'timestamp','actions'];
+      // });
      }
-     applyFilter(filterValue: string) {
-      filterValue = filterValue.trim(); // Remove whitespace
-      filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-      this.dataSource.filter = filterValue;
-  }
-    ngOnInit() {
-        // this.dataSource.sort = this.sort;
-        // this.fetchData.getOrdersStatistics(this.holdData.userInfo.companyId )
-        // .subscribe( res => {
-        //   // this.orderInformation = res
-        //   // console.log(this.orderInformation);
-          
-        // });
-        this.fetchData.getOrders(this.holdData.userInfo.companyId )
-        .subscribe( res => {
+    applyFilter(filterValue: string) {
+      this.dataSource = this.dataSourceBack;
+      if (filterValue.length < this.filterValue.length) {
+        filterValue = filterValue.trim();
+        this.dataSource = this.dataSource.filter(d => {
+          if (d.orderId.includes(filterValue)) return d; 
+        })
+      } else {
+        this.filterValue = filterValue.trim();
+        this.dataSource = this.dataSource.filter(d => {
+          if (d.orderId.includes(this.filterValue)) return d; 
+        })
+      }
+    }
 
-          res.forEach(element => {
-            let data: order = {
-              clientName: element.clientName,
-              clientPhone: element.clientPhone,
-              comments: element.comments,
-              deliverMode: element.deliverMode,
-              order: element.order,
-              orderCost:element.orderCost,
-              orderId:element.orderId,
-              packageCost:element.packageCost,
-              paymentMethod:element.paymentMethod,
-              state:element.state,
-              timestamp:element.timestamp,
-              unseen:element.unseen,
-          }
-            ListOfOrders.push(data)
-          });
-          this.showTable = true;
-          this.dataSource = new MatTableDataSource<order>(ListOfOrders);
-          console.log(ListOfOrders);
-          
-        });
+    ngOnInit() {
+      this.ordersSubscriber = this.fetchData.getOrders(this.holdData.userInfo.companyId )
+      .subscribe( res => {
+        this.dataSource =  res;
+        this.dataSourceBack = res;
+        this.showTable = true;
+      });
     }
+
     prepareOrder(order){     
-      this.setData.startPreparingOrder(this.holdData.userInfo.companyId,order.orderId)
+      this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.orderId)
     }
+
     details(element){
-      console.log('detalles');
-      let navigationExtras: NavigationExtras = {
-        state: {
-          data: element,       
-        }
-      };
-      this.router.navigate(['/orderdetails'],navigationExtras);
+      this.holdData.currentOrder = element;
+      this.router.navigate(['/orderdetails']);
     }
-  
+    
+    ngOnDestroy() {
+      if(this.ordersSubscriber) this.ordersSubscriber.unsubscribe();
+    }
 }

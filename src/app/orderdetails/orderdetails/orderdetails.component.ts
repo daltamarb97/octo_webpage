@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FecthDataService } from 'app/core/services/fecth-data.service';
-import { HoldDataService } from 'app/core/services/hold-data.service';
-import { SetDataService } from 'app/core/services/set-data.service';
+import { FecthDataService } from '../../core/services/fecth-data.service';
+import { HoldDataService } from '../../core/services/hold-data.service';
+import { SetDataService } from '../../core/services/set-data.service';
 
 export interface order {
   clientName: string;
@@ -38,8 +38,8 @@ export class OrderdetailsComponent implements OnInit {
     {MediaContentType:"",inbound:false,mediaUrl:"",message:"para compensarle, le agregaremos un postre de brownie!",messageId:'1',Fecha:"6:39pm"},
     {MediaContentType:"",inbound:false,mediaUrl:"",message:"le estaremos enviando actualizaciones por WhatsApp",messageId:'1',Fecha:"6:39pm"},
     {MediaContentType:"",inbound:true,mediaUrl:"",message:"Listo muchas gracias",messageId:'1',Fecha:"6:39pm"},
-
   ]
+
   constructor(
     private router: Router,
       // private _snackBar: MatSnackBar,
@@ -48,22 +48,13 @@ export class OrderdetailsComponent implements OnInit {
       private setData: SetDataService,
       private holdData: HoldDataService,
       // private deleteData: DeleteDataService,
-      
-  ) {
-    this.route.queryParams.subscribe(async() => {
-      if (this.router.getCurrentNavigation().extras.state) {
-          const currentNav = this.router.getCurrentNavigation().extras.state.data
-          this.order = currentNav;
-          console.log(this.order);
-          
-      }
-
-  });
-   }
+  ) {}
 
   ngOnInit(): void {
     this.companyId = this.holdData.userInfo.companyId; 
+    this.order = this.holdData.currentOrder;
   }
+
   getMessages(){
 
   }

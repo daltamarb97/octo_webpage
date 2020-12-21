@@ -834,15 +834,6 @@ export class SetDataService {
       }
   }
 
-  async pushForm(data) {
-    let ref = this.db.collection('whatsapp')
-      .doc('AUj8qk9hf8p04kSYi6sj')
-      .collection('forms')
-      .doc('fwerUhfI0IY2CMKuwgME')
-      .collection('responses')
-      
-      return ref.add(data)
-  }
   setSendFormOnClose(companyId: string, ticketId: string, toggle: boolean) {
     let ref = this.db.collection('tickets')
       .doc(companyId)

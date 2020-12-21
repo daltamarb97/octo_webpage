@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { order } from '../../../interfaces/orders';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ export class HoldDataService {
   companyInfo:any;
   userId:string;
   hideSpinner: boolean = false;
+  currentOrder: order;
   constructor(
     private db: AngularFirestore
   ) { }

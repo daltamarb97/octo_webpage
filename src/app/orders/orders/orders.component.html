@@ -14,37 +14,35 @@
               
               <div class="responsive-table">
                 <mat-table #table [dataSource]="dataSource">
-                  <!-- Position Column -->
+
                   <ng-container matColumnDef="orderId">
-                    <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} </mat-cell>
+                    <mat-header-cell *matHeaderCellDef> # de pedido </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> {{element.orderId}} </mat-cell>
                   </ng-container>
       
-                 
-      
-                  <!-- Weight Column -->
+
                   <ng-container matColumnDef="deliverMode">
                     <mat-header-cell *matHeaderCellDef> Modo </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.deliverMode}} </mat-cell>
+                    <mat-cell *matCellDef="let element"> {{element.deliverMode}} </mat-cell>
                   </ng-container>
       
-                  <!-- Symbol Column -->
+
                   <ng-container matColumnDef="timestamp">
                     <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp}} </mat-cell>
+                    <mat-cell *matCellDef="let element"> {{element.timestamp.toDate() | date: 'short'}} </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
                     <mat-cell *matCellDef="let element"> 
-                      <button mat-icon-button  aria-label="Example icon button with a home icon">
+                      <button mat-icon-button >
                       <mat-icon>print</mat-icon>
                     </button>
-                    <button (click)="prepareOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
+                    <button (click)="prepareOrder(element)" mat-icon-button color="green">
                       <mat-icon>check_circle</mat-icon>
                     </button></mat-cell>
                   </ng-container>
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="details(row)"></mat-row>
                 </mat-table>
               </div>
             </mat-card-content>
@@ -67,38 +65,36 @@
             
             <div class="responsive-table">
               <mat-table #table [dataSource]="dataSource">
-                <!-- Position Column -->
+
                   <ng-container matColumnDef="orderId">
-                    <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} </mat-cell>
+                    <mat-header-cell *matHeaderCellDef> # de pedido </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> {{element.orderId}} </mat-cell>
                   </ng-container>
       
-                 
-      
-                  <!-- Weight Column -->
+
                   <ng-container matColumnDef="deliverMode">
                     <mat-header-cell *matHeaderCellDef> Modo </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.deliverMode}} </mat-cell>
+                    <mat-cell *matCellDef="let element"> {{element.deliverMode}} </mat-cell>
                   </ng-container>
       
-                  <!-- Symbol Column -->
+
                   <ng-container matColumnDef="timestamp">
                     <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp}} </mat-cell>
+                    <mat-cell *matCellDef="let element"> {{element.timestamp.toDate() | date: 'short'}} </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
                     <mat-cell *matCellDef="let element"> 
-                      <button mat-icon-button  aria-label="Example icon button with a home icon">
+                      <button mat-icon-button >
                       <mat-icon>print</mat-icon>
                     </button>
-                    <button (click)="prepareOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
+                    <button (click)="prepareOrder(element)" mat-icon-button color="green">
                       <mat-icon>check_circle</mat-icon>
                     </button></mat-cell>
                   </ng-container>
                 
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="details(row)"></mat-row>
               </mat-table>
             </div>
           </mat-card-content>
@@ -121,38 +117,36 @@
               
               <div class="responsive-table">
                 <mat-table #table [dataSource]="dataSource">
-                  <!-- Position Column -->
+
                     <ng-container matColumnDef="orderId">
-                      <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
-                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} </mat-cell>
+                      <mat-header-cell *matHeaderCellDef> # de pedido </mat-header-cell>
+                      <mat-cell *matCellDef="let element"> {{element.orderId}} </mat-cell>
                     </ng-container>
         
-                   
-        
-                    <!-- Weight Column -->
+
                     <ng-container matColumnDef="deliverMode">
                       <mat-header-cell *matHeaderCellDef> Modo </mat-header-cell>
-                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.deliverMode}} </mat-cell>
+                      <mat-cell *matCellDef="let element"> {{element.deliverMode}} </mat-cell>
                     </ng-container>
         
-                    <!-- Symbol Column -->
+
                     <ng-container matColumnDef="timestamp">
                       <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
-                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp}} </mat-cell>
+                      <mat-cell *matCellDef="let element"> {{element.timestamp.toDate() | date: 'short'}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="actions">
                       <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
                       <mat-cell *matCellDef="let element"> 
-                        <button mat-icon-button  aria-label="Example icon button with a home icon">
+                        <button mat-icon-button >
                         <mat-icon>print</mat-icon>
                       </button>
-                      <button (click)="prepareOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
+                      <button (click)="prepareOrder(element)" mat-icon-button color="green">
                         <mat-icon>check_circle</mat-icon>
                       </button></mat-cell>
                     </ng-container>
                   
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="details(row)"></mat-row>
                 </mat-table>
               </div>
             </mat-card-content>

@@ -9,9 +9,8 @@ import { TicketDialogComponent } from '../../material-component/ticket-dialog/ti
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter } from 'saturn-datepicker'
 import { formatDate } from '@angular/common';
-
-import * as firebase from 'firebase';
 import 'firebase/firestore';
+
 export const PICK_FORMATS = {
   parse: {dateInput: {month: 'short', year: 'numeric', day: 'numeric'}},
   display: {
@@ -91,7 +90,6 @@ export class FormsTableComponent implements OnInit {
     this.companyInfo = this.holdData.companyInfo;
     this.companyId = this.holdData.companyInfo.companyId;
     await this.getForms();
-    // this.pushForm();
   }
 
   async getForms() {
@@ -171,26 +169,7 @@ export class FormsTableComponent implements OnInit {
         })
     }
   }
-  // pushForm(){
 
-  //   let form = {
-  //     number:'whatsapp:+573118977991',
-  //     responseId:'fwerUhfI0IY2CMKuwgME',
-  //     results:{
-  //       comentario:"Los granizados vinieron como jugos",
-  //       nombre:"Freddy Vega",
-  //       problema:"2",
-  //       producto:"Granizado de mandarina y granizado de limonada",
-  //       sede:"Parque Whashington"
-               
-  //     },
-  //     timestamp:firebase.firestore.FieldValue.serverTimestamp()
-  //   }
-  //   console.log(form);
-    
-  //   this.setData.pushForm(form);
-    
-  // }
   selectFilter(event) {
     let rate: number = 0;
     let counter: number = 0;

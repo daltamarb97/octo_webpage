@@ -8,8 +8,6 @@
         <mat-card-content>
             <div class="header-drop">
                 <div class="header-drop-sub">
-                    <button mat-stroked-button color="primary" (click)="pushForm()">push</button>
-
                     <mat-card-title *ngIf="currentForm">Resumen de información de: {{currentForm.alias | titlecase}}</mat-card-title>
                     <mat-card-subtitle *ngIf="showTable && currentForm && !currentForm.foreign">Para abrir Octo Form Builder, 
                         <span style="color: #E83D5E" (click)="showTable = false">haz click aqui</span> 
@@ -39,6 +37,7 @@
                 <button mat-stroked-button color="primary" (click)="searchFields()">Confirmar</button>
                 <button id="download-button" mat-stroked-button color="primary" *ngIf="dataSource.length >= 1" (click)="downloadData()">Descargar datos en Excel</button>
             </div>
+
             <!-- filter of points, just for porthos -->
             <div class="filter-options" *ngIf="showTable && showCardsVersion && dataSource.length >= 1">
                 <mat-form-field class="filter-options__select" appearance="fill">
@@ -52,9 +51,6 @@
                     <p><span class="bold-subtitle">Total respuestas:   </span>{{responsesLength}}</p>
                 </div>
             </div>
-
-
-
 
             <!-- <div class="responsive-table" *ngIf="showTable && !showCardsVersion">
                 <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
@@ -94,20 +90,16 @@
                 </table>
             </div> -->
 
-
-
-
-
             <div fxLayout="row wrap" class="course-app" *ngIf="showTable && !showCardsVersion">
                 <div fxFlex.gt-md="33.33" fxFlex.gt-lg="33.33" fxFlex="100" *ngFor='let d of dataSource'>
                     <mat-card>
                     <mat-card-header class="response-header d-5">
-                        <mat-card-title>
-                            <span class="response-date">
+                        <mat-card-title *ngIf="d.results">
+                            <span *ngIf="d.results.timestamp" class="response-date">
                                 <mat-icon class="m-r-10">access_time</mat-icon>
                                 {{ d.timestamp.toDate() | date: 'short' }}
                             </span>
-                            <span id="response-point">{{d.results.sede}}</span>
+                            <span *ngIf="d.results.sede" id="response-point">{{d.results.sede}}</span>
                         </mat-card-title>
                     </mat-card-header>
                     <mat-card-content class="text-center">
@@ -118,11 +110,9 @@
                             <div class="element-detail">
                             <mat-list role="list">
                                 <mat-list-item class="element-detail__text" role="listitem" *ngFor="let j of expandedDataNames">{{j}}</mat-list-item>                               
-                                <mat-divider></mat-divider>
                             </mat-list>
                             <mat-list role="list">
-                                <mat-list-item id="rta-detail" role="listitem" *ngFor="let i of expandedData">{{i}}</mat-list-item>     
-                                <mat-divider></mat-divider>                       
+                                <mat-list-item id="rta-detail" role="listitem" *ngFor="let i of expandedData">{{i}}</mat-list-item>                           
                             </mat-list>
                         </div>
                         </mat-expansion-panel>
@@ -133,12 +123,7 @@
                     </mat-card>
                 </div>
             </div>
-
-
-
-
-
-            <!-- just for Porthos, for now -->
+            <!-- just for Porthos -->
             <div fxLayout="row wrap" class="course-app" *ngIf="showTable && showCardsVersion">
                 <div fxFlex.gt-md="33.33" fxFlex.gt-lg="33.33" fxFlex="100" *ngFor='let d of dataSource'>
                     <mat-card>

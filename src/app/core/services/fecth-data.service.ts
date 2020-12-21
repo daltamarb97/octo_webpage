@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore, DocumentData } from '@angular/fire/firestore';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HoldDataService } from './hold-data.service';
+import { Observable } from 'rxjs';
+import { order } from '../../../interfaces/orders';
 
 @Injectable({
   providedIn: 'root'
@@ -510,6 +512,7 @@ export class FecthDataService {
 
     return ref.valueChanges();
   }
+
   getOrders(companyId: string) {
     let ref = this.db.collection('delivery')
     .doc(companyId)
