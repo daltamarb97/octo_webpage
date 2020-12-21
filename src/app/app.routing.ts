@@ -119,6 +119,16 @@ export const AppRoutes: Routes = [
           () => import('./tag-metrics/tag-metrics.module').then(m => m.TagMetricsModule)
       },
       {
+        path: 'pedidos',
+        canActivate: [
+          CurrentUserGuard,
+          EmailVerifiedGuardService,
+          UserinfoGuard,   
+        ],
+        loadChildren:
+          () => import('./orders/orders.module').then(m => m.OrdersModule)
+      },
+      {
         path: 'statistics',
         canActivate: [
           CurrentUserGuard,
@@ -127,6 +137,16 @@ export const AppRoutes: Routes = [
         ],
         loadChildren:
           () => import('./statistics/statistics.module').then(m => m.StatisticsModule)
+      },
+      {
+        path: 'orderdetails',
+        canActivate: [
+          CurrentUserGuard,
+          EmailVerifiedGuardService,
+          UserinfoGuard,   
+        ],
+        loadChildren:
+          () => import('./orderdetails/orderdetails.module').then(m => m.OrderdetailsModule)
       },
       {
         path: 'chat-flow',

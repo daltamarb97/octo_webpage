@@ -817,6 +817,15 @@ export class SetDataService {
       }
   }
 
+  async pushForm(data) {
+    let ref = this.db.collection('whatsapp')
+      .doc('AUj8qk9hf8p04kSYi6sj')
+      .collection('forms')
+      .doc('fwerUhfI0IY2CMKuwgME')
+      .collection('responses')
+      
+      return ref.add(data)
+  }
   setSendFormOnClose(companyId: string, ticketId: string, toggle: boolean) {
     let ref = this.db.collection('tickets')
       .doc(companyId)
@@ -852,5 +861,50 @@ export class SetDataService {
       unseen: false
     })
   }
+  // ORDERS
+  startPreparingOrder(companyId,orderId){
+    let ref = this.db.collection('delivery')
+      .doc(companyId)
+      .collection('orders')
+      .doc(orderId)
+    return ref.update({
+      state: 'inProgress'
+    })
+  }
+  //send message in orders
+//   sendWhatsappMessageHttpInOrder(data){
+//     const responseId = this.holdData.createRandomId(); 
+//    //  const api_url = "http://localhost:5000/message/sendFromOcto"
+//    const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
+//    if(data.mediaUrl) {
+//        const finalData = {
+//          message: data.message,
+//          number: data.number,
+//          template: data.template, 
+//          companyId: data.companyId,
+//          mediaUrl: data.mediaUrl,
+//          responseId: (data.form) ? responseId : 0,
+//          form: data.form
+//        }
+//        // api request
+//        let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
+//        const req =  this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
+//        return req;           
+//    } else {
+//      const finalData = {
+//        message: data.message,
+//        number: data.number,
+//        template: data.template, 
+//        companyId: data.companyId,
+//        form: data.form,
+//        responseId: (data.form) ? responseId : 0,
+//      }
+//        // api request
+//      let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
+//      const req =  this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
+//      return req;
+//    }
+//  }
+  //END OF ORDERS
 }
 

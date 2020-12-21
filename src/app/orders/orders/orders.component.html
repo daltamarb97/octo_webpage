@@ -1,0 +1,164 @@
+
+<mat-tab-group mat-align-tabs="center">
+  <mat-tab label="Pendientes">
+    <div fxLayout="row wrap">
+        <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+          <mat-card>
+            <mat-card-content>
+              <mat-card-title >Pedidos pendientes: </mat-card-title>
+              <div class=" p-10 p-r-20 p-l-20">
+                <mat-form-field>
+                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Busca tu pedido">
+                </mat-form-field>
+              </div>
+              
+              <div class="responsive-table">
+                <mat-table #table [dataSource]="dataSource">
+                  <!-- Position Column -->
+                  <ng-container matColumnDef="orderId">
+                    <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} </mat-cell>
+                  </ng-container>
+      
+                 
+      
+                  <!-- Weight Column -->
+                  <ng-container matColumnDef="deliverMode">
+                    <mat-header-cell *matHeaderCellDef> Modo </mat-header-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.deliverMode}} </mat-cell>
+                  </ng-container>
+      
+                  <!-- Symbol Column -->
+                  <ng-container matColumnDef="timestamp">
+                    <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp}} </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> 
+                      <button mat-icon-button  aria-label="Example icon button with a home icon">
+                      <mat-icon>print</mat-icon>
+                    </button>
+                    <button (click)="prepareOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
+                      <mat-icon>check_circle</mat-icon>
+                    </button></mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                </mat-table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+  </mat-tab>
+  <!-- new Tab -->
+  <mat-tab label="En preparación">
+    <div fxLayout="row wrap">
+      <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+        <mat-card>
+          <mat-card-content>
+            <mat-card-title>Pedidos en preparación</mat-card-title>
+            <div class=" p-10 p-r-20 p-l-20">
+              <mat-form-field>
+                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Busca tu pedido en preparación">
+              </mat-form-field>
+            </div>
+            
+            <div class="responsive-table">
+              <mat-table #table [dataSource]="dataSource">
+                <!-- Position Column -->
+                  <ng-container matColumnDef="orderId">
+                    <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} </mat-cell>
+                  </ng-container>
+      
+                 
+      
+                  <!-- Weight Column -->
+                  <ng-container matColumnDef="deliverMode">
+                    <mat-header-cell *matHeaderCellDef> Modo </mat-header-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.deliverMode}} </mat-cell>
+                  </ng-container>
+      
+                  <!-- Symbol Column -->
+                  <ng-container matColumnDef="timestamp">
+                    <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp}} </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> 
+                      <button mat-icon-button  aria-label="Example icon button with a home icon">
+                      <mat-icon>print</mat-icon>
+                    </button>
+                    <button (click)="prepareOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
+                      <mat-icon>check_circle</mat-icon>
+                    </button></mat-cell>
+                  </ng-container>
+                
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+              </mat-table>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </mat-tab>
+  <!-- new Tap -->
+  <mat-tab label="Despachados">
+      <div fxLayout="row wrap">
+        <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
+          <mat-card>
+            <mat-card-content>
+              <mat-card-title>Pedidos despachados</mat-card-title>
+              <div class=" p-10 p-r-20 p-l-20">
+                <mat-form-field>
+                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Busca tu pedido despachado">
+                </mat-form-field>
+              </div>
+              
+              <div class="responsive-table">
+                <mat-table #table [dataSource]="dataSource">
+                  <!-- Position Column -->
+                    <ng-container matColumnDef="orderId">
+                      <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
+                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} </mat-cell>
+                    </ng-container>
+        
+                   
+        
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="deliverMode">
+                      <mat-header-cell *matHeaderCellDef> Modo </mat-header-cell>
+                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.deliverMode}} </mat-cell>
+                    </ng-container>
+        
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="timestamp">
+                      <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
+                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="actions">
+                      <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+                      <mat-cell *matCellDef="let element"> 
+                        <button mat-icon-button  aria-label="Example icon button with a home icon">
+                        <mat-icon>print</mat-icon>
+                      </button>
+                      <button (click)="prepareOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
+                        <mat-icon>check_circle</mat-icon>
+                      </button></mat-cell>
+                    </ng-container>
+                  
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                </mat-table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+</mat-tab-group>
+

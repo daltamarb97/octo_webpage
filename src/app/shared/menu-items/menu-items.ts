@@ -8,6 +8,7 @@ export interface Menu {
 }
 
 const MENUITEMS = [
+  { state: 'pedidos', type: 'link', name: 'Pedidos', icon: 'fact_check' },
   { state: 'whatsapp', type: 'link', name: 'WhatsApp', icon: 'chat' },
   { state: 'chat-flow', type: 'link', name: 'Octo-Bot', icon: 'account_tree' },
   { state: 'tag-metrics', type: 'link', name: 'Estadísticas', icon: 'show_chart' },
