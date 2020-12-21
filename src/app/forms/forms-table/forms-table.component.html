@@ -8,6 +8,8 @@
         <mat-card-content>
             <div class="header-drop">
                 <div class="header-drop-sub">
+                    <button mat-stroked-button color="primary" (click)="pushForm()">push</button>
+
                     <mat-card-title *ngIf="currentForm">Resumen de información de: {{currentForm.alias | titlecase}}</mat-card-title>
                     <mat-card-subtitle *ngIf="showTable && currentForm && !currentForm.foreign">Para abrir Octo Form Builder, 
                         <span style="color: #E83D5E" (click)="showTable = false">haz click aqui</span> 

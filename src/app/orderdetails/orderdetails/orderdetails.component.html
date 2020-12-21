@@ -1,0 +1,155 @@
+<h2>works</h2>
+  <mat-sidenav-container class="chat-sidebar-container">
+    <mat-sidenav  mode="side" opened style="width: auto;height: auto; max-width: 40%;">
+        <mat-card >
+    
+            <span (click)="goBack()" class="material-icons">
+                arrow_back
+                </span>
+                <mat-card-header>
+                  <mat-card-title>{{order.orderId}}</mat-card-title>
+                  <mat-card-subtitle>{{order.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</mat-card-subtitle>
+            
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="paragraph">
+                    <p class="title">
+                      <strong >Datos de contacto:</strong>  
+                     </p>
+                     <p>{{order.clientName}} </p>
+                       <p>{{order.clientPhone}}</p>
+   
+                  </div>
+                  <div class="paragraph">
+                    <p class="title">
+                      <strong>Detalles del pedido:</strong> 
+                    </p>
+                    <p >{{order.deliverMode}}</p> 
+
+                      <p *ngFor="let order of order.order">{{order}}</p> 
+
+                  </div>
+                  <div class="paragraph">
+                    <p class="title">
+                      <strong>Comentarios</strong> 
+                    </p>
+                      <p >{{order.comments}}</p> 
+                      
+                  </div>
+                  <div class="paragraph">
+                    <p class="title">
+                      <strong>Método de pago</strong> 
+                    </p>
+                      <p >{{order.paymentMethod}}</p> 
+                      
+                  </div>
+                    
+                </mat-card-content>
+                <mat-card-actions>
+                  <button mat-button>LIKE</button>
+                  <button mat-button>SHARE</button>
+                </mat-card-actions>
+              </mat-card>
+            </mat-sidenav>
+            <!-- /////////////////////////////  CHAT    //////////////////////////////////// -->
+
+            <mat-sidenav-content opened mode="side" position="end"  style="width: auto;">
+                <p>works222222</p>
+                <mat-card  id="content-messages-private" style="max-height: 75%;min-height:75%; width: auto; overflow-y: auto;" >
+                  <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
+                      <span class="toolbar-msg"  >{{order.clientName}}</span>                     
+                  </mat-toolbar>
+                  
+                  <mat-card-content style=" overflow-y: visible; height: 75%;">
+                      <div class="chat"  *ngFor="let message of chatMessages" >
+                          <div class="me"  *ngIf="message.inbound === false">          
+                              <span style="word-wrap: break-word;">{{message.message}} </span>  
+                              <!-- <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p> -->
+                              <p class="time-left" *ngIf="message.timestamp">{{message.fecha}}</p>
+
+                              <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                                  <img 
+                                      [src]="message.mediaUrl" 
+                                      style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
+                              </div>   
+                              <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                                  <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>   
+                              </div>  
+                          </div>
+                          <div class="otherMessage" *ngIf="message.inbound === true">
+                              <span class="name">
+                                  Cliente
+                              </span> <br>
+                              <span style="word-wrap: break-word;">{{message.message}}</span>
+                              <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
+                              <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                                  <img 
+                                      [src]="message.mediaUrl" 
+                                      style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
+                              </div>  
+                              <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                                  <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>  
+                              </div>  
+                          </div>            
+                      </div>  
+                      <!-- if no messages show this card -->
+                      <div *ngIf="chatMessages.length === 0">
+                          <mat-card class="message-card">
+                              <mat-card-content>
+                                  <p>
+                                  Aún no hay mensajes en esta sala
+                                  </p>
+                              </mat-card-content>
+                          </mat-card>
+                      </div>
+                  </mat-card-content>
+                  <footer>
+                      <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;max-width: 720px;">
+                          <div style="display: flex;">
+                              <textarea matInput
+                              cdkTextareaAutosize
+                              #autosize="cdkTextareaAutosize"
+                              cdkAutosizeMinRows="1"
+                              cdkAutosizeMaxRows="9"
+                              [(ngModel)]="currentMessage" 
+                              placeholder="Envía un mensaje" 
+                              (keydown.enter)="sendMessage()"
+                              ></textarea>
+                              
+                              <div 
+                                  class="actions-button-container"
+                                  >
+                                  <div style="display: flex; flex-direction: row">
+                                      <button mat-mini-fab style="background-color: #3197F3">
+                                          <mat-icon (click)="sendMessage()">send</mat-icon>
+                                      </button>
+                                      <!-- <button mat-mini-fab color="warn">
+                                          <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
+                                      </button> -->
+                                      <!-- <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
+                                          <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
+                                      </button> -->
+                                      <!-- <button *ngIf="showMic" mat-mini-fab color="accent" matTooltip="Nota de voz">
+                                          <mat-icon (click)="startVoiceRecording()">settings_voice</mat-icon>
+                                      </button>
+                                      <div *ngIf="!showMic" class="mic-actions">
+                                          <button  mat-mini-fab id="check-voice" matTooltip="Nota de voz">
+                                              <mat-icon (click)="sendVoiceNote()">check</mat-icon>
+                                          </button>
+                                          <p>{{timeRecorded}}</p>
+                                          <button  mat-mini-fab id="cancel-voice" matTooltip="Nota de voz">
+                                              <mat-icon (click)="cancelVoiceNote()">close</mat-icon>
+                                          </button>
+                                      </div> -->
+                                  </div>
+                                  <p>{{fileName}}</p>
+                              </div>
+                          </div>
+                          
+                      </mat-form-field>
+                  </footer>
+               </mat-card>
+          </mat-sidenav-content>
+        </mat-sidenav-container>
+s
+    
