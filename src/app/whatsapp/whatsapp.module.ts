@@ -16,6 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     WhatsappRoutingModule,
     FormsModule,
     ReactiveFormsModule,
+    
   ]
 })
 export class WhatsappComponentModule { }

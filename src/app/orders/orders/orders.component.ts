@@ -32,6 +32,8 @@ export class OrdersComponent implements OnInit {
     ordersSubscriber: any;
     filterValue: string = '';
     // listOfOrders:Array<order>;
+    showTableOrders=null;
+    fullOrders:any[] = [];
     @ViewChild(MatSort, { static: true }) sort: MatSort = Object.create(null);
 /**
      * Set the sort after the view init since this component will
@@ -70,16 +72,71 @@ export class OrdersComponent implements OnInit {
     ngOnInit() {
       this.ordersSubscriber = this.fetchData.getOrders(this.holdData.userInfo.companyId )
       .subscribe( res => {
-        this.dataSource =  res;
-        this.dataSourceBack = res;
-        this.showTable = true;
+        //save all the orders from firestore
+        this.fullOrders = res;
+        //show only the orders according to the tab
+        if (this.showTableOrders === null) {
+          this.fullOrders.forEach(element => {
+            if (element.state === 'pending') {
+              this.dataSource.push(element)            
+            }
+          });
+        }
+
+          
+        
+        
+        
       });
     }
-
+    
     prepareOrder(order){     
-      this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.orderId)
+      console.log(order);
+      
+      // this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.orderId)
     }
-
+    showOrdersInTable(event){
+      this.dataSource=[];
+      if (event.tab.textLabel === 'Pendientes') {
+        this.showTableOrders='pending';
+        this.showOnlyPendingOrders();
+      } else if (event.tab.textLabel === 'En preparación') {
+        this.showTableOrders='inProgress';
+        this.showOnlyInProgressOrders()
+      } else if(event.tab.textLabel === 'Despachados') {
+        this.showTableOrders='delivered';
+        this.showOnlyDeliveredOrders()
+      }
+      
+      
+      
+      
+    }
+    showOnlyPendingOrders(){
+      this.dataSource = [];
+      
+      this.fullOrders.forEach(element => {
+        if (element.state === 'pending') {
+          this.dataSource.push(element)            
+        }
+      });
+    }
+    showOnlyInProgressOrders(){
+      this.dataSource = [];
+      this.fullOrders.forEach(element => {
+        if (element.state === 'inProgress') {
+          this.dataSource.push(element)            
+        }
+      });
+    }
+    showOnlyDeliveredOrders(){
+      this.dataSource = [];
+      this.fullOrders.forEach(element => {
+        if (element.state === 'delivered') {
+          this.dataSource.push(element)            
+        }
+      });
+    }
     details(element){
       this.holdData.currentOrder = element;
       this.router.navigate(['/orderdetails']);

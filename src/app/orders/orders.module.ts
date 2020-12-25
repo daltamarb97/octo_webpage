@@ -7,6 +7,7 @@ import { OrdersComponent } from './orders/orders.component';
 import { DemoMaterialModule } from '../demo-material-module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { NgxPrintModule } from 'ngx-print';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxPrintModule
   ]
 })
 export class OrdersModule { }
