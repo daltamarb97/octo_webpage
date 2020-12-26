@@ -32,7 +32,7 @@ export class FullComponent implements OnDestroy, AfterViewInit {
     media: MediaMatcher,
     public menuItems: MenuItems
   ) {
-    this.mobileQuery = media.matchMedia('(min-width: 768px)');
+    this.mobileQuery = media.matchMedia('(min-width: 769px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
   }

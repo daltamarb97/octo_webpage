@@ -60,7 +60,7 @@
  Ipad & above all(768px) 
  ============================================================== */
 
-@media(min-width:768px) {
+@media(min-width:769px) {
     .navbar-header {
         width: 225px;
         flex-shrink:0;
@@ -76,7 +76,7 @@
  Phone and below ipad(767px) 
  ============================================================== */
 
-@media(max-width:767px) {
+@media(max-width:769px) {
     .mat-toolbar-single-row{
         height: 64px!important;
     }

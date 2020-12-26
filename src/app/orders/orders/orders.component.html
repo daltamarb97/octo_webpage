@@ -1,11 +1,17 @@
 
-<mat-tab-group mat-align-tabs="center" (selectedTabChange)="showOrdersInTable($event)">
+<mat-tab-group mat-align-tabs="center" animationDuration="0ms" (selectedTabChange)="showOrdersInTable($event)">
   <mat-tab label="Pendientes" >
+    <ng-template mat-tab-label>
+      <mat-icon class="example-tab-icon">pending_actions
+        
+      </mat-icon>
+      Pendientes
+    </ng-template>
     <div fxLayout="row wrap">
         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
           <mat-card>
             <mat-card-content>
-              <mat-card-title >Pedidos pendientes: {{dataSource.length}} </mat-card-title>
+              <mat-card-title > Pedidos pendientes: {{dataSource.length}} </mat-card-title>
                         <!--
    1)- Add an ID here
  -->
@@ -15,7 +21,6 @@
    2)- Add the directive name in your button (ngxPrint),
    3)- Affect your ID to printSectionId
  -->
-<button #printButton printTitle="Print Title" printSectionId="print-section" ngxPrint>print</button> 
  
               <div class=" p-10 p-r-20 p-l-20">
                 <mat-form-field>
@@ -42,7 +47,7 @@
                   <!-- Symbol Column -->
                   <ng-container matColumnDef="timestamp">
                     <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp.toDate() | date: 'EEEE, MMMM d, h:mm a'}} </mat-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp.toDate() | date: 'EEEE, h:mm a'}} </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
@@ -51,7 +56,7 @@
                         <!--Your html stuff that you want to print-->
                         <div class="header">...</div>
                         <h1>{{element.orderId}}</h1>
-                        <mat-card-subtitle>{{element.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</mat-card-subtitle>
+                        <mat-card-subtitle>{{element.timestamp.toDate() | date: 'EEEE, h:mm a'}}</mat-card-subtitle>
 
                         <div class="content">
                           <p class="title">
@@ -79,9 +84,11 @@
                       </div>
                       <button (click)="printButton.click(element)" mat-icon-button  aria-label="Example icon button with a home icon">
                       <mat-icon>print</mat-icon>
+                      <button #printButton printTitle="Print Title" printSectionId="print-section" ngxPrint style="display: none;">print</button> 
+
                     </button>
                     <button (click)="prepareOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
-                      <mat-icon>check_circle</mat-icon>
+                      <mat-icon>outdoor_grill</mat-icon>
                     </button></mat-cell>
                   </ng-container>
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -95,11 +102,17 @@
   </mat-tab>
   <!-- new Tab -->
   <mat-tab label="En preparación">
+    <ng-template mat-tab-label>
+      <mat-icon class="example-tab-icon">outdoor_grill
+        
+      </mat-icon>
+      En preparación
+    </ng-template>
     <div fxLayout="row wrap">
       <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
         <mat-card>
           <mat-card-content>
-            <mat-card-title>Pedidos en preparación: {{dataSource.length}}</mat-card-title>
+            <mat-card-title> Pedidos en preparación: {{dataSource.length}}</mat-card-title>
             <div class=" p-10 p-r-20 p-l-20">
               <mat-form-field>
                 <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Busca tu pedido en preparación">
@@ -125,16 +138,49 @@
                   <!-- Symbol Column -->
                   <ng-container matColumnDef="timestamp">
                     <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp}} </mat-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)">{{element.timestamp.toDate() | date: 'EEEE, h:mm a'}} </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
                     <mat-cell *matCellDef="let element"> 
-                      <button mat-icon-button  aria-label="Example icon button with a home icon">
+                      <div style="display: none;" id="print-section"> 
+                        <!--Your html stuff that you want to print-->
+                        <div class="header">...</div>
+                        <h1>{{element.orderId}}</h1>
+                        <mat-card-subtitle>{{element.timestamp.toDate() | date: 'EEEE, h:mm a'}}</mat-card-subtitle>
+
+                        <div class="content">
+                          <p class="title">
+                            <strong>Detalles del pedido:</strong> 
+                          </p>
+                          <p >{{element.deliverMode}}</p> 
+      
+                            <p *ngFor="let element of element.order">{{element}}</p> 
+                            <p class="title">
+                              <strong>Comentarios</strong> 
+                            </p>
+                              <p >{{element.comments}}</p> 
+                              <div class="paragraph">
+                                <p class="title">
+                                  <strong>Método de pago</strong> 
+                                </p>
+                                  <p >{{element.paymentMethod}}</p> 
+                                  
+                              </div>
+                        </div>
+
+                        <div class="footer">
+                          Cliente: {{element.clientName}}
+                        </div>
+                      </div>
+                      <button (click)="printButton.click(element)" mat-icon-button  aria-label="Example icon button with a home icon">
                       <mat-icon>print</mat-icon>
+                      <button #printButton printTitle="Print Title" printSectionId="print-section" ngxPrint style="display: none;">print</button> 
+
                     </button>
                     <button (click)="prepareOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
-                      <mat-icon>check_circle</mat-icon>
+                      <mat-icon>moped
+                      </mat-icon>
                     </button></mat-cell>
                   </ng-container>
                 
@@ -149,11 +195,17 @@
   </mat-tab>
   <!-- new Tap -->
   <mat-tab label="Despachados">
+    <ng-template mat-tab-label>
+      <mat-icon class="example-tab-icon">moped
+        
+      </mat-icon>
+      Despachados
+    </ng-template>
       <div fxLayout="row wrap">
         <div fxFlex.gt-sm="100" fxFlex.gt-xs="100" fxFlex="100">
           <mat-card>
             <mat-card-content>
-              <mat-card-title>Pedidos despachados: {{dataSource.length}}</mat-card-title>
+              <mat-card-title>  Pedidos despachados: {{dataSource.length}}</mat-card-title>
               <div class=" p-10 p-r-20 p-l-20">
                 <mat-form-field>
                   <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Busca tu pedido despachado">
@@ -179,19 +231,56 @@
                     <!-- Symbol Column -->
                     <ng-container matColumnDef="timestamp">
                       <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
-                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp}} </mat-cell>
+                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp.toDate() | date: 'EEEE, h:mm a'}} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="actions">
                       <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
                       <mat-cell *matCellDef="let element"> 
-                        <button mat-icon-button  aria-label="Example icon button with a home icon">
+                        <div style="display: none;" id="print-section"> 
+                          <!--Your html stuff that you want to print-->
+                          <div class="header">...</div>
+                          <h1>Pedido: {{element.orderId}}</h1>
+                          <mat-card-subtitle> {{element.timestamp.toDate() | date: 'EEEE, h:mm a'}}</mat-card-subtitle>
+  
+                          <div class="content">
+                            <p class="title">
+                              <strong>Detalles del pedido:</strong> 
+                            </p>
+                            <p >{{element.deliverMode}}</p> 
+        
+                              <p *ngFor="let element of element.order">{{element}}</p> 
+                              <p class="title">
+                                <strong>Comentarios</strong> 
+                              </p>
+                                <p >{{element.comments}}</p> 
+                                <div class="paragraph">
+                                  <p class="title">
+                                    <strong>Método de pago</strong> 
+                                  </p>
+                                    <p >{{element.paymentMethod}}</p> 
+                                    
+                                </div>
+                          </div>
+  
+                          <div class="footer">
+                           <strong>Cliente:</strong>  {{element.clientName}}
+                          </div>
+                        </div>
+                        <button (click)="printButton.click(element)" mat-icon-button  aria-label="Example icon button with a home icon">
                         <mat-icon>print</mat-icon>
+                        <button #printButton printTitle="Print Title" printSectionId="print-section" ngxPrint style="display: none;">print</button> 
+                        <!-- <button *ngIf="element.state == 'received'" mat-icon-button color="green" aria-label="Example icon button with a home icon">Entregado
+                          <mat-icon>check_circle
+  
+                          </mat-icon>
+                        </button> -->
                       </button>
-                      <button (click)="prepareOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
-                        <mat-icon>check_circle</mat-icon>
-                      </button></mat-cell>
+                      </mat-cell>
                     </ng-container>
-                  
+                    <!-- <ng-container matColumnDef="received">
+                      <mat-header-cell *matHeaderCellDef> Entregado </mat-header-cell>
+                      <mat-cell *matCellDef="let element"  >  </mat-cell>
+                    </ng-container> -->
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
                 </mat-table>

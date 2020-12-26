@@ -91,6 +91,16 @@ export class OrdersComponent implements OnInit {
     }
     
     prepareOrder(order){     
+      console.log(order.id);     
+      // this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.orderId);
+
+    }
+    deliverOrder(order){     
+      console.log(order);
+      
+      // this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.orderId)
+    }
+    finishOrder(order){     
       console.log(order);
       
       // this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.orderId)
@@ -103,7 +113,7 @@ export class OrdersComponent implements OnInit {
       } else if (event.tab.textLabel === 'En preparación') {
         this.showTableOrders='inProgress';
         this.showOnlyInProgressOrders()
-      } else if(event.tab.textLabel === 'Despachados') {
+      } else if(event.tab.textLabel === 'Despachados' ) {
         this.showTableOrders='delivered';
         this.showOnlyDeliveredOrders()
       }
