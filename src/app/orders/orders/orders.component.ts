@@ -32,7 +32,7 @@ export class OrdersComponent implements OnInit {
     ordersSubscriber: any;
     filterValue: string = '';
     // listOfOrders:Array<order>;
-    showTableOrders=null;
+    showTableOrders:string=null;
     fullOrders:any[] = [];
     @ViewChild(MatSort, { static: true }) sort: MatSort = Object.create(null);
 /**
@@ -56,6 +56,7 @@ export class OrdersComponent implements OnInit {
      }
     applyFilter(filterValue: string) {
       this.dataSource = this.dataSourceBack;
+      this.showOrdersInTable();
       if (filterValue.length < this.filterValue.length) {
         filterValue = filterValue.trim();
         this.dataSource = this.dataSource.filter(d => {
@@ -67,80 +68,101 @@ export class OrdersComponent implements OnInit {
           if (d.orderId.includes(this.filterValue)) return d; 
         })
       }
+      
     }
 
     ngOnInit() {
+
       this.ordersSubscriber = this.fetchData.getOrders(this.holdData.userInfo.companyId )
       .subscribe( res => {
-        //save all the orders from firestore
-        this.fullOrders = res;
-        //show only the orders according to the tab
-        if (this.showTableOrders === null) {
-          this.fullOrders.map(p=>{
-            let element = p.payload.doc.data();
-            //insert the id of the object in typescript
-            element.id = p.payload.doc.id;            
-            if (element.state === 'pending') {
-              this.dataSource.push(element)            
-            }
-          })
+        res.map(d => {
+          let itemData = d.payload.doc.data();
+          itemData.id =  d.payload.doc.id;
+          if (d.type === 'added'){
+            if (!this.showTableOrders) return this.dataSourceBack.push(itemData);            
+          } 
           
-        }        
-        
+          if (d.type === 'modified') {
+            const filterDataModified = this.dataSourceBack.filter((i) => {
+              if (i.orderId !== itemData.orderId) return i;
+            });
+            filterDataModified.push(itemData);
+            this.dataSourceBack = filterDataModified;
+          }
+        })
+        this.dataSource = this.dataSourceBack;
+        if (!this.showTableOrders) {   
+          this.showTableOrders = 'pending'   
+          this.showOnlyPendingOrders();    
+        } else {
+          this.showOrdersInTable();
+        }
       });
-    }
-    
+  }
     prepareOrder(order){     
       console.log(order.id);     
       this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.id);
+      this._snackBar.open('El estado del pedido cambio a "En preparación"', 'Ok', {
+        duration: 4000,
+    });
+    this.showOnlyPendingOrders();
 
     }
     deliverOrder(order){     
       console.log(order);    
-      this.setData.deliveringOrder(this.holdData.userInfo.companyId, order.orderId)
+      this.setData.deliveringOrder(this.holdData.userInfo.companyId, order.id)
+      this._snackBar.open('El estado del pedido cambio a "En camino"', 'Ok', {
+        duration: 4000,
+    });
+    this.showOnlyInProgressOrders();
     }
    
-    showOrdersInTable(event){
+    showOrdersInTable(){
       //show the orders that correspond with the tab
+      console.log(this.showTableOrders);
+
+      if ( this.showTableOrders ==='pending') {   
+        this.showOnlyPendingOrders();
+      } else if ( this.showTableOrders ==='inProgress') {
+        this.showOnlyInProgressOrders();
+      } else if( this.showTableOrders ==='delivered' ) {
+        this.showOnlyDeliveredOrders()
+      }     
+    }
+
+    changeTab(event){
       if (event.tab.textLabel === 'Pendientes') {
         this.showTableOrders='pending';
         this.showOnlyPendingOrders();
-      } else if (event.tab.textLabel === 'En preparación') {
+      } else if (event.tab.textLabel === 'En preparación' ) {
         this.showTableOrders='inProgress';
-        this.showOnlyInProgressOrders()
+        this.showOnlyInProgressOrders();
       } else if(event.tab.textLabel === 'Despachados' ) {
         this.showTableOrders='delivered';
         this.showOnlyDeliveredOrders()
-      }
-      
-      
-      
-      
-    }
+      }  
+    } 
     showOnlyPendingOrders(){
       this.dataSource = [];
-        this.fullOrders.map(p=>{
-          let element = p.payload.doc.data(); 
-          if (element.state === 'pending') {
-            this.dataSource.push(element)            
+        this.dataSourceBack.map(p=>{
+          if (p.state === 'pending') {
+            this.dataSource.push(p)            
           }
         });   
     }
     showOnlyInProgressOrders(){
       this.dataSource = [];
-      this.fullOrders.map(p=>{
-        let element = p.payload.doc.data(); 
-        if (element.state === 'inProgress') {
-          this.dataSource.push(element)            
+      this.dataSourceBack.map(p=>{
+        if (p.state === 'inProgress') {
+          this.dataSource.push(p)            
         }
       }); 
     }
     showOnlyDeliveredOrders(){
       this.dataSource = [];
-      this.fullOrders.map(p=>{
-        let element = p.payload.doc.data(); 
-        if (element.state === 'delivered' || element.state === 'received') {
-          this.dataSource.push(element)            
+      this.dataSourceBack.map(p=>{
+        if (p.state === 'delivered' || p.state === 'received') {
+          this.dataSource.push(p)            
         }
       });
     }

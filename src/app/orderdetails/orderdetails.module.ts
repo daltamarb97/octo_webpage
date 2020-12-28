@@ -7,6 +7,7 @@ import { DemoMaterialModule } from 'app/demo-material-module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AccordionAnchorDirective } from 'app/shared/accordion';
+import { NgxPrintModule } from 'ngx-print';
 
 
 @NgModule({
@@ -18,7 +19,7 @@ import { AccordionAnchorDirective } from 'app/shared/accordion';
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
-    
+    NgxPrintModule
 
   ]
 })

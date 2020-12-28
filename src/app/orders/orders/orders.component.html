@@ -1,5 +1,5 @@
 
-<mat-tab-group mat-align-tabs="center"  (selectedTabChange)="showOrdersInTable($event)">
+<mat-tab-group mat-align-tabs="center" animationDuration="0ms" (selectedTabChange)="changeTab($event)">
   <mat-tab label="Pendientes" >
     <ng-template mat-tab-label>
       <mat-icon  class="example-tab-icon">pending_actions
@@ -34,7 +34,7 @@
                   <ng-container matColumnDef="orderId">
                     <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
                     <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} 
-                      <mat-icon color="primary"*ngIf="element.unseen === true" class="material-icons m-l-10">
+                      <mat-icon color="primary"*ngIf="element.unseen == true" class="material-icons m-l-10">
                         mark_chat_unread
                         </mat-icon>
                     </mat-cell>
@@ -129,7 +129,11 @@
                 <!-- Position Column -->
                   <ng-container matColumnDef="orderId">
                     <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} </mat-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}}
+                      <mat-icon color="primary"*ngIf="element.unseen == true" class="material-icons m-l-10">
+                        mark_chat_unread
+                        </mat-icon>
+                      </mat-cell>
                   </ng-container>
       
                  
@@ -183,7 +187,7 @@
                       <button #printButton printTitle="Print Title" printSectionId="print-section" ngxPrint style="display: none;">print</button> 
 
                     </button>
-                    <button (click)="prepareOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
+                    <button (click)="deliverOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
                       <mat-icon>moped
                       </mat-icon>
                     </button></mat-cell>
@@ -223,7 +227,9 @@
                     <ng-container matColumnDef="orderId">
                       <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
                       <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} 
-                        
+                        <mat-icon color="primary"*ngIf="element.unseen == true" class="material-icons m-l-10">
+                          mark_chat_unread
+                          </mat-icon>
                       </mat-cell>
                     
                     </ng-container>

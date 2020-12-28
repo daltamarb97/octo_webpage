@@ -250,12 +250,12 @@ export class FecthDataService {
     return ref.stateChanges(['modified']);
   }
 
-  getMessagesFromSpecificWChat(companyId: string, phoneNumber: string){
+  getMessagesFromSpecificWChat(companyId: string, orderId: string){
     // get messages from specific whatsapp chat
-    let ref = this.db.collection('whatsapp')
+    let ref = this.db.collection('delivery')
     .doc(companyId)
-    .collection('chats')
-    .doc(phoneNumber)
+    .collection('orders')
+    .doc(orderId)
     .collection('messages', ref => ref.orderBy('timestamp', 'desc'))
 
     return ref.stateChanges(['added']);
@@ -513,7 +513,7 @@ export class FecthDataService {
     .doc(companyId)
     .collection('orders', ref => ref.orderBy('timestamp', 'desc'))
 
-    return ref.stateChanges(['added']);
+    return ref.stateChanges(['added','modified']);
 
   }
   //END OF ORDERS

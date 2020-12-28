@@ -15,9 +15,50 @@
 
 
                   <mat-card-subtitle>{{order.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</mat-card-subtitle>
-            
+                  
                 </mat-card-header>
+                
                 <mat-card-content>
+                    <div style="display: none;" id="print-section"> 
+                        <!--Your html stuff that you want to print-->
+                        <div class="header">...</div>
+                        <h1>{{order.orderId}}</h1>
+                        <mat-card-subtitle>{{order.timestamp.toDate() | date: 'EEEE, h:mm a'}}</mat-card-subtitle>
+    
+                        <div class="content">
+                          <p class="title">
+                            <strong>Detalles del pedido:</strong> 
+                          </p>
+                          <p >{{order.deliverMode}}</p> 
+      
+                            <p *ngFor="let order of order.order">{{order}}</p> 
+                            <p class="title">
+                              <strong>Comentarios</strong> 
+                            </p>
+                              <p >{{order.comments}}</p> 
+                              <div class="paragraph">
+                                <p class="title">
+                                  <strong>Método de pago</strong>{{order.paymentMethod}}
+                                </p>
+                                  <div class="paragraph">                                      
+                                      <p class="title">
+                                        <strong>Vuelto:</strong> {{order.cashChange}}
+                                      </p>
+                                      <p class="title">
+                                        <strong>Costo de empaque:</strong> {{order.packageCost}}
+                                      </p>   
+                                  </div>
+                              </div>
+                        </div>
+    
+                        <div class="footer">
+                          Cliente: {{order.clientName}}
+                        </div>
+                      </div>
+                      <button (click)="printButton.click(order)" mat-icon-button  aria-label="Example icon button with a home icon">
+                        <mat-icon>print</mat-icon> IMPRIMIR
+                    </button>
+                        <button #printButton printTitle="Print Title" printSectionId="print-section" ngxPrint style="display: none;">print</button> 
                   <div class="paragraph">
                     <p class="title">
                       <strong >Datos de contacto:</strong>  
@@ -48,7 +89,7 @@
                     </p>
                        
                       <p class="title">
-                        <strong>Vuelto:</strong> {{order.paymentMethod}}
+                        <strong>Vuelto:</strong> {{order.cashChange}}
                       </p>
                       <p class="title">
                         <strong>Costo de empaque:</strong> {{order.packageCost}}
@@ -59,10 +100,7 @@
                    </mat-icon>
                   </button>
                 </mat-card-content>
-                <mat-card-actions>
-                  <!-- <button mat-button>LIKE</button>
-                  <button mat-button>SHARE</button> -->
-                </mat-card-actions>
+                
               </mat-card>
             </mat-sidenav>
             <!-- /////////////////////////////  CHAT    //////////////////////////////////// -->
