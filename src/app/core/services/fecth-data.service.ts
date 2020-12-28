@@ -505,20 +505,16 @@ export class FecthDataService {
   }
   // END OF TICKETS SERVICES
 
-  // ORDERS
-  getOrdersStatistics(companyId: string) {
-    let ref = this.db.collection('orders')
-    .doc(companyId)
-
-    return ref.valueChanges();
-  }
+  
 
   getOrders(companyId: string) {
+    
     let ref = this.db.collection('delivery')
     .doc(companyId)
     .collection('orders', ref => ref.orderBy('timestamp', 'desc'))
 
-    return ref.valueChanges();
+    return ref.stateChanges(['added']);
+
   }
   //END OF ORDERS
 }

@@ -76,37 +76,32 @@ export class OrdersComponent implements OnInit {
         this.fullOrders = res;
         //show only the orders according to the tab
         if (this.showTableOrders === null) {
-          this.fullOrders.forEach(element => {
+          this.fullOrders.map(p=>{
+            let element = p.payload.doc.data();
+            //insert the id of the object in typescript
+            element.id = p.payload.doc.id;            
             if (element.state === 'pending') {
               this.dataSource.push(element)            
             }
-          });
-        }
-
+          })
           
-        
-        
+        }        
         
       });
     }
     
     prepareOrder(order){     
       console.log(order.id);     
-      // this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.orderId);
+      this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.id);
 
     }
     deliverOrder(order){     
-      console.log(order);
-      
-      // this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.orderId)
+      console.log(order);    
+      this.setData.deliveringOrder(this.holdData.userInfo.companyId, order.orderId)
     }
-    finishOrder(order){     
-      console.log(order);
-      
-      // this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.orderId)
-    }
+   
     showOrdersInTable(event){
-      this.dataSource=[];
+      //show the orders that correspond with the tab
       if (event.tab.textLabel === 'Pendientes') {
         this.showTableOrders='pending';
         this.showOnlyPendingOrders();
@@ -124,25 +119,27 @@ export class OrdersComponent implements OnInit {
     }
     showOnlyPendingOrders(){
       this.dataSource = [];
-      
-      this.fullOrders.forEach(element => {
-        if (element.state === 'pending') {
-          this.dataSource.push(element)            
-        }
-      });
+        this.fullOrders.map(p=>{
+          let element = p.payload.doc.data(); 
+          if (element.state === 'pending') {
+            this.dataSource.push(element)            
+          }
+        });   
     }
     showOnlyInProgressOrders(){
       this.dataSource = [];
-      this.fullOrders.forEach(element => {
+      this.fullOrders.map(p=>{
+        let element = p.payload.doc.data(); 
         if (element.state === 'inProgress') {
           this.dataSource.push(element)            
         }
-      });
+      }); 
     }
     showOnlyDeliveredOrders(){
       this.dataSource = [];
-      this.fullOrders.forEach(element => {
-        if (element.state === 'delivered') {
+      this.fullOrders.map(p=>{
+        let element = p.payload.doc.data(); 
+        if (element.state === 'delivered' || element.state === 'received') {
           this.dataSource.push(element)            
         }
       });

@@ -1,8 +1,8 @@
 
-<mat-tab-group mat-align-tabs="center" animationDuration="0ms" (selectedTabChange)="showOrdersInTable($event)">
+<mat-tab-group mat-align-tabs="center"  (selectedTabChange)="showOrdersInTable($event)">
   <mat-tab label="Pendientes" >
     <ng-template mat-tab-label>
-      <mat-icon class="example-tab-icon">pending_actions
+      <mat-icon  class="example-tab-icon">pending_actions
         
       </mat-icon>
       Pendientes
@@ -33,7 +33,12 @@
                   <!-- Position Column -->
                   <ng-container matColumnDef="orderId">
                     <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} </mat-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} 
+                      <mat-icon color="primary"*ngIf="element.unseen === true" class="material-icons m-l-10">
+                        mark_chat_unread
+                        </mat-icon>
+                    </mat-cell>
+                    
                   </ng-container>
       
                  
@@ -217,7 +222,10 @@
                   <!-- Position Column -->
                     <ng-container matColumnDef="orderId">
                       <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
-                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} </mat-cell>
+                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} 
+                        
+                      </mat-cell>
+                    
                     </ng-container>
         
                    
@@ -269,12 +277,14 @@
                         <button (click)="printButton.click(element)" mat-icon-button  aria-label="Example icon button with a home icon">
                         <mat-icon>print</mat-icon>
                         <button #printButton printTitle="Print Title" printSectionId="print-section" ngxPrint style="display: none;">print</button> 
-                        <!-- <button *ngIf="element.state == 'received'" mat-icon-button color="green" aria-label="Example icon button with a home icon">Entregado
-                          <mat-icon>check_circle
-  
-                          </mat-icon>
-                        </button> -->
+                        
                       </button>
+                      <button  *ngIf="element.state == 'received'" style="margin-left: 10px;" mat-icon-button color="green" aria-label="Example icon button with a home icon">Entregado
+                        <mat-icon color="green">check_circle
+
+                        </mat-icon>
+                      </button>
+
                       </mat-cell>
                     </ng-container>
                     <!-- <ng-container matColumnDef="received">

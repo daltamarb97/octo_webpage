@@ -879,6 +879,24 @@ export class SetDataService {
       state: 'inProgress'
     })
   }
+  deliveringOrder(companyId,orderId){
+    let ref = this.db.collection('delivery')
+      .doc(companyId)
+      .collection('orders')
+      .doc(orderId)
+    return ref.update({
+      state: 'delivered'
+    })
+  }
+  // deliveringOrder(companyId,orderId){
+  //   let ref = this.db.collection('delivery')
+  //     .doc(companyId)
+  //     .collection('orders')
+  //     .doc(orderId)
+  //   return ref.update({
+  //     state: 'delivered'
+  //   })
+  // }
   //send message in orders
 //   sendWhatsappMessageHttpInOrder(data){
 //     const responseId = this.holdData.createRandomId(); 
