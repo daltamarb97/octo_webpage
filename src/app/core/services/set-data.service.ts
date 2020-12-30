@@ -381,7 +381,7 @@ export class SetDataService {
 
   sendWhatsappMessageHttp(data){
      const responseId = this.holdData.createRandomId(); 
-     const api_url = "https://bb8a5447cf39.ngrok.io/message/sendFromOcto"
+     const api_url = "https://6842fc3b96e8.ngrok.io/message/sendFromOcto"
     // const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {

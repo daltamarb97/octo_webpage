@@ -319,7 +319,7 @@
                 {{t}}
             </button>
         </mat-menu>
-        <mat-card-content class="backgroun-img" style=" overflow-y: visible; height: 75%;">
+        <mat-card-content class="backgroun-img" style="overflow-y: visible; height: 75%;">
             <div class="chat"  *ngFor="let message of chatMessages" >
                 <div class="me" *ngIf="message.inbound === false">          
                     <span style="word-wrap: break-word;">{{message.message}} </span> 

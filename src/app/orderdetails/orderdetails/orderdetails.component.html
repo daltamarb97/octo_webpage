@@ -1,4 +1,3 @@
-<h2>works</h2>
   <mat-sidenav-container class="chat-sidebar-container">
     <mat-sidenav  mode="side" opened style="width: auto;height: auto; max-width: 40%;">
         <mat-card >
@@ -116,7 +115,7 @@
                           <div class="me"  *ngIf="message.inbound === false">          
                               <span style="word-wrap: break-word;">{{message.message}} </span>  
                               <!-- <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p> -->
-                              <p class="time-left" *ngIf="message.timestamp">{{message.fecha}}</p>
+                              <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm a'}}</p>
 
                               <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                                   <img 
@@ -132,7 +131,7 @@
                                   Cliente
                               </span> <br>
                               <span style="word-wrap: break-word;">{{message.message}}</span>
-                              <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
+                              <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm a'}}</p>
                               <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
                                   <img 
                                       [src]="message.mediaUrl" 
