@@ -381,8 +381,8 @@ export class SetDataService {
 
   sendWhatsappMessageHttp(data){
      const responseId = this.holdData.createRandomId(); 
-     const api_url = "https://6842fc3b96e8.ngrok.io/message/sendFromOcto"
-    // const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
+    //  const api_url = "https://6842fc3b96e8.ngrok.io/message/sendFromOcto"
+    const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {
           message: data.message,
@@ -888,49 +888,6 @@ export class SetDataService {
       state: 'delivered'
     })
   }
-  // deliveringOrder(companyId,orderId){
-  //   let ref = this.db.collection('delivery')
-  //     .doc(companyId)
-  //     .collection('orders')
-  //     .doc(orderId)
-  //   return ref.update({
-  //     state: 'delivered'
-  //   })
-  // }
-  //send message in orders
-//   sendWhatsappMessageHttpInOrder(data){
-//     const responseId = this.holdData.createRandomId(); 
-//    //  const api_url = "http://localhost:5000/message/sendFromOcto"
-//    const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
-//    if(data.mediaUrl) {
-//        const finalData = {
-//          message: data.message,
-//          number: data.number,
-//          template: data.template, 
-//          companyId: data.companyId,
-//          mediaUrl: data.mediaUrl,
-//          responseId: (data.form) ? responseId : 0,
-//          form: data.form
-//        }
-//        // api request
-//        let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
-//        const req =  this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
-//        return req;           
-//    } else {
-//      const finalData = {
-//        message: data.message,
-//        number: data.number,
-//        template: data.template, 
-//        companyId: data.companyId,
-//        form: data.form,
-//        responseId: (data.form) ? responseId : 0,
-//      }
-//        // api request
-//      let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
-//      const req =  this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
-//      return req;
-//    }
-//  }
   //END OF ORDERS
 
   async sendWhatsappMessageInOrder(companyId: string, orderId: string, messageData){

@@ -103,43 +103,43 @@ prepareOrder(){
 
 }
   sendMessage() {
-            if (this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {               
-                this.setData.sendWhatsappMessageHttp({
+    if (this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {               
+        this.setData.sendWhatsappMessageHttp({
+                message: this.currentMessage,
+                number: this.order.whatsappPhone,
+                template: false,
+                companyId: this.companyId,
+                mediaUrl: null,
+                api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
+            }).toPromise()
+            .then(async (data) => {
+                const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
+                let dataFirebase = {
+                        inbound: false,
                         message: this.currentMessage,
-                        number: this.order.whatsappPhone,
-                        template: false,
-                        companyId: this.companyId,
-                        mediaUrl: null,
-                        api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
-                    }).toPromise()
-                    .then(async (data) => {
-                        const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
-                        let dataFirebase = {
-                                inbound: false,
-                                message: this.currentMessage,
-                                timestamp: timestamp,
-                        }  
-                        await this.setData.sendWhatsappMessageInOrder(this.companyId, this.order.whatsappPhone, dataFirebase);
-                        
-                        this.currentMessage = null;
-                        
-                    })
-                    .catch(error => {
-                        if (error.status === 400) {
-                            alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
-                        } else {
-                            console.log(error);
-                            
-                            alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
-                        }
-                        this.currentMessage = null;
-                       
-                    })
-            }  else {
+                        timestamp: timestamp,
+                }  
+                await this.setData.sendWhatsappMessageInOrder(this.companyId, this.order.whatsappPhone, dataFirebase);
+                
                 this.currentMessage = null;
-            }
-        
-          }
+                
+            })
+            .catch(error => {
+                if (error.status === 400) {
+                    alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
+                } else {
+                    console.log(error);
+                    
+                    alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
+                }
+                this.currentMessage = null;
+                
+            })
+    }  else {
+        this.currentMessage = null;
+    }
+
+  }
           
           ngOnDestroy() {
             this.destroy$.next();
