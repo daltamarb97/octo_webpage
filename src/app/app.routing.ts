@@ -10,8 +10,10 @@ import { CurrentUserGuard } from './core/guards/current-user-guard.service';
 import { UserinfoGuard } from './core/guards/userinfo.guard';
 
 
+
 export const AppRoutes: Routes = [
-  {
+ 
+  {   
     path: '',
     component: FullComponent,
     children: [
@@ -148,6 +150,7 @@ export const AppRoutes: Routes = [
         loadChildren:
           () => import('./orderdetails/orderdetails.module').then(m => m.OrderdetailsModule)
       },
+      
       {
         path: 'chat-flow',
         canActivate: [
@@ -169,6 +172,7 @@ export const AppRoutes: Routes = [
     path: '**',
     component: NotfoundComponent
   },
+  
 ];
 
 

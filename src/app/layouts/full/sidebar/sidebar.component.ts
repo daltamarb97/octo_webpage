@@ -29,7 +29,7 @@ export class AppSidebarComponent implements OnDestroy {
     public menuItems: MenuItems,
     private holdData: HoldDataService,
   ) {
-    this.mobileQuery = media.matchMedia('(min-width: 768px)');
+    this.mobileQuery = media.matchMedia('(min-width: 769px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
     this.userInfo = this.holdData.userInfo;

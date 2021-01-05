@@ -250,20 +250,20 @@ export class FecthDataService {
     return ref.stateChanges(['modified']);
   }
 
-  getMessagesFromSpecificWChat(companyId: string, phoneNumber: string){
+  getMessagesFromSpecificWChat(companyId: string, orderId: string){
     // get messages from specific whatsapp chat
-    let ref = this.db.collection('whatsapp')
+    let ref = this.db.collection('delivery')
     .doc(companyId)
-    .collection('chats')
-    .doc(phoneNumber)
-    .collection('messages', ref => ref.orderBy('timestamp', 'desc'))
+    .collection('orders')
+    .doc(orderId)
+    .collection('messages', ref => ref.orderBy('timestamp', 'asc'))
 
     return ref.stateChanges(['added']);
   }
 
 
   checkWhatsapp24HourWindow(data) {
-      // const api_url = "http://localhost:5000/message/check-user"
+      // const api_url = "https://6842fc3b96e8.ngrok.io/message/check-user"
       const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
       const finalData = {
         companyId: data.companyId,
@@ -505,20 +505,14 @@ export class FecthDataService {
   }
   // END OF TICKETS SERVICES
 
-  // ORDERS
-  getOrdersStatistics(companyId: string) {
-    let ref = this.db.collection('orders')
-    .doc(companyId)
-
-    return ref.valueChanges();
-  }
+  
 
   getOrders(companyId: string) {
+    
     let ref = this.db.collection('delivery')
     .doc(companyId)
     .collection('orders', ref => ref.orderBy('timestamp', 'desc'))
-
-    return ref.stateChanges(['added', 'modified']);
+    return ref.stateChanges(['added','modified']);
   }
   //END OF ORDERS
 }

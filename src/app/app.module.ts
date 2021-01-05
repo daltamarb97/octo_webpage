@@ -31,6 +31,9 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { NotfoundComponent } from './notfound/notfound.component';
 import { NgxChartsModule } from "@swimlane/ngx-charts";
 
+import { RouterModule, Routes } from '@angular/router';
+import {NgxPrintModule} from 'ngx-print';
+
 
 
 @NgModule({
@@ -41,6 +44,7 @@ import { NgxChartsModule } from "@swimlane/ngx-charts";
     SpinnerComponent,
     AppSidebarComponent,
     NotfoundComponent,
+    
     
   ],
   imports: [
@@ -56,7 +60,11 @@ import { NgxChartsModule } from "@swimlane/ngx-charts";
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireStorageModule,
-    NgxChartsModule
+    NgxChartsModule,
+    RouterModule,
+    NgxPrintModule
+
+    
   ],
   providers: [
     {

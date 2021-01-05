@@ -381,8 +381,8 @@ export class SetDataService {
 
   sendWhatsappMessageHttp(data){
      const responseId = this.holdData.createRandomId(); 
-    //  const api_url = "http://localhost:5000/message/sendFromOcto"
-    const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
+     const api_url = "https://6842fc3b96e8.ngrok.io/message/sendFromOcto"
+    // const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {
           message: data.message,
@@ -879,6 +879,24 @@ export class SetDataService {
       state: 'inProgress'
     })
   }
+  deliveringOrder(companyId,orderId){
+    let ref = this.db.collection('delivery')
+      .doc(companyId)
+      .collection('orders')
+      .doc(orderId)
+    return ref.update({
+      state: 'delivered'
+    })
+  }
+  // deliveringOrder(companyId,orderId){
+  //   let ref = this.db.collection('delivery')
+  //     .doc(companyId)
+  //     .collection('orders')
+  //     .doc(orderId)
+  //   return ref.update({
+  //     state: 'delivered'
+  //   })
+  // }
   //send message in orders
 //   sendWhatsappMessageHttpInOrder(data){
 //     const responseId = this.holdData.createRandomId(); 
@@ -914,5 +932,27 @@ export class SetDataService {
 //    }
 //  }
   //END OF ORDERS
+
+  async sendWhatsappMessageInOrder(companyId: string, orderId: string, messageData){
+    // send chat message to firestore
+    let ref = this.db.collection('delivery')
+    .doc(companyId)
+    .collection('orders')
+    .doc(orderId)
+    .collection('messages')
+
+      return ref.add({
+        inbound: messageData.inbound,
+        message: messageData.message,
+        timestamp: messageData.timestamp,
+        })
+        .then(docRef => {
+          ref.doc(docRef.id)
+          .update({
+            messageId: docRef.id
+          })
+        })
+    
+  }
 }
 

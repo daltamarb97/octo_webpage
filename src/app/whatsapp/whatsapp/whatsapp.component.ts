@@ -923,4 +923,6 @@ export class WhatsappComponent implements OnInit {
         this.timeRecorded = 0;
         this.showMic = true;
     }
+    
+ 
 }

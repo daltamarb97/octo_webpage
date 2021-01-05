@@ -12,4 +12,9 @@ export interface order {
     state:string;
     timestamp:any;
     unseen:boolean;
+    cashChange:string;
+    whatsappPhone:string;
+    id?:string;
+    proofTransferPicture?:string;
+
 }

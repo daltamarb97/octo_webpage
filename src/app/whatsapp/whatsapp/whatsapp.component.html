@@ -3,6 +3,7 @@
   
     <mat-sidenav opened mode="side" style="width: auto;max-width: 50%; background-color: #EBF2F6;">
         <mat-card *ngIf="!showTicket && !showDetail">
+   
             <div class="p-20  position-relative" style="display: flex; justify-content: space-between; flex-direction: row;">
                 <h4 class="card-title  m-0 font-20 font-medium">Chats de WhatsApp</h4>
                 <button 
@@ -311,7 +312,7 @@
         <!-- GENERAL CHATS -->
     <mat-card *ngIf="showGeneralChats" id="content-messages" style="max-height: 75%;min-height:75% ; overflow-y: auto;">
         <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
-            <span class="toolbar-msg"  ># {{currentChatData.phoneNumber}}</span>
+            <span class="toolbar-msg"  ># {{currentChatData.phoneNumber | slice:9}}</span>
             <span class="example-spacer"></span>
             <button *ngIf="currentChatData.hasTicket" (click)="getTicket()" color="primary" mat-raised-button class="m-r-5">Ver Ticket</button>
             <button *ngIf="!currentChatData.finished" (click)="showDetails()" color="primary" mat-raised-button class="m-r-5">Detalles</button>  
@@ -322,7 +323,7 @@
                 {{t}}
             </button>
         </mat-menu>
-        <mat-card-content class="backgroun-img" style=" overflow-y: visible; height: 75%;">
+        <mat-card-content class="backgroun-img" style="overflow-y: visible; height: 75%;">
             <div class="chat"  *ngFor="let message of chatMessages" >
                 <div class="me" *ngIf="message.inbound === false">          
                     <span style="word-wrap: break-word;">{{message.message}} </span> 
