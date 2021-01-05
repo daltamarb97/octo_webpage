@@ -70,9 +70,18 @@ export class OrdersComponent implements OnInit {
     ngOnInit() {
       this.ordersSubscriber = this.fetchData.getOrders(this.holdData.userInfo.companyId )
       .subscribe( res => {
-        this.dataSource =  res;
-        this.dataSourceBack = res;
-        this.showTable = true;
+        res.map(d => {
+          const itemData = d.payload.doc.data();
+          if (d.type === 'added') this.dataSourceBack.push(itemData);
+          if (d.type === 'modified') {
+            const filterDataModified = this.dataSourceBack.filter((i) => {
+              if (i.orderId !== itemData.orderId) return i;
+            });
+            filterDataModified.push(itemData);
+            this.dataSourceBack = filterDataModified;
+          }
+        })
+        this.dataSource = this.dataSourceBack;
       });
     }
 

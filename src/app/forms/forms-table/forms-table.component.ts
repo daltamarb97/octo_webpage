@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FecthDataService } from '../../core/services/fecth-data.service';
 import { HoldDataService } from '../../core/services/hold-data.service';
@@ -70,6 +71,7 @@ export class FormsTableComponent implements OnInit {
   showCardsVersion: boolean = false;
   filterCases: Array<number | string> = [];
   responsesLength: number;
+  downloadJsonHref: any;
   // PORTHOS EXCLUSIVE
   averageRate: number;
   selectedFilter: string;
@@ -81,6 +83,7 @@ export class FormsTableComponent implements OnInit {
     private router: Router,
     public dialog: MatDialog,
     private _snackBar: MatSnackBar,
+    private sanitizer: DomSanitizer
   ) { }
 
   async ngOnInit() {
@@ -304,7 +307,7 @@ export class FormsTableComponent implements OnInit {
     a.click();
   }
 
-  ConvertToCSV(objArray) {
+  private ConvertToCSV(objArray) {
     let array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
     let str = '';
     let row = "";
@@ -316,16 +319,18 @@ export class FormsTableComponent implements OnInit {
     for (let i = 0; i < array.length; i++) {
         let line = '';
         for (let index in array[i]) {
-            if (line != '') line += ','
-
-            line += array[i][index];
+          let data = array[i][index];
+          if (data && typeof(data) === 'object') data = data.toDate();
+          if (data && typeof(data) === 'string') data.replace(',', '');
+          if (line != '') line += ','
+          line += data;
         }
         str += line + '\r\n';
     }
     return str;
   }
 
-  flattenArrayOfResults() {
+  private flattenArrayOfResults() {
     let responseArray = [];
     for (let i = 0; i < this.dataSource.length; i++ ){
       const rta = {

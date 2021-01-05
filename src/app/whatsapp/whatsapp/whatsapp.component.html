@@ -20,6 +20,7 @@
                     <mat-selection-list  [multiple]="false">   
                         <ng-container *ngFor="let chat of chatWhatsappAssigned; index as i" >
                             <mat-list-option 
+                                class="chat-option"
                                 *ngIf="chat.finished" 
                                 (mouseenter)="showDates(chat)" 
                                 (mouseleave)="hideDates(chat)"
@@ -45,6 +46,7 @@
                         </ng-container>
                         <ng-container *ngFor="let chat of chatWhatsappAssigned; index as i">
                             <mat-list-option 
+                                class="chat-option"
                                 (mouseenter)="showDates(chat)" 
                                 (mouseleave)="hideDates(chat)"
                                 *ngIf="!chat.finished" 
@@ -85,6 +87,7 @@
                     <mat-selection-list  [multiple]="false">
                         <ng-container *ngFor="let chat of chatWhatsapp; index as i" >
                             <mat-list-option 
+                                class="chat-option"
                                 *ngIf="!chat.finished"
                                 (mouseenter)="showDates(chat)" 
                                 (mouseleave)="hideDates(chat)"  
@@ -110,6 +113,7 @@
                         </ng-container>
                         <ng-container *ngFor="let chat of chatWhatsapp; index as i" >
                             <mat-list-option 
+                                class="chat-option"
                                 *ngIf="chat.finished" 
                                 (mouseenter)="showDates(chat)" 
                                 (mouseleave)="hideDates(chat)" 
