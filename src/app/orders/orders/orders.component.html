@@ -1,5 +1,6 @@
 
 <mat-tab-group mat-align-tabs="center" animationDuration="0ms" (selectedTabChange)="changeTab($event)">
+  
   <mat-tab label="Pendientes" >
     <ng-template mat-tab-label>
       <mat-icon  class="example-tab-icon">pending_actions
@@ -30,33 +31,10 @@
               
               <div class="responsive-table">
                 <mat-table *ngIf="dataSource.length != 0" #table [dataSource]="dataSource">
-                  <!-- Position Column -->
+                  <!--  Column -->
                   <ng-container matColumnDef="orderId">
                     <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} 
-                      <mat-icon color="primary"*ngIf="element.unseen == true" class="material-icons m-l-10">
-                        mark_chat_unread
-                        </mat-icon>
-                    </mat-cell>
-                    
-                  </ng-container>
-      
-                 
-      
-                  <!-- Weight Column -->
-                  <ng-container matColumnDef="deliverMode">
-                    <mat-header-cell *matHeaderCellDef> Modo </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.deliverMode}} </mat-cell>
-                  </ng-container>
-      
-                  <!-- Symbol Column -->
-                  <ng-container matColumnDef="timestamp">
-                    <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp.toDate() | date: 'EEEE, h:mm a'}} </mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="actions">
-                    <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
-                    <mat-cell *matCellDef="let element"> 
+                    <mat-cell *matCellDef="let element" (click)="details(element)">
                       <div style="display: none;" id="print-section"> 
                         <!--Your html stuff that you want to print-->
                         <div class="header">...</div>
@@ -87,14 +65,49 @@
                           Cliente: {{element.clientName}}
                         </div>
                       </div>
-                      <button (click)="printButton.click(element)" mat-icon-button  aria-label="Example icon button with a home icon">
+                      <button (click)="printButton.click(element)" mat-icon-button  >
                       <mat-icon>print</mat-icon>
                       <button #printButton printTitle="Print Title" printSectionId="print-section" ngxPrint style="display: none;">print</button> 
 
                     </button>
-                    <button (click)="prepareOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
-                      <mat-icon>outdoor_grill</mat-icon>
-                    </button></mat-cell>
+                     {{element.orderId}} 
+                      <mat-icon color="primary"*ngIf="element.unseen == true" class="material-icons m-l-10">
+                        mark_chat_unread
+                        </mat-icon>
+                    </mat-cell>       
+                  </ng-container>
+     
+                  <!--  Column -->
+                  <ng-container matColumnDef="deliverMode">
+                    <mat-header-cell *matHeaderCellDef> Modo </mat-header-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.deliverMode}}  </mat-cell>
+                  </ng-container>
+
+                  <ng-container matColumnDef="paymentMethod">
+                    <mat-header-cell *matHeaderCellDef> Método de pago </mat-header-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.paymentMethod | slice:1:14}} </mat-cell>
+                  </ng-container>
+
+          
+                  <!--  Column -->
+                  <ng-container matColumnDef="timestamp">
+                    <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp.toDate() | date: 'EEEE, h:mm a'}} </mat-cell>
+                  </ng-container>
+                  <!--  Column -->
+
+                  <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> 
+                      
+                    <button *ngIf="element.state != 'transfer-pending'" (click)="prepareOrder(element)" mat-raised-button class="prepare-button" >
+                      Preparar
+                    </button>
+                    <button   *ngIf="element.state == 'transfer-pending'" (click)="details(element)"  mat-raised-button color="primary" >
+                      Confirmar                      
+                    </button>
+                    
+                  </mat-cell>
                   </ng-container>
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
@@ -129,29 +142,7 @@
                 <!-- Position Column -->
                   <ng-container matColumnDef="orderId">
                     <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}}
-                      <mat-icon color="primary"*ngIf="element.unseen == true" class="material-icons m-l-10">
-                        mark_chat_unread
-                        </mat-icon>
-                      </mat-cell>
-                  </ng-container>
-      
-                 
-      
-                  <!-- Weight Column -->
-                  <ng-container matColumnDef="deliverMode">
-                    <mat-header-cell *matHeaderCellDef> Modo </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.deliverMode}} </mat-cell>
-                  </ng-container>
-      
-                  <!-- Symbol Column -->
-                  <ng-container matColumnDef="timestamp">
-                    <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
-                    <mat-cell *matCellDef="let element" (click)="details(element)">{{element.timestamp.toDate() | date: 'EEEE, h:mm a'}} </mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="actions">
-                    <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
-                    <mat-cell *matCellDef="let element"> 
+                    <mat-cell *matCellDef="let element" (click)="details(element)">
                       <div style="display: none;" id="print-section"> 
                         <!--Your html stuff that you want to print-->
                         <div class="header">...</div>
@@ -182,15 +173,42 @@
                           Cliente: {{element.clientName}}
                         </div>
                       </div>
-                      <button (click)="printButton.click(element)" mat-icon-button  aria-label="Example icon button with a home icon">
+                      <button (click)="printButton.click(element)" mat-icon-button  >
                       <mat-icon>print</mat-icon>
                       <button #printButton printTitle="Print Title" printSectionId="print-section" ngxPrint style="display: none;">print</button> 
 
                     </button>
-                    <button (click)="deliverOrder(element)" mat-icon-button color="green" aria-label="Example icon button with a home icon">
-                      <mat-icon>moped
-                      </mat-icon>
-                    </button></mat-cell>
+                      {{element.orderId}}
+                      <mat-icon color="primary"*ngIf="element.unseen == true" class="material-icons m-l-10">
+                        mark_chat_unread
+                        </mat-icon>
+                      </mat-cell>
+                  </ng-container>
+      
+                 
+      
+                  <!-- Weight Column -->
+                  <ng-container matColumnDef="deliverMode">
+                    <mat-header-cell *matHeaderCellDef> Modo </mat-header-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.deliverMode}} </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="paymentMethod">
+                    <mat-header-cell *matHeaderCellDef> Método de pago </mat-header-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.paymentMethod | slice:1:14}} </mat-cell>
+                  </ng-container>
+                  <!-- Symbol Column -->
+                  <ng-container matColumnDef="timestamp">
+                    <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
+                    <mat-cell *matCellDef="let element" (click)="details(element)">{{element.timestamp.toDate() | date: 'EEEE, h:mm a'}} </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> 
+                      
+                    <button (click)="deliverOrder(element)" mat-raised-button class="prepare-button" >
+                      despachar
+                    </button>
+                    </mat-cell>
                   </ng-container>
                 
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -226,30 +244,7 @@
                   <!-- Position Column -->
                     <ng-container matColumnDef="orderId">
                       <mat-header-cell *matHeaderCellDef> # </mat-header-cell>
-                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.orderId}} 
-                        <mat-icon color="primary"*ngIf="element.unseen == true" class="material-icons m-l-10">
-                          mark_chat_unread
-                          </mat-icon>
-                      </mat-cell>
-                    
-                    </ng-container>
-        
-                   
-        
-                    <!-- Weight Column -->
-                    <ng-container matColumnDef="deliverMode">
-                      <mat-header-cell *matHeaderCellDef> Modo </mat-header-cell>
-                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.deliverMode}} </mat-cell>
-                    </ng-container>
-        
-                    <!-- Symbol Column -->
-                    <ng-container matColumnDef="timestamp">
-                      <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
-                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp.toDate() | date: 'EEEE, h:mm a'}} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="actions">
-                      <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
-                      <mat-cell *matCellDef="let element"> 
+                      <mat-cell *matCellDef="let element" (click)="details(element)"> 
                         <div style="display: none;" id="print-section"> 
                           <!--Your html stuff that you want to print-->
                           <div class="header">...</div>
@@ -280,12 +275,40 @@
                            <strong>Cliente:</strong>  {{element.clientName}}
                           </div>
                         </div>
-                        <button (click)="printButton.click(element)" mat-icon-button  aria-label="Example icon button with a home icon">
+                        <button (click)="printButton.click(element)" mat-icon-button  >
                         <mat-icon>print</mat-icon>
                         <button #printButton printTitle="Print Title" printSectionId="print-section" ngxPrint style="display: none;">print</button> 
                         
                       </button>
-                      <button  *ngIf="element.state == 'received'" style="margin-left: 10px;" mat-icon-button color="green" aria-label="Example icon button with a home icon">Entregado
+                        {{element.orderId}} 
+                        <mat-icon color="primary"*ngIf="element.unseen == true" class="material-icons m-l-10">
+                          mark_chat_unread
+                          </mat-icon>
+                      </mat-cell>
+                    
+                    </ng-container>
+        
+                   
+        
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="deliverMode">
+                      <mat-header-cell *matHeaderCellDef> Modo </mat-header-cell>
+                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.deliverMode}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="paymentMethod">
+                      <mat-header-cell *matHeaderCellDef> Método de pago </mat-header-cell>
+                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.paymentMethod | slice:1:14}} </mat-cell>
+                    </ng-container>
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="timestamp">
+                      <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
+                      <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp.toDate() | date: 'EEEE, h:mm a'}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="actions">
+                      <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+                      <mat-cell *matCellDef="let element"> 
+                        
+                      <button  *ngIf="element.state == 'received'" style="margin-left: 10px; color: green;" mat-icon-button >Entregado
                         <mat-icon color="green">check_circle
 
                         </mat-icon>

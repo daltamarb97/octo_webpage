@@ -5,6 +5,7 @@ import { HoldDataService } from '../../core/services/hold-data.service';
 import { SetDataService } from '../../core/services/set-data.service';
 import {order} from '../../../interfaces/orders'
 import { Subject } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-orderdetails',
@@ -29,10 +30,12 @@ export class OrderdetailsComponent implements OnInit {
   chatMessages:Array<any> = [];
   messageSubscription: any;
   destroy$: Subject < void > = new Subject();
-
+  showChat:boolean = false;
+  showImage:boolean = false;
+  mediaUrl:string;
   constructor(
     private router: Router,
-      // private _snackBar: MatSnackBar,
+      private _snackBar: MatSnackBar,
       private route: ActivatedRoute,
       private fetchData: FecthDataService,
       private setData: SetDataService,
@@ -43,8 +46,18 @@ export class OrderdetailsComponent implements OnInit {
   ngOnInit(): void {
     this.companyId = this.holdData.userInfo.companyId; 
     this.order = this.holdData.currentOrder;
+    //if the transfer its not confirm, don't show chat
+    if(this.order.state !== 'transfer-pending'){
+      this.allowGetChatInformation()
+      this.showChat = true;
+      
+    }else {
+      //don't show chat, show image
+      this.showChat = false;
+      this.mediaUrl= this.order.proofTransferPicture;
+      this.showImage = true;
+    }
      console.log(this.order);
-     this.allowGetChatInformation()
   }
 
   getMessages(){
@@ -81,7 +94,14 @@ export class OrderdetailsComponent implements OnInit {
   // set unseen flag to false
   // this.setData.setUnseenToFalse(this.companyId, this.currentChatData.phoneNumber);
 }
+prepareOrder(){     
+  console.log(this.order.id);     
+  this.setData.startPreparingOrder(this.holdData.userInfo.companyId, this.order.id);
+  this._snackBar.open('El estado del pedido cambio a "En preparación"', 'Ok', {
+    duration: 4000,
+});
 
+}
   sendMessage() {
             if (this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {               
                 this.setData.sendWhatsappMessageHttp({
@@ -120,6 +140,7 @@ export class OrderdetailsComponent implements OnInit {
             }
         
           }
+          
           ngOnDestroy() {
             this.destroy$.next();
             this.destroy$.complete();
@@ -127,4 +148,7 @@ export class OrderdetailsComponent implements OnInit {
                 this.messageSubscription.unsubscribe();
             }
         }
+        displayImage(url: string) {
+          window.open(url, "_blank");
+      }
 }

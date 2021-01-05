@@ -6,7 +6,7 @@
                 arrow_back
                 </span>
                 <mat-card-header>
-                  <mat-card-title>{{order.orderId}}</mat-card-title>
+                  <mat-card-title>Pedido: {{order.orderId}}</mat-card-title>
                   <mat-card-subtitle *ngIf="order.state == 'pending'" >Estado: Pendiente</mat-card-subtitle>
                   <mat-card-subtitle *ngIf="order.state == 'inProgress'" >Estado: En preparación</mat-card-subtitle>
                   <mat-card-subtitle *ngIf="order.state == 'delivered'" >Estado: Despachado</mat-card-subtitle>
@@ -18,11 +18,12 @@
                 </mat-card-header>
                 
                 <mat-card-content>
+                  
                     <div style="display: none;" id="print-section"> 
                         <!--Your html stuff that you want to print-->
-                        <div class="header">...</div>
-                        <h1>{{order.orderId}}</h1>
-                        <mat-card-subtitle>{{order.timestamp.toDate() | date: 'EEEE, h:mm a'}}</mat-card-subtitle>
+                        <div class="header">Pedido: {{order.orderId}}</div>
+                        <!-- <h1></h1> -->
+                        <mat-card-subtitle>{{order.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</mat-card-subtitle>
     
                         <div class="content">
                           <p class="title">
@@ -54,11 +55,23 @@
                           Cliente: {{order.clientName}}
                         </div>
                       </div>
-                      <button (click)="printButton.click(order)" mat-icon-button  aria-label="Example icon button with a home icon">
-                        <mat-icon>print</mat-icon> IMPRIMIR
+                      <ng-container *ngIf="order.state == 'transfer-pending'">
+                        <span>Confirma que la Transferencia es real y haz click en el botón "Preparar"</span>
+                        <button mat-raised-button style="background-color: green; color: white;" (click)="prepareOrder(order)" class="m-r-10"  >
+                          Preparar
+                      </button>
+                      </ng-container>
+                        
+                      
+                      <button (click)="printButton.click(order)" mat-icon-button >
+                        <mat-icon>print</mat-icon> Imprimir
                     </button>
                         <button #printButton printTitle="Print Title" printSectionId="print-section" ngxPrint style="display: none;">print</button> 
                   <div class="paragraph">
+                    <button *ngIf="order.state == 'received'"  mat-icon-button style="color: green;" >Pedido entregado
+                      <mat-icon>check_circle
+                     </mat-icon>
+                    </button>
                     <p class="title">
                       <strong >Datos de contacto:</strong>  
                      </p>
@@ -67,6 +80,7 @@
    
                   </div>
                   <div class="paragraph">
+                    
                     <p class="title">
                       <strong>Detalles del pedido:</strong> 
                     </p>
@@ -94,18 +108,16 @@
                         <strong>Costo de empaque:</strong> {{order.packageCost}}
                       </p>   
                   </div>
-                  <button *ngIf="order.state == 'received'" style="margin-left: 10px;" mat-icon-button color="green" aria-label="Example icon button with a home icon">Pedido entregado
-                    <mat-icon>check_circle
-                   </mat-icon>
-                  </button>
+                  
                 </mat-card-content>
                 
               </mat-card>
             </mat-sidenav>
             <!-- /////////////////////////////  CHAT    //////////////////////////////////// -->
 
-            <mat-sidenav-content class="sidenav" opened mode="side" position="end"  >
-                <mat-card  id="content-messages-private"  >
+            <mat-sidenav-content  class="sidenav" opened mode="side" position="end"  >
+              <!-- CHAT -->
+                <mat-card *ngIf="showChat" id="content-messages-private"  >
                   <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
                       <span class="toolbar-msg"  >{{order.clientName}}</span>                     
                   </mat-toolbar>
@@ -199,6 +211,13 @@
                       </mat-form-field>
                   </footer>
                </mat-card>
+               <!-- IMAGE -->
+               <div *ngIf="showImage" style="margin-top: 10px;" (click)="displayImage(mediaUrl)">
+                <img 
+                    [src]="mediaUrl" 
+                    style="width: 100%;  height: 100%; ">   
+            </div>   
+            
           </mat-sidenav-content>
         </mat-sidenav-container>
 s

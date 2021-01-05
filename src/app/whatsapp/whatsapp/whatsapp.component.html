@@ -308,7 +308,7 @@
         <!-- GENERAL CHATS -->
     <mat-card *ngIf="showGeneralChats" id="content-messages" style="max-height: 75%;min-height:75% ; overflow-y: auto;">
         <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
-            <span class="toolbar-msg"  ># {{currentChatData.phoneNumber}}</span>
+            <span class="toolbar-msg"  ># {{currentChatData.phoneNumber | slice:9}}</span>
             <span class="example-spacer"></span>
             <button *ngIf="currentChatData.hasTicket" (click)="getTicket()" color="primary" mat-raised-button class="m-r-5">Ver Ticket</button>
             <button *ngIf="!currentChatData.finished" (click)="showDetails()" color="primary" mat-raised-button class="m-r-5">Detalles</button>  

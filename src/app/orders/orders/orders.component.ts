@@ -23,7 +23,7 @@ import { order } from '../../../interfaces/orders';
 
 
 export class OrdersComponent implements OnInit {
-    displayedColumns = ['orderId',  'deliverMode', 'timestamp','actions'];
+    displayedColumns: string[]= ['orderId', 'deliverMode', 'paymentMethod', 'timestamp', 'actions'];
     dataSource: any[] = [];
     dataSourceBack: any[] = []; // used to filter
     orderInformation:any;
@@ -48,11 +48,7 @@ export class OrdersComponent implements OnInit {
         private _snackBar: MatSnackBar,
         breakpointObserver: BreakpointObserver
     ) {
-      // breakpointObserver.observe(['(max-width: 600px)']).subscribe(result => {
-      //   this.displayedColumns = result.matches ?
-      //       ['orderId',  'deliverMode', 'timestamp','actions'] :
-      //       ['orderId',  'deliverMode', 'timestamp','actions'];
-      // });
+     
      }
     applyFilter(filterValue: string) {
       this.dataSource = this.dataSourceBack;
@@ -108,6 +104,7 @@ export class OrdersComponent implements OnInit {
     this.showOnlyPendingOrders();
 
     }
+    
     deliverOrder(order){     
       console.log(order);    
       this.setData.deliveringOrder(this.holdData.userInfo.companyId, order.id)
@@ -140,16 +137,17 @@ export class OrdersComponent implements OnInit {
       } else if(event.tab.textLabel === 'Despachados' ) {
         this.showTableOrders='delivered';
         this.showOnlyDeliveredOrders()
-      }  
+      } 
     } 
     showOnlyPendingOrders(){
       this.dataSource = [];
         this.dataSourceBack.map(p=>{
-          if (p.state === 'pending') {
+          if (p.state === 'pending' || p.state === 'transfer-pending') {
             this.dataSource.push(p)            
           }
         });   
     }
+   
     showOnlyInProgressOrders(){
       this.dataSource = [];
       this.dataSourceBack.map(p=>{

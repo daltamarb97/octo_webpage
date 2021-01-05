@@ -15,5 +15,6 @@ export interface order {
     cashChange:string;
     whatsappPhone:string;
     id?:string;
+    proofTransferPicture?:string;
 
 }
