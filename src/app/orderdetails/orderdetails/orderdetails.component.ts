@@ -57,7 +57,6 @@ export class OrderdetailsComponent implements OnInit {
       this.mediaUrl= this.order.proofTransferPicture;
       this.showImage = true;
     }
-     console.log(this.order);
   }
 
   getMessages(){
@@ -67,35 +66,21 @@ export class OrderdetailsComponent implements OnInit {
   goBack() {
     this.router.navigate(['/pedidos']);
   }
+
   allowGetChatInformation() {
-    console.log(this.companyId);
-    
-  console.log(this.order.id);
-      
-    this.messageSubscription = this.fetchData.getMessagesFromSpecificWChat(
+    this.messageSubscription = this.fetchData.getMessagesFromSpecificDeliveryChat(
             this.companyId,
             this.order.id
         )
-        .subscribe((dataRta) => {
-          
-            console.log('funciono');
-            
+        .subscribe((dataRta) => {            
             dataRta.map(d => {
               let message =  d.payload.doc.data()             
-                    this.chatMessages.push(message);
-                    console.log(d.payload.doc.data());
-                    
-                });           
-            // this.firstTimeMsgLoad = false;
+                this.chatMessages.push(message);                    
+              });           
           });
-    // .catch(error => {
-    //   console.error(error);
-    // })
-  // set unseen flag to false
-  // this.setData.setUnseenToFalse(this.companyId, this.currentChatData.phoneNumber);
 }
+
 prepareOrder(){     
-  console.log(this.order.id);     
   this.setData.startPreparingOrder(this.holdData.userInfo.companyId, this.order.id);
   this._snackBar.open('El estado del pedido cambio a "En preparación"', 'Ok', {
     duration: 4000,
@@ -127,9 +112,7 @@ prepareOrder(){
             .catch(error => {
                 if (error.status === 400) {
                     alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
-                } else {
-                    console.log(error);
-                    
+                } else {                    
                     alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
                 }
                 this.currentMessage = null;

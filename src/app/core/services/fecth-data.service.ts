@@ -250,7 +250,18 @@ export class FecthDataService {
     return ref.stateChanges(['modified']);
   }
 
-  getMessagesFromSpecificWChat(companyId: string, orderId: string){
+  getMessagesFromSpecificWChat(companyId: string, number: string){
+    // get messages from specific whatsapp chat
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(number)
+    .collection('messages', ref => ref.orderBy('timestamp', 'asc'))
+
+    return ref.stateChanges(['added']);
+  }
+
+  getMessagesFromSpecificDeliveryChat(companyId: string, orderId: string){
     // get messages from specific whatsapp chat
     let ref = this.db.collection('delivery')
     .doc(companyId)

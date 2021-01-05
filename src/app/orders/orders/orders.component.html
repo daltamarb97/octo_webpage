@@ -13,15 +13,6 @@
           <mat-card>
             <mat-card-content>
               <mat-card-title > Pedidos pendientes: {{dataSource.length}} </mat-card-title>
-                        <!--
-   1)- Add an ID here
- -->
-
- 
- <!--
-   2)- Add the directive name in your button (ngxPrint),
-   3)- Affect your ID to printSectionId
- -->
  
               <div class=" p-10 p-r-20 p-l-20">
                 <mat-form-field>
@@ -71,7 +62,7 @@
 
                     </button>
                      {{element.orderId}} 
-                      <mat-icon color="primary"*ngIf="element.unseen == true" class="material-icons m-l-10">
+                      <mat-icon color="primary" *ngIf="element.unseen === true" class="material-icons m-l-10">
                         mark_chat_unread
                         </mat-icon>
                     </mat-cell>       

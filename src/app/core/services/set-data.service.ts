@@ -909,7 +909,17 @@ export class SetDataService {
             messageId: docRef.id
           })
         })
-    
+  }
+
+  async setUnseenToFalseOrder(companyId: string, orderId: string) {
+    let ref = this.db.collection('delivery')
+      .doc(companyId)
+      .collection('orders')
+      .doc(orderId)
+    await ref.update({
+      unseen: false
+    })
+    return;
   }
 }
 

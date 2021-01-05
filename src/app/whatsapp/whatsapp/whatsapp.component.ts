@@ -381,7 +381,7 @@ export class WhatsappComponent implements OnInit {
               this.companyId,
               data.number
           )
-          .subscribe((dataRta) => {
+          .subscribe((dataRta) => {              
               if (this.showGeneralChats) {
                   const el = document.getElementById('content-messages');
                   el.scrollTop = el.scrollHeight;

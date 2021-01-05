@@ -68,7 +68,6 @@ export class OrdersComponent implements OnInit {
     }
 
     ngOnInit() {
-
       this.ordersSubscriber = this.fetchData.getOrders(this.holdData.userInfo.companyId )
       .subscribe( res => {
         res.map(d => {
@@ -81,7 +80,7 @@ export class OrdersComponent implements OnInit {
             const filterDataModified = this.dataSourceBack.filter((i) => {
               if (i.orderId !== itemData.orderId) return i;
             });
-            filterDataModified.push(itemData);
+            filterDataModified.unshift(itemData);
             this.dataSourceBack = filterDataModified;
           }
         })
@@ -95,7 +94,6 @@ export class OrdersComponent implements OnInit {
       });
   }
     prepareOrder(order){     
-      console.log(order.id);     
       this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.id);
       this._snackBar.open('El estado del pedido cambio a "En preparación"', 'Ok', {
         duration: 4000,
@@ -104,8 +102,7 @@ export class OrdersComponent implements OnInit {
 
     }
     
-    deliverOrder(order){     
-      console.log(order);    
+    deliverOrder(order){        
       this.setData.deliveringOrder(this.holdData.userInfo.companyId, order.id)
       this._snackBar.open('El estado del pedido cambio a "En camino"', 'Ok', {
         duration: 4000,
@@ -115,8 +112,6 @@ export class OrdersComponent implements OnInit {
    
     showOrdersInTable(){
       //show the orders that correspond with the tab
-      console.log(this.showTableOrders);
-
       if ( this.showTableOrders ==='pending') {   
         this.showOnlyPendingOrders();
       } else if ( this.showTableOrders ==='inProgress') {
@@ -155,6 +150,7 @@ export class OrdersComponent implements OnInit {
         }
       }); 
     }
+
     showOnlyDeliveredOrders(){
       this.dataSource = [];
       this.dataSourceBack.map(p=>{
@@ -163,7 +159,9 @@ export class OrdersComponent implements OnInit {
         }
       });
     }
-    details(element){
+
+    async details(element){
+      await this.setData.setUnseenToFalseOrder(this.holdData.userInfo.companyId, element.id);
       this.holdData.currentOrder = element;
       this.router.navigate(['/orderdetails']);
     }
