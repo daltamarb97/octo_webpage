@@ -119,7 +119,7 @@ prepareOrder(){
                         message: this.currentMessage,
                         timestamp: timestamp,
                 }  
-                await this.setData.sendWhatsappMessageInOrder(this.companyId, this.order.whatsappPhone, dataFirebase);
+                await this.setData.sendWhatsappMessageInOrder(this.companyId, this.order.id, dataFirebase);
                 
                 this.currentMessage = null;
                 
