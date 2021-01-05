@@ -256,7 +256,7 @@ export class FecthDataService {
     .doc(companyId)
     .collection('chats')
     .doc(number)
-    .collection('messages', ref => ref.orderBy('timestamp', 'asc'))
+    .collection('messages', ref => ref.orderBy('timestamp', 'desc'))
 
     return ref.stateChanges(['added']);
   }
