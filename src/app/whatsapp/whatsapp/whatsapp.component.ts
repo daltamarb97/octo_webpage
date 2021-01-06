@@ -700,6 +700,7 @@ export class WhatsappComponent implements OnInit {
         companyId: this.companyId,
         number: this.currentChatData.phoneNumber,
         timestamp: this.currentChatData.timestamp,
+        assignTo: this.currentChatData.assignTo
     })
     // hide user interface 
     this.showDetail = false;

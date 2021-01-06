@@ -316,6 +316,12 @@
             <span class="example-spacer"></span>
             <button *ngIf="currentChatData.hasTicket" (click)="getTicket()" color="primary" mat-raised-button class="m-r-5">Ver Ticket</button>
             <button *ngIf="!currentChatData.finished" (click)="showDetails()" color="primary" mat-raised-button class="m-r-5">Detalles</button>  
+            <mat-chip-list class="agent-list__closed" *ngIf="currentChatData.finished" aria-label="agents assigned">   
+                <mat-chip
+                    *ngFor="let agent of currentChatData.assignTo">
+                    {{agent.name}}
+                </mat-chip>
+            </mat-chip-list>  
             <button *ngIf="currentChatData.finished" mat-raised-button class="m-r-5" [matMenuTriggerFor]="templatesClose">Enviar Template</button>     
         </mat-toolbar>
         <mat-menu #templatesClose="matMenu" class="mymegamenu" style="overflow-y: auto;">

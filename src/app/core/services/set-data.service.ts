@@ -381,7 +381,7 @@ export class SetDataService {
 
   sendWhatsappMessageHttp(data){
      const responseId = this.holdData.createRandomId(); 
-    //  const api_url = "https://6842fc3b96e8.ngrok.io/message/sendFromOcto"
+    //  const api_url = "https://localhost:5000/message/sendFromOcto"
     const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {
@@ -459,6 +459,7 @@ export class SetDataService {
       finished: true,
       number: data.number,
       timestamp: data.timestamp,
+      assignTo: data.assignTo
     })
 
   }
@@ -921,5 +922,19 @@ export class SetDataService {
     })
     return;
   }
+
+  sendOrderUpdateHttp(data){
+    // const api_url = "http://localhost:5000/message/orderStatusNotification"
+    const api_url = (data.api_url) ? `${data.api_url}/message/orderStatusNotification` : "https://octo-api-wa.herokuapp.com/message/orderStatusNotification";
+    const finalData = {
+      message: data.message,
+      number: data.number,
+      companyId: data.companyId,
+    }
+    // api request
+    let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
+    const req =  this.httpClient.post(api_url, JSON.stringify(finalData), {headers: headers, responseType: 'text'});
+    return req;
+ }
 }
 

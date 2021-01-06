@@ -61,6 +61,9 @@ mat-drawer-content {
   display: flex;
   justify-content: space-between;
   background-color: themecolor-alt !important;
+  .agent-list__closed {
+    margin: 0 10px !important;
+  }
 }
 .chat{
   display:flex;

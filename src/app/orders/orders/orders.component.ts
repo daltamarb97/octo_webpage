@@ -93,54 +93,78 @@ export class OrdersComponent implements OnInit {
         }
       });
   }
-    prepareOrder(order){     
+
+
+  async prepareOrder(order){    
+    // send update
+    const data = {
+      message: `_¡Tu pedido con código_ *${order.orderId}* _ha sido confirmado y está siendo preparado!_ 👨🏽‍🍳 👩🏽‍🍳`,
+      number: order.whatsappPhone,
+      companyId: this.holdData.userInfo.companyId,
+    }
+    try {
+      const notificationResponse = await this.setData.sendOrderUpdateHttp(data).toPromise(); 
       this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.id);
       this._snackBar.open('El estado del pedido cambio a "En preparación"', 'Ok', {
         duration: 4000,
-    });
-    this.showOnlyPendingOrders();
-
+      });
+      this.showOnlyPendingOrders();
+    } catch(error) {
+      console.log(error);
     }
+  }
     
-    deliverOrder(order){        
+  async deliverOrder(order){    
+    // send update
+    const data = {
+      message: `_¡Tu pedido con código_ *${order.orderId}* _está listo y está siendo enviado a tu dirección!_ 🛵💨`,
+      number: order.whatsappPhone,
+      companyId: this.holdData.userInfo.companyId,
+    }
+    try {
+      const notificationResponse = await this.setData.sendOrderUpdateHttp(data).toPromise(); 
       this.setData.deliveringOrder(this.holdData.userInfo.companyId, order.id)
       this._snackBar.open('El estado del pedido cambio a "En camino"', 'Ok', {
         duration: 4000,
-    });
-    this.showOnlyInProgressOrders();
+      });
+      this.showOnlyInProgressOrders();
+    } catch(error) {
+      console.log(error);
     }
-   
-    showOrdersInTable(){
-      //show the orders that correspond with the tab
-      if ( this.showTableOrders ==='pending') {   
-        this.showOnlyPendingOrders();
-      } else if ( this.showTableOrders ==='inProgress') {
-        this.showOnlyInProgressOrders();
-      } else if( this.showTableOrders ==='delivered' ) {
-        this.showOnlyDeliveredOrders()
-      }     
-    }
+  }
+  
+  showOrdersInTable(){
+    //show the orders that correspond with the tab
+    if ( this.showTableOrders ==='pending') {   
+      this.showOnlyPendingOrders();
+    } else if ( this.showTableOrders ==='inProgress') {
+      this.showOnlyInProgressOrders();
+    } else if( this.showTableOrders ==='delivered' ) {
+      this.showOnlyDeliveredOrders()
+    }     
+  }
 
-    changeTab(event){
-      if (event.tab.textLabel === 'Pendientes') {
-        this.showTableOrders='pending';
-        this.showOnlyPendingOrders();
-      } else if (event.tab.textLabel === 'En preparación' ) {
-        this.showTableOrders='inProgress';
-        this.showOnlyInProgressOrders();
-      } else if(event.tab.textLabel === 'Despachados' ) {
-        this.showTableOrders='delivered';
-        this.showOnlyDeliveredOrders()
-      } 
+  changeTab(event){
+    if (event.tab.textLabel === 'Pendientes') {
+      this.showTableOrders='pending';
+      this.showOnlyPendingOrders();
+    } else if (event.tab.textLabel === 'En preparación' ) {
+      this.showTableOrders='inProgress';
+      this.showOnlyInProgressOrders();
+    } else if(event.tab.textLabel === 'Despachados' ) {
+      this.showTableOrders='delivered';
+      this.showOnlyDeliveredOrders()
     } 
-    showOnlyPendingOrders(){
-      this.dataSource = [];
-        this.dataSourceBack.map(p=>{
-          if (p.state === 'pending' || p.state === 'transfer-pending') {
-            this.dataSource.push(p)            
-          }
-        });   
-    }
+  }
+
+  showOnlyPendingOrders(){
+    this.dataSource = [];
+      this.dataSourceBack.map(p=>{
+        if (p.state === 'pending' || p.state === 'transfer-pending') {
+          this.dataSource.push(p)            
+        }
+      });   
+  }
    
     showOnlyInProgressOrders(){
       this.dataSource = [];
