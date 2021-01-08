@@ -39,9 +39,13 @@ const MENUITEMS = [
 export class MenuItems {
   constructor(private holdData: HoldDataService) {}
   getMenuitem(): Menu[] {
-    if (this.holdData.companyInfo.delivery) {
-      return MENUITEMSORDERS;
-    } else {
+    if (this.holdData.companyInfo){
+      if (this.holdData.companyInfo.delivery) {
+        return MENUITEMSORDERS;
+      }else {
+        return MENUITEMS;
+      }
+    }  else {
       return MENUITEMS;
     }
   }
