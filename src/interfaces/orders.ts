@@ -16,5 +16,5 @@ export interface order {
     whatsappPhone:string;
     id?:string;
     proofTransferPicture?:string;
-
+    discount?: string;
 }

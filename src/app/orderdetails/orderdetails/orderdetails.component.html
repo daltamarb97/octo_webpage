@@ -37,13 +37,16 @@
                             </p>
                               <p >{{order.comments}}</p> 
                               <div class="paragraph">
-                                <p class="title">
-                                  <strong>Método de pago</strong>{{order.paymentMethod}}
-                                </p>
-                                  <div class="paragraph">                                      
-                                      <p class="title">
-                                        <strong>Vuelto:</strong> {{order.cashChange}}
-                                      </p>
+                                    <p class="title">
+                                        <strong>Valor del pedido:</strong> {{order.orderCost}}
+                                    </p>
+                                  <div class="paragraph">     
+                                        <p class="title">
+                                            <strong>Descuento:</strong> {{order.discount ? order.discount : 'No hay descuento'}}
+                                        </p>
+                                        <p class="title">
+                                            <strong>Método de pago</strong>{{order.paymentMethod}}
+                                        </p>                                    
                                       <p class="title">
                                         <strong>Costo de empaque:</strong> {{order.packageCost}}
                                       </p>   
@@ -97,16 +100,18 @@
                       
                   </div>
                   <div class="paragraph">
-                    <p class="title">
-                      <strong>Método de pago</strong> {{order.paymentMethod}}
-                    </p>
-                       
-                      <p class="title">
-                        <strong>Vuelto:</strong> {{order.cashChange}}
-                      </p>
-                      <p class="title">
-                        <strong>Costo de empaque:</strong> {{order.packageCost}}
-                      </p>   
+                        <p class="title">
+                            <strong>Valor del pedido:</strong> {{order.orderCost}}
+                        </p>                                     
+                        <p class="title">
+                            <strong>Descuento:</strong> {{order.discount ? order.discount : 'No hay descuento'}}
+                        </p>
+                        <p class="title">
+                            <strong>Método de pago</strong> {{order.paymentMethod}}
+                        </p> 
+                        <p class="title">
+                            <strong>Costo de empaque:</strong> {{order.packageCost}}
+                        </p>   
                   </div>
                   
                 </mat-card-content>
@@ -185,24 +190,6 @@
                                       <button mat-mini-fab style="background-color: #3197F3">
                                           <mat-icon (click)="sendMessage()">send</mat-icon>
                                       </button>
-                                      <!-- <button mat-mini-fab color="warn">
-                                          <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
-                                      </button> -->
-                                      <!-- <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
-                                          <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
-                                      </button> -->
-                                      <!-- <button *ngIf="showMic" mat-mini-fab color="accent" matTooltip="Nota de voz">
-                                          <mat-icon (click)="startVoiceRecording()">settings_voice</mat-icon>
-                                      </button>
-                                      <div *ngIf="!showMic" class="mic-actions">
-                                          <button  mat-mini-fab id="check-voice" matTooltip="Nota de voz">
-                                              <mat-icon (click)="sendVoiceNote()">check</mat-icon>
-                                          </button>
-                                          <p>{{timeRecorded}}</p>
-                                          <button  mat-mini-fab id="cancel-voice" matTooltip="Nota de voz">
-                                              <mat-icon (click)="cancelVoiceNote()">close</mat-icon>
-                                          </button>
-                                      </div> -->
                                   </div>
                                   <p>{{fileName}}</p>
                               </div>
