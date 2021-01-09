@@ -121,6 +121,7 @@ export class OrdersComponent implements OnInit {
       message: `_¡Tu pedido con código_ *${order.orderId}* _está listo y está siendo enviado a tu dirección!_ 🛵💨`,
       number: order.whatsappPhone,
       companyId: this.holdData.userInfo.companyId,
+      api_url: this.holdData.companyInfo.api_url
     }
     try {
       const notificationResponse = await this.setData.sendOrderUpdateHttp(data).toPromise(); 
