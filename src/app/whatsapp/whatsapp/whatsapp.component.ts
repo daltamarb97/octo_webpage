@@ -927,7 +927,7 @@ export class WhatsappComponent implements OnInit {
     }
     
     goToClosedChats(){
-        this.router.navigate(['/closedchats'])
+        this.router.navigate(['/closedchats']);
     }
 
    
