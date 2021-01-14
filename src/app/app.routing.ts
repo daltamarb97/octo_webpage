@@ -31,6 +31,14 @@ export const AppRoutes: Routes = [
           () => import('./material-component/material.module').then(m => m.MaterialComponentsModule)
       },
       {
+        path: 'closedchats',
+        canActivate: [
+          UserinfoGuard
+        ],
+        loadChildren: 
+          () => import('./closedchats/closedchats.module').then(m => m.ClosedchatsModule)
+      },
+      {
         path: 'whatsapp',
         canActivate: [
           CurrentUserGuard,

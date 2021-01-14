@@ -147,7 +147,8 @@ export class FecthDataService {
     .doc(companyId)
     .collection('rooms')
     .doc(roomId)
-    .collection('messages', ref => ref.orderBy('timestamp', "desc").where("timestamp", "<", timestamp).limit(limit))
+    .collection('messages', ref => ref.orderBy('timestamp', "desc")
+    .where("timestamp", "<", timestamp).limit(limit))
 
     return ref.get();
   }
@@ -226,11 +227,24 @@ export class FecthDataService {
     // getting chatrooms info
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
-    .collection('chats', ref => ref.orderBy('timestamp', 'desc').where("timestamp", ">=", timestamp))
+    .collection('chats', ref => ref.orderBy('timestamp', 'desc')
+    .where("timestamp", ">=", timestamp)
+    .where("finished", "==", false))
 
     return ref.valueChanges();
   }
+ 
+  getWhatsappClosedChats(companyId: string, timestamp: any){
+    
+    // getting chatrooms info
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats', ref => ref.orderBy('timestamp', 'desc')
+    .where("timestamp", ">=", timestamp)
+    .where("finished", "==", true))
 
+    return ref.valueChanges();
+  }
   getSingleWhatsappChat(companyId: string, number: string){
     // getting chatrooms info
     let ref = this.db.collection('whatsapp')

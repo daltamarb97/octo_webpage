@@ -37,7 +37,7 @@ import {
 } from '../../material-component/quick-responses-dialog/quick-responses-dialog.component';
 import {
   TicketDialogComponent
-} from '../../../app/material-component/ticket-dialog/ticket-dialog.component';
+} from '../../material-component/ticket-dialog/ticket-dialog.component';
 import {
   MatSnackBar
 } from '@angular/material/snack-bar';
@@ -76,15 +76,15 @@ export const PICK_FORMATS = {
   }
 
 @Component({
-  selector: 'app-whatsapp',
-  templateUrl: './whatsapp.component.html',
-  styleUrls: ['./whatsapp.component.scss'],
+  selector: 'app-closedchats',
+  templateUrl: './closedchats.component.html',
+  styleUrls: ['./closedchats.component.scss'],
   providers: [
     {provide: DateAdapter, useClass: PickDateAdapter},
     {provide: MAT_DATE_FORMATS, useValue: PICK_FORMATS}
   ]
 })
-export class WhatsappComponent implements OnInit {
+export class ClosedchatsComponent implements OnInit {
   @ViewChild('autosize') autosize: CdkTextareaAutosize;
 
   destroy$: Subject < void > = new Subject();
@@ -258,12 +258,11 @@ export class WhatsappComponent implements OnInit {
   getChatWhatsappNames() {
       // get chat rooms names
       const timestamp = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(new Date("December 31, 1970 00:00:00"));
-      this.chatInfoSubscription = this.fetchData.getWhatsappChats(this.companyId, timestamp)
+      this.chatInfoSubscription = this.fetchData.getWhatsappClosedChats(this.companyId, timestamp)
         .pipe(
             takeUntil(this.destroy$)
         )
-        .subscribe(data => {
-            
+        .subscribe(data => { 
             this.chatWhatsapp = [];
             this.chatWhatsappAssigned = [];
             data.forEach(d => {
@@ -382,7 +381,7 @@ export class WhatsappComponent implements OnInit {
               this.companyId,
               data.number
           )
-          .subscribe((dataRta) => {              
+          .subscribe((dataRta) => {
               if (this.showGeneralChats) {
                   const el = document.getElementById('content-messages');
                   el.scrollTop = el.scrollHeight;
@@ -701,7 +700,6 @@ export class WhatsappComponent implements OnInit {
         companyId: this.companyId,
         number: this.currentChatData.phoneNumber,
         timestamp: this.currentChatData.timestamp,
-        assignTo: this.currentChatData.assignTo
     })
     // hide user interface 
     this.showDetail = false;
@@ -926,10 +924,8 @@ export class WhatsappComponent implements OnInit {
         this.showMic = true;
     }
     
-    goToClosedChats(){
-        this.router.navigate(['/closedchats'])
-    }
+    goToOpenChats(){
+        this.router.navigate(['/whatsapp']);
 
-   
-    
+    }
 }
