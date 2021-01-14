@@ -282,7 +282,7 @@ export class ClosedchatsComponent implements OnInit {
   dateFilter(){
     if (this.chatInfoSubscription) this.chatInfoSubscription.unsubscribe();
     const timestamp = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(this.datePick);
-      this.chatInfoSubscription = this.fetchData.getWhatsappChats(this.companyId, timestamp)
+      this.chatInfoSubscription = this.fetchData.getWhatsappClosedChats(this.companyId, timestamp)
         .pipe(
             takeUntil(this.destroy$)
         )

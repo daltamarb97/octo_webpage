@@ -241,7 +241,8 @@ export class FecthDataService {
     .doc(companyId)
     .collection('chats', ref => ref.orderBy('timestamp', 'desc')
     .where("timestamp", ">=", timestamp)
-    .where("finished", "==", true))
+    .where("finished", "==", true)
+    .limit(200))
 
     return ref.valueChanges();
   }
