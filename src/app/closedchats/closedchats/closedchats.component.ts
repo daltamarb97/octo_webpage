@@ -98,8 +98,6 @@ export class ClosedchatsComponent implements OnInit {
   currentMessage: string = null; // message to be send
   currentChatData: currentChatData; // information of selected room chat
   showTicket: boolean = false;
-  showAssignedChats: boolean = false;
-  showGeneralChats: boolean = false;
   WMessages: number;
   WSenders: number;
   chat: any;
@@ -115,7 +113,6 @@ export class ClosedchatsComponent implements OnInit {
   commentsChat: Array < any > = [];
   isAdmin: boolean = false;
   showChip: boolean = false;
-
   tagsCategories: any = [];
   tagsCategoriesNames: any = [];
   tagsFromConversation: any = [];
@@ -130,7 +127,7 @@ export class ClosedchatsComponent implements OnInit {
   timeRecorded: number = 0;
   saveAudio: boolean = false;
   voiceNote: any;
-
+  showGeneralChat: boolean = false;
   visible = true;
   selectable = true;
   removable = true;
@@ -166,8 +163,6 @@ export class ClosedchatsComponent implements OnInit {
             const currentNav = this.router.getCurrentNavigation().extras.state
             if (currentNav.data) {
                 this.getMessagesFromChatOnclick(currentNav.data, false);
-                //get a ticket from current chat
-                this.getTicket(currentNav.data.companyId, currentNav.data.ticketId);
             } 
         }
     });
@@ -196,7 +191,6 @@ export class ClosedchatsComponent implements OnInit {
       this.getChatWhatsappNames();
       this.getCompanyEmployees();
       this.getWhatsappTemplateMessages();
-      this.getCategories();
       this.getForms();
   }
 
@@ -348,6 +342,7 @@ export class ClosedchatsComponent implements OnInit {
   }
 
   allowGetChatInformation(data, assigned: boolean) {
+      this.showGeneralChat = true;
       //chat is allowed to see
       this.employeesAssignated = [];
       if (this.messageSubscription) this.messageSubscription.unsubscribe();
@@ -365,30 +360,18 @@ export class ClosedchatsComponent implements OnInit {
           private: (data.private) ? data.private : false,
           chatName: (data.chatName) ? data.chatName:'Sin nombre',
           timestamp: data.timestamp
-      }      
+      }  
+          
       //if the current chat has no one assigned do nothing
       if (this.currentChatData.assignTo) this.employeesAssignated = this.currentChatData.assignTo;
-      // fetch the ticket of the specific Chat
-      if (assigned === true) {
-          this.showAssignedChats = true;
-          this.showGeneralChats = false;
-      } else {
-          this.showGeneralChats = true;
-          this.showAssignedChats = false;
-      }
-      this.getTagsFromConversation(data.number);
+
       this.messageSubscription = this.fetchData.getMessagesFromSpecificWChat(
               this.companyId,
               data.number
           )
           .subscribe((dataRta) => {
-              if (this.showGeneralChats) {
-                  const el = document.getElementById('content-messages');
-                  el.scrollTop = el.scrollHeight;
-              } else if (this.showAssignedChats) {
-                  const el = document.getElementById('content-messages-private');
-                  el.scrollTop = el.scrollHeight;
-              }
+              const el = document.getElementById('content-messages');
+              el.scrollTop = el.scrollHeight;
               dataRta.map(d => {
                   if (this.firstTimeMsgLoad === true) {
                       this.chatMessages.unshift({
@@ -409,12 +392,6 @@ export class ClosedchatsComponent implements OnInit {
               })
               this.firstTimeMsgLoad = false;
           })
-
-      // .catch(error => {
-      //   console.error(error);
-      // })
-    // set unseen flag to false
-    this.setData.setUnseenToFalse(this.companyId, this.currentChatData.phoneNumber);
   }
 
   sendForm(formId: string) {
@@ -563,78 +540,6 @@ export class ClosedchatsComponent implements OnInit {
   END OF ROOM CHAT
   *******************/
 
-  // ------------------------------------
-  triggerResize() {
-      // Wait for changes to be applied, then trigger textarea resize.
-      this._ngZone.onStable.pipe(take(1))
-          .subscribe(() => this.autosize.resizeToFitContent(true));
-  }
-
-  getCategories() {
-      // get categories 
-      this.fetchData.getTags(this.companyId)
-          .pipe(
-              takeUntil(this.destroy$)
-          )
-          .subscribe(data => {
-            data.forEach(d => {
-              if (d.name) this.tagsCategoriesNames.push(d)
-            })
-          })
-  }
-
-  getSpecificTags(category) {
-      this.fetchData.getSpecificTag(category.categoryId, this.companyId)
-          .pipe(
-              takeUntil(this.destroy$)
-          ).subscribe(data => {
-              this.tagsCategories = data;
-          })
-  }
-
-  getTagsFromConversation(number) {
-      this.fetchData.getTagFromConversation(number, this.companyId)
-          .pipe(
-              takeUntil(this.destroy$)
-          )
-          .subscribe(data => {
-              this.tagsFromConversation = data;
-          })
-  }
-
-  remove(tag) {
-      this.deleteData.deleteTagCounter(this.companyId, tag.categoryId, tag.tagId, this.currentChatData.phoneNumber);
-  }
-
-  selected(tag) {
-      const tagData = {
-          ...tag,
-          times: (tag.times) ? tag.times : 0
-      }
-      //save tag to whatsapp conversation
-      this.setData.sendTag(this.companyId, this.currentChatData.phoneNumber, tagData);
-      this.setData.addToTagCounter(this.companyId, tagData);
-      this.tagsCategories = [];
-  }
-
-  private _filter(value: string): string[] {
-      const filterValue = value.toLowerCase();
-      return this.tagsCategories.filter(tag =>
-          tag.toLowerCase().indexOf(filterValue) === 0);
-  }
-
-  goToTags() {
-      this.router.navigate(['/tags']);
-  }
-
-  goToStatistics() {
-      this.router.navigate(['/tag-metrics']);
-  }
-
-  onTabChanged() {
-      this.showAssignedChats = false;
-      this.showGeneralChats = false;
-  }
 
   templateSelected(template) {
       this.currentMessage = template;
@@ -670,214 +575,6 @@ export class ClosedchatsComponent implements OnInit {
     })
   }
 
-  displayImage(url: string) {
-      window.open(url, "_blank");
-  }
-
-  selectImage(file) {
-      this.fileInfo = file.target.files[0];
-      this.fileName = file.target.files[0].name;
-  }
-
-  setChatNote() {
-      if (this.chatNote) {
-          const data = {
-              agent: `${this.holdData.userInfo.name} ${this.holdData.userInfo.lastname}`,
-              body: this.chatNote,
-              companyId: this.companyId,
-              ticketId: this.currentChatData.ticketId,
-              timestamp: this.holdData.convertJSDateIntoFirestoreTimestamp()
-          }
-          // send comment
-          this.setData.sendChatComment(data).catch(e => {console.error(e)})
-          this.chatNote = null;
-      }
-  }
-
-  async archiveChat() {
-    // finish chat and remove agent from chat    
-    await this.setData.archiveChat({
-        companyId: this.companyId,
-        number: this.currentChatData.phoneNumber,
-        timestamp: this.currentChatData.timestamp,
-    })
-    // hide user interface 
-    this.showDetail = false;
-    this.showAssignedChats = false;
-    this.showGeneralChats = false;
-  }
-
-  showQuickResponses() {
-      // show pre-saved messages (quick responses)
-      const dialogRef = this.dialog.open(QuickResponsesDialogComponent);
-      dialogRef.afterClosed()
-          .subscribe(result => {
-              if (result.event !== 'cancel') {
-                  this.currentMessage = result.data;
-              }
-          })
-  }
-
-  getEmployees() {
-      //get all the company employees
-      this.fetchData.getCompanyEmployees(this.holdData.userInfo.companyId)
-          .subscribe(data => {
-              data.map(e => {
-                  const data = e.payload.doc.data();
-                  this.employees.push(data);
-              })
-          })
-  }
-
-  getTicket(companyId?: string, ticketId?: string) {
-    if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
-    //get a ticket from current chat
-    if (companyId && ticketId) {
-        this.fetchData.getTicket(companyId, ticketId)
-            .pipe(
-                takeUntil(this.destroy$)
-            ).subscribe(data => {
-                this.ticket = data.data();
-                //make the select component show the status automaticly
-                this.status = this.ticket.status
-                this.showTicket = true;
-                this.showDetail = false;
-            })
-        this.fetchData.getCommentsChat({
-            companyId: companyId,
-            ticketId: ticketId
-        }).pipe(
-            takeUntil(this.destroy$)
-        ).subscribe(data => {
-            this.commentsChat = data;
-        })
-    } else {
-        this.fetchData.getTicket(this.companyId, this.currentChatData.ticketId)
-        .pipe(
-            takeUntil(this.destroy$)
-        ).subscribe(data => {
-            this.ticket = data.data();
-            //make the select component show the status automaticly
-            this.status = this.ticket.status
-            this.showTicket = true;
-            this.showDetail = false;
-        })
-        this.commentsSubscription = this.fetchData.getCommentsChat({
-            companyId: this.companyId,
-            ticketId: this.currentChatData.ticketId
-        }).pipe(
-            takeUntil(this.destroy$)
-        ).subscribe(data => {
-            this.commentsChat = data;
-        })
-    }
-  }
-
-  createTicket() {
-      const dialogRef = this.dialog.open(TicketDialogComponent);
-      dialogRef.afterClosed()
-          .subscribe(async result => {
-              // create new chat room 
-              if (result.event === 'Cancel' || result.event === undefined) {} else if (result.event === 'Success') {
-                  let ticket = result.data;
-                  ticket.phone = this.currentChatData.phoneNumber;
-                  ticket.status = 'Pendiente';
-                  const ticketId: any = await this.setData.createTicket(ticket, this.companyId);
-                  this.setData.sendHasTicket(this.currentChatData.phoneNumber, this.companyId, ticketId);
-                  this.showDetail = false;
-                  //agregar snackbar
-                  this.currentChatData = {...this.currentChatData, hasTicket: true, ticketId: ticketId};
-                  this.getTicket();
-                  this._snackBar.open('Creación exitosa', 'Ok', {
-                      duration: 3000,
-                  });
-              }
-          });
-  }
-
-  addPerson(person) {
-      this.employeesAssignated.push(person);
-      this.setData.setAssignedpeople(this.companyId, this.currentChatData.phoneNumber, this.employeesAssignated)
-      this.showAssignedChats = false;
-      this.showTicket = false;
-      if (person.userId === this.holdData.userId) this.showPrivateChat = true;
-      this._snackBar.open('Nueva persona agregada al chat', 'Ok', {
-          duration: 5000,
-      });
-  }
-
-  removePersonAssigned(person) {
-      const index = this.employeesAssignated.indexOf(person);
-      if (index >= 0) {
-          this.employeesAssignated.splice(index, 1);
-          this.setData.setAssignedpeople(this.companyId, this.currentChatData.phoneNumber, this.employeesAssignated)
-      }
-  }
-
-  chatPrivateMode() {
-      //make the chat go into private mode 
-      this.setData.makeChatPrivate(this.currentChatData.phoneNumber, this.companyId)
-      this._snackBar.open('Este chat esta en modo privado, sólo las personas asignadas podrán tener acceso', 'Ok', {
-          duration: 5000,
-      });
-  }
-
-  chatPublicMode() {
-      //make the chat go into public mode 
-      // verify if user is assigned to the chat
-      this.setData.makeChatPublic(this.currentChatData.phoneNumber, this.companyId);
-      this._snackBar.open('Este chat esta en modo público, todo tu equipo podrá acceder a el', 'Ok', {
-          duration: 5000,
-      });
-  }
-
-  checkboxEvent() {
-      if (this.privateChat === true) {
-          this.chatPublicMode();
-      } else if (this.privateChat === false) {
-          this.chatPrivateMode();
-      }
-  }
-
-  ticketStatus(status) {      
-      this.setData.setStatus(this.companyId, this.currentChatData.ticketId, status, this.currentChatData.phoneNumber);
-      this.ticket.status = status;
-      if(status === 'Completado') {
-          let ticketId =this.currentChatData.ticketId
-        this.setData.setCommentsOnChatClosed(this.companyId,ticketId,this.commentsChat);
-        this.currentChatData = {
-            ...this.currentChatData,
-            hasTicket: false,
-            ticketId: 'no ticket',
-        }
-        this.showTicket = false;
-        this.archiveChat();
-        if(this.sendFormOnTicketClose) {
-            this.sendForm(this.formOnTicket.formId);
-        }
-      }
-  }
-
-  showDetails() {
-      this.showDetail = true;
-      this.showTicket = false;
-  }
-
-  closeDetailsBox(){
-    this.showDetail = false;
-    this.showAssignedChats = false;
-    this.showGeneralChats = false;
-  }
-  createAlias(name){
-      //create a name for the chat
-      this.setData.changeNameOfChat(this.currentChatData.phoneNumber, this.companyId,name)
-      this._snackBar.open('Cambio exitoso', 'Ok', {
-          duration: 5000,
-      });
-      this.currentChatData.chatName = name;
-      this.name = '';
-  }
-
     showDates(chat){
         this.date = chat.timestamp;
         this.showDate = true;
@@ -885,43 +582,6 @@ export class ClosedchatsComponent implements OnInit {
 
     hideDates(){
         this.showDate = false;
-    }
-
-    startVoiceRecording() {
-        this.showMic = false;
-        let time; 
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(stream => {
-                this.mediaRecorder = new MediaRecorder(stream);
-                this.mediaRecorder.start();
-                const audioChunks = [];
-                this.mediaRecorder.addEventListener("dataavailable", event => {
-                  audioChunks.push(event.data);
-                });
-                this.mediaRecorder.addEventListener("stop", () => {
-                    this.voiceNote = new Blob(audioChunks, {'type': 'audio/mpeg'});
-                    clearInterval(time);
-                    if(this.saveAudio) {
-                        this.sendMessage();
-                    }
-                });
-                time = setInterval(()=> {
-                    this.timeRecorded++
-                }, 1000)
-            });
-    }
-
-    sendVoiceNote() {
-        this.saveAudio = true;
-        this.mediaRecorder.stop();
-        this.timeRecorded = 0;
-        this.showMic = true;
-    }
-
-    cancelVoiceNote() {
-        this.mediaRecorder.stop();
-        this.timeRecorded = 0;
-        this.showMic = true;
     }
     
     goToOpenChats(){

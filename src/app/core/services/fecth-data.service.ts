@@ -45,12 +45,11 @@ export class FecthDataService {
     return ref.valueChanges();
   }
 
-
   getCompanyEmployees(companyId: string){
     // get company employees
-    let ref = this.db.collection('company')
+    let ref = this.db.collection('whatsapp')
     .doc(companyId)
-    .collection('employees')
+    .collection('weights')
 
     return ref.stateChanges(['added']);
   }

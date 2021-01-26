@@ -31,6 +31,7 @@
                     <mat-selection-list  [multiple]="false">   
                         <ng-container *ngFor="let chat of chatWhatsappAssigned; index as i" >
                             <mat-list-option 
+                                aria-selected="true"
                                 class="chat-option"
                                 *ngIf="chat.finished" 
                                 (mouseenter)="showDates(chat)" 
@@ -57,6 +58,7 @@
                         </ng-container>
                         <ng-container *ngFor="let chat of chatWhatsappAssigned; index as i">
                             <mat-list-option 
+                                aria-selected="true"
                                 class="chat-option"
                                 (mouseenter)="showDates(chat)" 
                                 (mouseleave)="hideDates(chat)"
@@ -98,6 +100,7 @@
                     <mat-selection-list  [multiple]="false">
                         <ng-container *ngFor="let chat of chatWhatsapp; index as i" >
                             <mat-list-option 
+                                aria-selected="true"
                                 class="chat-option"
                                 *ngIf="!chat.finished"
                                 (mouseenter)="showDates(chat)" 
@@ -124,6 +127,7 @@
                         </ng-container>
                         <ng-container *ngFor="let chat of chatWhatsapp; index as i" >
                             <mat-list-option 
+                                aria-selected="true"
                                 class="chat-option"
                                 *ngIf="chat.finished" 
                                 (mouseenter)="showDates(chat)" 
@@ -149,7 +153,6 @@
                 </mat-tab>
             </mat-tab-group>
         </mat-card>
-        <!-- right side menu -->
         <!-- TICKET -->
         <mat-card *ngIf="showTicket && currentChatData" style="width: auto;" >
             <mat-card-header class="details-menu_header">
@@ -424,8 +427,11 @@
                                 </button>
                             </div>
                         </div>
-                        <p>{{fileName}}</p>
+                        <!-- <p>{{fileName}}</p> -->
                     </div>
+                </div>
+                <div class="yes-pic" *ngIf="fileInfo">
+                    <img [src]="urlSelectedFile" alt="preview image to send"/>
                 </div>
                 <input *ngIf="!iAmAssigned  && !currentChatData.finished" matInput value="Asígnate este chat para responder" readonly>
                 <input *ngIf="currentChatData.finished" matInput value="Este chat fue cerrado, envía un template para reanudar la conversación" readonly>
@@ -565,8 +571,11 @@
                                 </button>
                             </div>
                         </div>
-                        <p>{{fileName}}</p>
+                        <!-- <p>{{fileName}}</p> -->
                     </div>
+                </div>
+                <div class="yes-pic" *ngIf="fileInfo">
+                    <img [src]="urlSelectedFile" alt="preview image to send"/>
                 </div>
                 <input 
                     *ngIf="templatesActivated" 
