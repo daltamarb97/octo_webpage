@@ -75,6 +75,7 @@ export class FormsTableComponent implements OnInit {
   // PORTHOS EXCLUSIVE
   averageRate: number;
   selectedFilter: string;
+  dataSourceTemp;
 
   constructor(
     private fetchData: FecthDataService,
@@ -181,7 +182,7 @@ export class FormsTableComponent implements OnInit {
         rate = rate + d.calificacion
         counter++;
       }
-    }); 
+    });
     this.averageRate = rate / counter;
   }
 

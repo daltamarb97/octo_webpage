@@ -468,10 +468,7 @@ export class WhatsappComponent implements OnInit {
                   if (this.fileInfo) {
                     try {
                       mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.fileInfo, this.fileName);
-                      
-                      console.log('ocurri');
-                      
-                      if (!this.currentMessage) this.currentMessage = 'Imagen';
+                      if (this.currentMessage.length <= 1) this.currentMessage = 'Imagen';
                     } catch(error) {
                       console.log('error uploading file');
                       alert('Error enviando archivo');
