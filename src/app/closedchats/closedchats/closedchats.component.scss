@@ -255,3 +255,6 @@ mat-selection-list {
     margin: 0;
   }
 }
+mat-list-option[aria-selected="true"] {
+  background: #F6E8E3;
+}

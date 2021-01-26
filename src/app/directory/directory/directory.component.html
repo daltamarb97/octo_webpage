@@ -12,7 +12,6 @@
             <a>
                 <div class="user-img">
                     <span class="material-icons m-r-15">account_circle</span>
-                    <span class="profile-status online pull-right"></span> 
                 </div>
                 <div class="mail-contnet">
                     <h5>{{empl.name}} {{empl.lastname}}</h5> 
@@ -28,6 +27,12 @@
                         *ngIf="empl.userId === user.userId"
                         >Estoy disponible
                     </mat-slide-toggle>
+                    <div class="availability-visual" *ngIf="empl.userId != user.userId">
+                        <div *ngIf="empl.available" id="green-dot"></div>
+                        <div *ngIf="!empl.available" id="red-dot"></div>
+                        <p *ngIf="empl.available">Disponible</p>
+                        <p *ngIf="!empl.available">No Disponible</p>
+                    </div>
                 </div>
             </a>
         </div>

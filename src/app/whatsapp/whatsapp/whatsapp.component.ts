@@ -148,6 +148,7 @@ export class WhatsappComponent implements OnInit {
   date:number;
   datePick: any;
   chatInfoSubscription: any;
+  urlSelectedFile: any;
   constructor(
       private fetchData: FecthDataService,
       private setData: SetDataService,
@@ -462,13 +463,22 @@ export class WhatsappComponent implements OnInit {
                   this.templatesActivatedOptions = true;
               }
               this.showSpinner = true;
+              // upload file if file
+              let mediaUrl = null;
+                  if (this.fileInfo) {
+                    try {
+                      mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.fileInfo, this.fileName);
+                      
+                      console.log('ocurri');
+                      
+                      if (!this.currentMessage) this.currentMessage = 'Imagen';
+                    } catch(error) {
+                      console.log('error uploading file');
+                      alert('Error enviando archivo');
+                    }
+                  }
               //send message in specific chat
               if (this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {
-                  // uncomment in production
-                  let mediaUrl = null;
-                  if (this.fileInfo) {
-                      mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.fileInfo, this.fileName);
-                  }
                   this.setData.sendWhatsappMessageHttp({
                           message: this.currentMessage,
                           number: this.currentChatData.phoneNumber,
@@ -555,7 +565,8 @@ export class WhatsappComponent implements OnInit {
                         this.showSpinner = false;
                     })
               } else {
-                  this.currentMessage = null;
+                this.currentMessage = null;
+                this.showSpinner = false;
               }
           })
   }
@@ -677,6 +688,11 @@ export class WhatsappComponent implements OnInit {
 
   selectImage(file) {
       this.fileInfo = file.target.files[0];
+      let reader = new FileReader();
+      reader.readAsDataURL(this.fileInfo);
+      reader.onload = () => {
+        this.urlSelectedFile = reader.result;
+      }
       this.fileName = file.target.files[0].name;
   }
 
