@@ -149,6 +149,7 @@ export class WhatsappComponent implements OnInit {
   datePick: any;
   chatInfoSubscription: any;
   urlSelectedFile: any;
+  responseBot: Array<string> = [];
   constructor(
       private fetchData: FecthDataService,
       private setData: SetDataService,
@@ -943,6 +944,9 @@ export class WhatsappComponent implements OnInit {
         this.router.navigate(['/closedchats']);
     }
 
-   
+    async getBotResponses() {
+        const data = await this.fetchData.getSingleWhatsappChat(this.companyId, this.currentChatData.phoneNumber).toPromise();
+        this.responseBot = data.data().responseBot;
+    }
     
 }

@@ -262,18 +262,28 @@
                             </mat-checkbox>
                          </section>
                    </ng-container>
-                   <div style="display: flex; flex-direction: column">
+                   <div style="display: flex; flex-direction: column"> 
+                        <mat-accordion>
+                            <mat-expansion-panel (opened)="getBotResponses()">
+                                    <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        Respuestas previas en Flujo de Bot
+                                    </mat-panel-title>
+                                    </mat-expansion-panel-header>
+                                    <mat-list *ngIf="responseBot.length != 0" role="list">
+                                        <mat-list-item *ngFor="let resp of responseBot; index as i">{{i + 1}}-{{resp}}</mat-list-item>
+                                    </mat-list>
+                                    <p *ngIf="responseBot.length == 0">No hay respuestas previas</p>
+                                </mat-expansion-panel>
+                        </mat-accordion>                       
                        <mat-button-toggle-group name="fontStyle" aria-label="Font Style" class="detail-toggle">
                            <mat-button-toggle *ngIf="templatesActivatedOptions" [matMenuTriggerFor]="templates" >
-                               <!-- <mat-icon>keyboard_arrow_down</mat-icon> -->
                                Escoger Template
                            </mat-button-toggle>
                            <mat-button-toggle [matMenuTriggerFor]="assignment" >
-                               <!-- <mat-icon>keyboard_arrow_down</mat-icon> -->
                                Asignar conversación
                            </mat-button-toggle>
                            <mat-button-toggle *ngIf="iAmAssigned"  [matMenuTriggerFor]="forms">
-                               <!-- <mat-icon>keyboard_arrow_down</mat-icon> -->
                                Enviar formulario
                            </mat-button-toggle>
                        </mat-button-toggle-group>
@@ -281,7 +291,8 @@
                            mat-stroked-button 
                            style="margin-top: 10px;"
                            color="warn" *ngIf="iAmAssigned && !currentChatData.hasTicket"
-                           (click)="archiveChat()">Cerrar Chat</button>
+                           (click)="archiveChat()">Cerrar Chat
+                        </button>
                    </div>
                 <!-- MENUS START -->
                 <mat-menu #templates="matMenu" class="mymegamenu" style="overflow-y: auto;">
@@ -312,8 +323,6 @@
                 </mat-chip-list> 
                 </div>
               </mat-card-content>
-             
-
         </mat-card>
         <!-- ************** END OF DETALLES ************** -->
     <input hidden #fileInput type="file" class="form-control" (change)="selectImage($event)" placeholder="Upload image" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
@@ -323,267 +332,264 @@
     <mat-sidenav-content opened mode="side" position="end">
 
         <!-- GENERAL CHATS -->
-    <mat-card *ngIf="showGeneralChats" id="content-messages" style="max-height: 75%;min-height:75% ; overflow-y: auto;">
-        <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
-            <span class="toolbar-msg"  ># {{currentChatData.phoneNumber | slice:9}}</span>
-            <span class="example-spacer"></span>
-            <button *ngIf="currentChatData.hasTicket" (click)="getTicket()" color="primary" mat-raised-button class="m-r-5">Ver Ticket</button>
-            <button *ngIf="!currentChatData.finished" (click)="showDetails()" color="primary" mat-raised-button class="m-r-5">Detalles</button>  
-            <mat-chip-list class="agent-list__closed" *ngIf="currentChatData.finished" aria-label="agents assigned">   
-                <mat-chip
-                    *ngFor="let agent of currentChatData.assignTo">
-                    {{agent.name}}
-                </mat-chip>
-            </mat-chip-list>  
-            <button *ngIf="currentChatData.finished" mat-raised-button class="m-r-5" [matMenuTriggerFor]="templatesClose">Enviar Template</button>     
-        </mat-toolbar>
-        <mat-menu #templatesClose="matMenu" class="mymegamenu" style="overflow-y: auto;">
-            <button mat-menu-item *ngFor="let t of templatesArray" (click)="templateSelectedClose(t)">
-                {{t}}
-            </button>
-        </mat-menu>
-        <mat-card-content class="backgroun-img" style="overflow-y: visible; height: 75%;">
-            <div class="chat"  *ngFor="let message of chatMessages" >
-                <div class="me" *ngIf="message.inbound === false">          
-                    <span style="word-wrap: break-word;">{{message.message}} </span> 
-                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
-                    <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
-                        <img 
-                            [src]="message.mediaUrl" 
-                            style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
-                    </div>   
-                    <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
-                        <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>   
-                    </div>  
-                </div>
-                <div class="otherMessage" *ngIf="message.inbound === true">
-                    <span class="name">
-                        Cliente
-                    </span> <br>
-                    <span style="word-wrap: break-word;">{{message.message}}</span>
-                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
-                    <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
-                        <img 
-                            [src]="message.mediaUrl" 
-                            style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
-                    </div>   
-                    <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
-                        <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>   
-                    </div> 
-                </div>
-            </div>  
-        
-            <!-- if no messages show this card -->
-            <div *ngIf="chatMessages.length === 0">
-                <mat-card class="message-card">
-                    <mat-card-content>
-                        <p>
-                        Aún no hay mensajes en esta sala
-                        </p>
-                    </mat-card-content>
-                </mat-card>
-            </div>
-        </mat-card-content>
-        <footer>
-            <mat-spinner *ngIf="showSpinner"></mat-spinner>
-            <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;max-width: 720px; " >
-                <div style="display: flex;">
-                    <textarea matInput
-                    cdkTextareaAutosize
-                    #autosize="cdkTextareaAutosize"
-                    cdkAutosizeMinRows="1"
-                    cdkAutosizeMaxRows="9"
-                    [(ngModel)]="currentMessage" 
-                    placeholder="Envía un mensaje" 
-                    (keydown.enter)="sendMessage()"
-                    *ngIf="iAmAssigned && !templatesActivated && !currentChatData.finished"></textarea>
-                    
-                    <div 
-                        class="actions-button-container"
-                        [ngStyle]="{'width': !showMic ? '220px' : '190px'}" 
-                        *ngIf="iAmAssigned && !templatesActivated && !currentChatData.finished">
-                        <div style="display: flex; flex-direction: row">
-                            <div *ngIf="showMic" class="mic-actions">
-                                <button mat-mini-fab style="background-color: #3197F3">
-                                    <mat-icon (click)="sendMessage()">send</mat-icon>
-                                </button>
-                                <button mat-mini-fab color="warn">
-                                    <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
-                                </button>
-                                <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
-                                    <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
-                                </button>
-                                <button mat-mini-fab color="accent" matTooltip="Nota de voz">
-                                    <mat-icon (click)="startVoiceRecording()">settings_voice</mat-icon>
-                                </button>
-                            </div>
-                            <div *ngIf="!showMic" class="mic-actions">
-                                <button  mat-mini-fab id="check-voice" matTooltip="Nota de voz">
-                                    <mat-icon (click)="sendVoiceNote()">check</mat-icon>
-                                </button>
-                                <h4>{{timeRecorded}} seg</h4>
-                                <button  mat-mini-fab id="cancel-voice" matTooltip="Nota de voz">
-                                    <mat-icon (click)="cancelVoiceNote()">close</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                        <!-- <p>{{fileName}}</p> -->
-                    </div>
-                </div>
-                <div class="yes-pic" *ngIf="fileInfo">
-                    <img [src]="urlSelectedFile" alt="preview image to send"/>
-                </div>
-                <input *ngIf="!iAmAssigned  && !currentChatData.finished" matInput value="Asígnate este chat para responder" readonly>
-                <input *ngIf="currentChatData.finished" matInput value="Este chat fue cerrado, envía un template para reanudar la conversación" readonly>
-                <input 
-                    *ngIf="templatesActivated && iAmAssigned" 
-                    matInput 
-                    value="Esta conversación no está activa, debes enviar un template para iniciar una conversación" 
-                    readonly>
-            </mat-form-field>
-        </footer>
-    </mat-card>
-
-
-        <!-- /*******
-    ASSIGNED CHAT
-    *******/ -->   
-    <mat-card *ngIf="showAssignedChats" id="content-messages-private" style="max-height: 75%;min-height:75% ; overflow-y: auto;" >
-        <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
-            <span class="toolbar-msg"  >{{currentChatData.phoneNumber}}</span>
-
-            <!-- <button mat-raised-button color="primary" class="example-icon m-l-10" [matMenuTriggerFor]="forms">Enviar Formulario</button>
-            <mat-menu  #forms="matMenu">
-                <button *ngFor="let form of formsAlias" (click)="sendForm(form.formId)" mat-menu-item>{{form.alias}}</button>
-            </mat-menu> -->
-            <button mat-raised-button color="primary" class="example-icon m-l-10"  [matMenuTriggerFor]="tagsMenu">Tags</button>
-            <mat-menu  #tagsMenu="matMenu">
-              <button *ngFor="let category of tagsCategoriesNames" (click)="getSpecificTags(category)"
-               mat-menu-item (mouseenter)="getSpecificTags(category)" [matMenuTriggerFor]="categories">{{category.name}}</button>
-            </mat-menu>    
-            <mat-menu  #categories="matMenu"  >
-                <button  *ngFor="let tag of tagsCategories" (click)="selected(tag,category)" mat-menu-item >{{tag.name}}</button>                              
-            </mat-menu>
-            <!-- <button *ngIf="templatesActivatedOptions" [matMenuTriggerFor]="templates" mat-raised-button class="m-r-5">Escoger Template</button>
-            <mat-menu #templates="matMenu" class="mymegamenu" style="overflow-y: auto;">
-                <button mat-menu-item *ngFor="let t of templatesArray" (click)="templateSelected(t)">
+        <mat-card *ngIf="showGeneralChats" id="content-messages" style="height: 100%; overflow-y: auto;">
+            <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
+                <span class="toolbar-msg"  ># {{currentChatData.phoneNumber | slice:9}}</span>
+                <span class="example-spacer"></span>
+                <button *ngIf="currentChatData.hasTicket" (click)="getTicket()" color="primary" mat-raised-button class="m-r-5">Ver Ticket</button>
+                <button *ngIf="!currentChatData.finished" (click)="showDetails()" color="primary" mat-raised-button class="m-r-5">Detalles</button>  
+                <mat-chip-list class="agent-list__closed" *ngIf="currentChatData.finished" aria-label="agents assigned">   
+                    <mat-chip
+                        *ngFor="let agent of currentChatData.assignTo">
+                        {{agent.name}}
+                    </mat-chip>
+                </mat-chip-list>  
+                <button *ngIf="currentChatData.finished" mat-raised-button class="m-r-5" [matMenuTriggerFor]="templatesClose">Enviar Template</button>     
+            </mat-toolbar>
+            <mat-menu #templatesClose="matMenu" class="mymegamenu" style="overflow-y: auto;">
+                <button mat-menu-item *ngFor="let t of templatesArray" (click)="templateSelectedClose(t)">
                     {{t}}
                 </button>
-            </mat-menu> -->
-            <span class="example-spacer"></span>
-            <button *ngIf="!currentChatData.finished" (click)="showDetails()" color="primary" mat-raised-button class="m-r-5">Detalles</button>     
-            <button *ngIf="!currentChatData.hasTicket" (click)="createTicket()" color="primary" mat-raised-button class="m-r-5">Generar Ticker</button>
-            <button *ngIf="currentChatData.hasTicket" (click)="getTicket()" color="primary" mat-raised-button class="m-r-5">Ver Ticket</button>
-        </mat-toolbar>
-        <div  style=" padding-left: 15px;padding-top:10px ; " >
-            <mat-chip-list #chipList aria-label="Tags">   
-                <mat-chip
-                    *ngFor="let tag of tagsFromConversation"
-                    [selectable]="selectable"
-                    [removable]="removable"
-                    (removed)="remove(tag)">
-                    {{tag.name}}
-                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                </mat-chip>
-            </mat-chip-list>      
-          </div>
-        <mat-card-content style=" overflow-y: visible; height: 75%;">
-            <div class="chat"  *ngFor="let message of chatMessages" >
-                <div class="me"  *ngIf="message.inbound === false">          
-                    <span style="word-wrap: break-word;">{{message.message}} </span>  
-                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
-                    <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
-                        <img 
-                            [src]="message.mediaUrl" 
-                            style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
-                    </div>   
-                    <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
-                        <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>   
-                    </div>  
-                </div>
-                <div class="otherMessage" *ngIf="message.inbound === true">
-                    <span class="name">
-                        Cliente
-                    </span> <br>
-                    <span style="word-wrap: break-word;">{{message.message}}</span>
-                    <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
-                    <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
-                        <img 
-                            [src]="message.mediaUrl" 
-                            style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
-                    </div>  
-                    <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
-                        <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>  
-                    </div>  
-                </div>            
-            </div>  
-            <!-- if no messages show this card -->
-            <div *ngIf="chatMessages.length === 0">
-                <mat-card class="message-card">
-                    <mat-card-content>
-                        <p>
-                        Aún no hay mensajes en esta sala
-                        </p>
-                    </mat-card-content>
-                </mat-card>
-            </div>
-        </mat-card-content>
-        <footer>
-            <mat-spinner *ngIf="showSpinner"></mat-spinner>
-            <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;max-width: 720px;">
-                <div style="display: flex;">
-                    <textarea matInput
-                    cdkTextareaAutosize
-                    #autosize="cdkTextareaAutosize"
-                    cdkAutosizeMinRows="1"
-                    cdkAutosizeMaxRows="9"
-                    [(ngModel)]="currentMessage" 
-                    placeholder="Envía un mensaje" 
-                    (keydown.enter)="sendMessage()"
-                    *ngIf="!templatesActivated"></textarea>
-                    
-                    <div 
-                        class="actions-button-container"
-                        [ngStyle]="{'width': !showMic ? '220px' : '190px'}" 
-                        *ngIf="!templatesActivated">
-                        <div style="display: flex; flex-direction: row">
-                            <div *ngIf="showMic" class="mic-actions">
-                                <button mat-mini-fab style="background-color: #3197F3">
-                                    <mat-icon (click)="sendMessage()">send</mat-icon>
-                                </button>
-                                <button mat-mini-fab color="warn">
-                                    <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
-                                </button>
-                                <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
-                                    <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
-                                </button>
-                                <button mat-mini-fab color="accent" matTooltip="Nota de voz">
-                                    <mat-icon (click)="startVoiceRecording()">settings_voice</mat-icon>
-                                </button>
-                            </div>
-                            <div *ngIf="!showMic" class="mic-actions">
-                                <button  mat-mini-fab id="check-voice" matTooltip="Nota de voz">
-                                    <mat-icon (click)="sendVoiceNote()">check</mat-icon>
-                                </button>
-                                <h4>{{timeRecorded}} seg</h4>
-                                <button  mat-mini-fab id="cancel-voice" matTooltip="Nota de voz">
-                                    <mat-icon (click)="cancelVoiceNote()">close</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                        <!-- <p>{{fileName}}</p> -->
+            </mat-menu>
+            <mat-card-content style="height: 100%; overflow-y: auto;">
+                <div class="chat"  *ngFor="let message of chatMessages" >
+                    <div class="me" *ngIf="message.inbound === false">          
+                        <span style="word-wrap: break-word;">{{message.message}} </span> 
+                        <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
+                        <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                            <img 
+                                [src]="message.mediaUrl" 
+                                style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
+                        </div>   
+                        <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                            <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>   
+                        </div>  
                     </div>
+                    <div class="otherMessage" *ngIf="message.inbound === true">
+                        <span class="name">
+                            Cliente
+                        </span> <br>
+                        <span style="word-wrap: break-word;">{{message.message}}</span>
+                        <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
+                        <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                            <img 
+                                [src]="message.mediaUrl" 
+                                style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
+                        </div>   
+                        <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                            <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>   
+                        </div> 
+                    </div>
+                </div>  
+                <!-- if no messages show this card -->
+                <div *ngIf="chatMessages.length === 0">
+                    <mat-card class="message-card">
+                        <mat-card-content>
+                            <p>
+                            Aún no hay mensajes en esta sala
+                            </p>
+                        </mat-card-content>
+                    </mat-card>
                 </div>
-                <div class="yes-pic" *ngIf="fileInfo">
-                    <img [src]="urlSelectedFile" alt="preview image to send"/>
+            </mat-card-content>
+            <mat-card-actions style="border-top: 1px solid #CED5D8;">
+                <mat-spinner *ngIf="showSpinner"></mat-spinner>
+                <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;" >
+                    <div style="display: flex;">
+                        <textarea matInput
+                        cdkTextareaAutosize
+                        #autosize="cdkTextareaAutosize"
+                        cdkAutosizeMinRows="1"
+                        cdkAutosizeMaxRows="9"
+                        [(ngModel)]="currentMessage" 
+                        placeholder="Envía un mensaje" 
+                        (keydown.enter)="sendMessage()"
+                        *ngIf="iAmAssigned && !templatesActivated && !currentChatData.finished"></textarea>
+                        
+                        <div 
+                            class="actions-button-container"
+                            [ngStyle]="{'width': !showMic ? '220px' : '190px'}" 
+                            *ngIf="iAmAssigned && !templatesActivated && !currentChatData.finished">
+                            <div style="display: flex; flex-direction: row">
+                                <div *ngIf="showMic" class="mic-actions">
+                                    <button mat-mini-fab style="background-color: #3197F3">
+                                        <mat-icon (click)="sendMessage()">send</mat-icon>
+                                    </button>
+                                    <button mat-mini-fab color="warn">
+                                        <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
+                                    </button>
+                                    <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
+                                        <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
+                                    </button>
+                                    <button mat-mini-fab color="accent" matTooltip="Nota de voz">
+                                        <mat-icon (click)="startVoiceRecording()">settings_voice</mat-icon>
+                                    </button>
+                                </div>
+                                <div *ngIf="!showMic" class="mic-actions">
+                                    <button  mat-mini-fab id="check-voice" matTooltip="Nota de voz">
+                                        <mat-icon (click)="sendVoiceNote()">check</mat-icon>
+                                    </button>
+                                    <h4>{{timeRecorded}} seg</h4>
+                                    <button  mat-mini-fab id="cancel-voice" matTooltip="Nota de voz">
+                                        <mat-icon (click)="cancelVoiceNote()">close</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- <p>{{fileName}}</p> -->
+                        </div>
+                    </div>
+                    <div class="yes-pic" *ngIf="fileInfo">
+                        <img [src]="urlSelectedFile" alt="preview image to send"/>
+                    </div>
+                    <input *ngIf="!iAmAssigned  && !currentChatData.finished" matInput value="Asígnate este chat para responder" readonly>
+                    <input *ngIf="currentChatData.finished" matInput value="Este chat fue cerrado, envía un template para reanudar la conversación" readonly>
+                    <input 
+                        *ngIf="templatesActivated && iAmAssigned" 
+                        matInput 
+                        value="Esta conversación no está activa, debes enviar un template para iniciar una conversación" 
+                        readonly>
+                </mat-form-field>
+            </mat-card-actions>
+        </mat-card>
+            <!-- /*******
+        ASSIGNED CHAT
+        *******/ -->   
+        <mat-card *ngIf="showAssignedChats" id="content-messages-private" style="height: 100%; overflow-y: auto;" >
+            <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
+                <span class="toolbar-msg"  >{{currentChatData.phoneNumber}}</span>
+
+                <!-- <button mat-raised-button color="primary" class="example-icon m-l-10" [matMenuTriggerFor]="forms">Enviar Formulario</button>
+                <mat-menu  #forms="matMenu">
+                    <button *ngFor="let form of formsAlias" (click)="sendForm(form.formId)" mat-menu-item>{{form.alias}}</button>
+                </mat-menu> -->
+                <button mat-raised-button color="primary" class="example-icon m-l-10"  [matMenuTriggerFor]="tagsMenu">Tags</button>
+                <mat-menu  #tagsMenu="matMenu">
+                <button *ngFor="let category of tagsCategoriesNames" (click)="getSpecificTags(category)"
+                mat-menu-item (mouseenter)="getSpecificTags(category)" [matMenuTriggerFor]="categories">{{category.name}}</button>
+                </mat-menu>    
+                <mat-menu  #categories="matMenu"  >
+                    <button  *ngFor="let tag of tagsCategories" (click)="selected(tag,category)" mat-menu-item >{{tag.name}}</button>                              
+                </mat-menu>
+                <!-- <button *ngIf="templatesActivatedOptions" [matMenuTriggerFor]="templates" mat-raised-button class="m-r-5">Escoger Template</button>
+                <mat-menu #templates="matMenu" class="mymegamenu" style="overflow-y: auto;">
+                    <button mat-menu-item *ngFor="let t of templatesArray" (click)="templateSelected(t)">
+                        {{t}}
+                    </button>
+                </mat-menu> -->
+                <span class="example-spacer"></span>
+                <button *ngIf="!currentChatData.finished" (click)="showDetails()" color="primary" mat-raised-button class="m-r-5">Detalles</button>     
+                <button *ngIf="!currentChatData.hasTicket" (click)="createTicket()" color="primary" mat-raised-button class="m-r-5">Generar Ticker</button>
+                <button *ngIf="currentChatData.hasTicket" (click)="getTicket()" color="primary" mat-raised-button class="m-r-5">Ver Ticket</button>
+            </mat-toolbar>
+            <div  style=" padding-left: 15px;padding-top:10px ; " >
+                <mat-chip-list #chipList aria-label="Tags">   
+                    <mat-chip
+                        *ngFor="let tag of tagsFromConversation"
+                        [selectable]="selectable"
+                        [removable]="removable"
+                        (removed)="remove(tag)">
+                        {{tag.name}}
+                        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                    </mat-chip>
+                </mat-chip-list>      
+            </div>
+            <mat-card-content style="height: 100%; overflow-y: auto;">
+                <div class="chat"  *ngFor="let message of chatMessages" >
+                    <div class="me"  *ngIf="message.inbound === false">          
+                        <span style="word-wrap: break-word;">{{message.message}} </span>  
+                        <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
+                        <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                            <img 
+                                [src]="message.mediaUrl" 
+                                style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
+                        </div>   
+                        <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                            <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>   
+                        </div>  
+                    </div>
+                    <div class="otherMessage" *ngIf="message.inbound === true">
+                        <span class="name">
+                            Cliente
+                        </span> <br>
+                        <span style="word-wrap: break-word;">{{message.message}}</span>
+                        <p class="time-left" *ngIf="message.timestamp">{{message.timestamp.toDate() | date: 'EEEE, MMMM d, y, h:mm:ss a'}}</p>
+                        <div *ngIf="message.MediaContentType === 'image'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                            <img 
+                                [src]="message.mediaUrl" 
+                                style="width: 100%; max-width: 200px; height: 100%; max-height: 200px;">   
+                        </div>  
+                        <div *ngIf="message.MediaContentType === 'file'" style="margin-top: 10px;" (click)="displayImage(message.mediaUrl)">
+                            <a mat-stroked-button href="{{message.mediaUrl}}" target="_blank">Ver Archivo</a>  
+                        </div>  
+                    </div>            
+                </div>  
+                <!-- if no messages show this card -->
+                <div *ngIf="chatMessages.length === 0">
+                    <mat-card class="message-card">
+                        <mat-card-content>
+                            <p>
+                            Aún no hay mensajes en esta sala
+                            </p>
+                        </mat-card-content>
+                    </mat-card>
                 </div>
-                <input 
-                    *ngIf="templatesActivated" 
-                    matInput 
-                    value="Esta conversación no está activa, debes enviar un template para iniciar una conversación" 
-                    readonly>
-            </mat-form-field>
-        </footer>
-     </mat-card>
-</mat-sidenav-content>
+            </mat-card-content>
+            <mat-card-actions style="border-top: 1px solid #CED5D8;">
+                <mat-spinner *ngIf="showSpinner"></mat-spinner>
+                <mat-form-field style="background-color: white; border-top: gray; padding-left: 20px;">
+                    <div style="display: flex;">
+                        <textarea matInput
+                        cdkTextareaAutosize
+                        #autosize="cdkTextareaAutosize"
+                        cdkAutosizeMinRows="1"
+                        cdkAutosizeMaxRows="9"
+                        [(ngModel)]="currentMessage" 
+                        placeholder="Envía un mensaje" 
+                        (keydown.enter)="sendMessage()"
+                        *ngIf="!templatesActivated"></textarea>
+                        
+                        <div 
+                            class="actions-button-container"
+                            [ngStyle]="{'width': !showMic ? '220px' : '190px'}" 
+                            *ngIf="!templatesActivated">
+                            <div style="display: flex; flex-direction: row">
+                                <div *ngIf="showMic" class="mic-actions">
+                                    <button mat-mini-fab style="background-color: #3197F3">
+                                        <mat-icon (click)="sendMessage()">send</mat-icon>
+                                    </button>
+                                    <button mat-mini-fab color="warn">
+                                        <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
+                                    </button>
+                                    <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
+                                        <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
+                                    </button>
+                                    <button mat-mini-fab color="accent" matTooltip="Nota de voz">
+                                        <mat-icon (click)="startVoiceRecording()">settings_voice</mat-icon>
+                                    </button>
+                                </div>
+                                <div *ngIf="!showMic" class="mic-actions">
+                                    <button  mat-mini-fab id="check-voice" matTooltip="Nota de voz">
+                                        <mat-icon (click)="sendVoiceNote()">check</mat-icon>
+                                    </button>
+                                    <h4>{{timeRecorded}} seg</h4>
+                                    <button  mat-mini-fab id="cancel-voice" matTooltip="Nota de voz">
+                                        <mat-icon (click)="cancelVoiceNote()">close</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- <p>{{fileName}}</p> -->
+                        </div>
+                    </div>
+                    <div class="yes-pic" *ngIf="fileInfo">
+                        <img [src]="urlSelectedFile" alt="preview image to send"/>
+                    </div>
+                    <input 
+                        *ngIf="templatesActivated" 
+                        matInput 
+                        value="Esta conversación no está activa, debes enviar un template para iniciar una conversación" 
+                        readonly>
+                </mat-form-field>
+            </mat-card-actions>
+        </mat-card>
+    </mat-sidenav-content>
 </mat-sidenav-container>

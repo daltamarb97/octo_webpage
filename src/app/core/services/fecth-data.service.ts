@@ -117,6 +117,7 @@ export class FecthDataService {
 
     return ref.get();
   }
+
   getChatRooms(userId, companyId){
     // getting chatrooms info
     let ref = this.db.collection('users')
@@ -245,6 +246,7 @@ export class FecthDataService {
 
     return ref.valueChanges();
   }
+
   getSingleWhatsappChat(companyId: string, number: string){
     // getting chatrooms info
     let ref = this.db.collection('whatsapp')
@@ -288,8 +290,8 @@ export class FecthDataService {
 
 
   checkWhatsapp24HourWindow(data) {
-      // const api_url = "https://6842fc3b96e8.ngrok.io/message/check-user"
-      const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
+      const api_url = "http://localhost:5000/message/check-user"
+      // const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
       const finalData = {
         companyId: data.companyId,
         number: data.number
