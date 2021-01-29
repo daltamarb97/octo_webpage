@@ -53,6 +53,8 @@ export class currentChatData {
   private: boolean = false;
   chatName?:string; 
   timestamp: any;
+  formId?: string
+  responseId?: string;
 }
 declare var MediaRecorder: any;
 export const PICK_FORMATS = {
@@ -150,6 +152,7 @@ export class WhatsappComponent implements OnInit {
   chatInfoSubscription: any;
   urlSelectedFile: any;
   responseBot: Array<string> = [];
+  responseForm: Array<string> = [];
   constructor(
       private fetchData: FecthDataService,
       private setData: SetDataService,
@@ -367,7 +370,9 @@ export class WhatsappComponent implements OnInit {
           hasTicket: (data.hasTicket) ? data.hasTicket : false,
           private: (data.private) ? data.private : false,
           chatName: (data.chatName) ? data.chatName:'Sin nombre',
-          timestamp: data.timestamp
+          timestamp: data.timestamp,
+          formId: (data.formId) ? data.formId : null,
+          responseId: (data.responseId) ? data.responseId : null,
       }      
       //if the current chat has no one assigned do nothing
       if (this.currentChatData.assignTo) this.employeesAssignated = this.currentChatData.assignTo;
@@ -947,6 +952,16 @@ export class WhatsappComponent implements OnInit {
     async getBotResponses() {
         const data = await this.fetchData.getSingleWhatsappChat(this.companyId, this.currentChatData.phoneNumber).toPromise();
         this.responseBot = data.data().responseBot;
+    }
+
+    async getFormResponses() {
+        const responseFormData = await this.fetchData.getSingleResultForms(this.companyId, {
+            formId: this.currentChatData.formId,
+            responseId: this.currentChatData.responseId
+        });
+        this.responseForm = Object.keys(responseFormData.results).map((key) => {
+            return `${key} : ${responseFormData.results[key]}`;
+        });
     }
     
 }

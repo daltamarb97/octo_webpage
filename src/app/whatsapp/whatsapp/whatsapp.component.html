@@ -265,16 +265,27 @@
                    <div style="display: flex; flex-direction: column"> 
                         <mat-accordion>
                             <mat-expansion-panel (opened)="getBotResponses()">
-                                    <mat-expansion-panel-header>
-                                    <mat-panel-title>
-                                        Respuestas previas en Flujo de Bot
-                                    </mat-panel-title>
-                                    </mat-expansion-panel-header>
-                                    <mat-list *ngIf="responseBot.length != 0" role="list">
-                                        <mat-list-item *ngFor="let resp of responseBot; index as i">{{i + 1}}-{{resp}}</mat-list-item>
-                                    </mat-list>
-                                    <p *ngIf="responseBot.length == 0">No hay respuestas previas</p>
-                                </mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Respuestas previas en Flujo de Bot
+                                </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <mat-list *ngIf="responseBot && responseBot.length != 0" role="list">
+                                    <mat-list-item *ngFor="let resp of responseBot; index as i">{{i + 1}}-{{resp}}</mat-list-item>
+                                </mat-list>
+                                <p *ngIf="!responseBot || responseBot.length == 0">No hay respuestas previas</p>
+                            </mat-expansion-panel>
+                            <mat-expansion-panel *ngIf="currentChatData.formId" (opened)="getFormResponses()">
+                                <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Respuesta de encuesta
+                                </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <mat-list *ngIf="responseForm && responseForm.length != 0" role="list">
+                                    <mat-list-item *ngFor="let resp of responseForm; index as i">{{i + 1}}- {{resp}}</mat-list-item>
+                                </mat-list>
+                                <p *ngIf="!responseForm || responseForm.length == 0">No hay encuesta previa realizada</p>
+                            </mat-expansion-panel>
                         </mat-accordion>                       
                        <mat-button-toggle-group name="fontStyle" aria-label="Font Style" class="detail-toggle">
                            <mat-button-toggle *ngIf="templatesActivatedOptions" [matMenuTriggerFor]="templates" >
