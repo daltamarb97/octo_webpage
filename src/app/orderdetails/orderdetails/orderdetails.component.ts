@@ -80,8 +80,8 @@ export class OrderdetailsComponent implements OnInit {
           });
 }
 
-prepareOrder(){     
-  this.setData.startPreparingOrder(this.holdData.userInfo.companyId, this.order.id);
+prepareOrder(order, time: number){     
+  this.setData.startPreparingOrder(this.holdData.userInfo.companyId, this.order.id, time);
   this._snackBar.open('El estado del pedido cambio a "En preparación"', 'Ok', {
     duration: 4000,
 });

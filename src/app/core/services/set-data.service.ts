@@ -871,13 +871,14 @@ export class SetDataService {
     })
   }
   // ORDERS
-  startPreparingOrder(companyId,orderId){
+  startPreparingOrder(companyId: string, orderId: string, time: number){
     let ref = this.db.collection('delivery')
       .doc(companyId)
       .collection('orders')
       .doc(orderId)
     return ref.update({
-      state: 'inProgress'
+      state: 'inProgress',
+      waitTime: time
     })
   }
   deliveringOrder(companyId,orderId){

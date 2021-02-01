@@ -544,8 +544,6 @@ export class FecthDataService {
   }
   // END OF TICKETS SERVICES
 
-  
-
   getOrders(companyId: string) {
     
     let ref = this.db.collection('delivery')
@@ -555,3 +553,4 @@ export class FecthDataService {
   }
   //END OF ORDERS
 }
+

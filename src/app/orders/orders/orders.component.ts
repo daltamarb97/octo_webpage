@@ -12,6 +12,8 @@ import { MatSort } from '@angular/material/sort';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { SetDataService } from '../../core/services/set-data.service';
 import { order } from '../../../interfaces/orders';
+import { Howl } from 'howler';
+
 
 // let ListOfOrders: order[] = [];
 
@@ -34,11 +36,8 @@ export class OrdersComponent implements OnInit {
     // listOfOrders:Array<order>;
     showTableOrders:string=null;
     fullOrders:any[] = [];
+    orderEvent: Event = new Event('orderNot');
     @ViewChild(MatSort, { static: true }) sort: MatSort = Object.create(null);
-/**
-     * Set the sort after the view init since this component will
-     * be able to query its view for the initialized sort.
-     */
   constructor(
         public dialog: MatDialog,
         private fetchData: FecthDataService,
@@ -67,35 +66,38 @@ export class OrdersComponent implements OnInit {
       
     }
 
-    ngOnInit() {
-      this.ordersSubscriber = this.fetchData.getOrders(this.holdData.userInfo.companyId )
-      .subscribe( res => {
-        res.map(d => {
-          let itemData = d.payload.doc.data();
-          itemData.id =  d.payload.doc.id;
-          if (d.type === 'added'){
-            if (!this.showTableOrders) return this.dataSourceBack.push(itemData);            
-          }  
-          if (d.type === 'modified') {
-            const filterDataModified = this.dataSourceBack.filter((i) => {
-              if (i.orderId !== itemData.orderId) return i;
-            });
-            filterDataModified.unshift(itemData);
-            this.dataSourceBack = filterDataModified;
-          }
-        })
-        this.dataSource = this.dataSourceBack;
-        if (!this.showTableOrders) {   
-          this.showTableOrders = 'pending'   
-          this.showOnlyPendingOrders();    
-        } else {
-          this.showOrdersInTable();
+  ngOnInit() {
+    this.allowSound();
+    this.ordersSubscriber = this.fetchData.getOrders(this.holdData.userInfo.companyId )
+    .subscribe( res => {
+      res.map(d => {
+        let itemData = d.payload.doc.data();
+        itemData.id =  d.payload.doc.id;
+        if (d.type === 'added'){
+          if(itemData.state === 'pending') document.documentElement.dispatchEvent(this.orderEvent);
+          if (!this.showTableOrders) return this.dataSourceBack.push(itemData);            
+        }  
+        if (d.type === 'modified') {
+          if(itemData.state === 'pending') document.documentElement.dispatchEvent(this.orderEvent);
+          const filterDataModified = this.dataSourceBack.filter((i) => {
+            if (i.orderId !== itemData.orderId) return i;
+          });
+          filterDataModified.unshift(itemData);
+          this.dataSourceBack = filterDataModified;
         }
-      });
+      })
+      this.dataSource = this.dataSourceBack;
+      if (!this.showTableOrders) {   
+        this.showTableOrders = 'pending'   
+        this.showOnlyPendingOrders();    
+      } else {
+        this.showOrdersInTable();
+      }
+    });
   }
 
 
-  async prepareOrder(order){    
+  async prepareOrder(order, time: number){    
     // send update
     const data = {
       message: `_¡Tu pedido con código_ *${order.orderId}* _ha sido confirmado y está siendo preparado!_ 👨🏽‍🍳 👩🏽‍🍳`,
@@ -105,7 +107,7 @@ export class OrdersComponent implements OnInit {
     }
     try {
       const notificationResponse = await this.setData.sendOrderUpdateHttp(data).toPromise(); 
-      this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.id);
+      this.setData.startPreparingOrder(this.holdData.userInfo.companyId, order.id, time);
       this._snackBar.open('El estado del pedido cambio a "En preparación"', 'Ok', {
         duration: 4000,
       });
@@ -194,5 +196,14 @@ export class OrdersComponent implements OnInit {
     
     ngOnDestroy() {
       if(this.ordersSubscriber) this.ordersSubscriber.unsubscribe();
+    }
+
+    allowSound() {
+      const audioHowl = new Howl({
+        src: ['../../../assets/images/sounds/piece-of-cake.mp3']
+      });
+      document.documentElement.addEventListener("orderNot", () => {        
+        audioHowl.play();
+      })
     }
 }

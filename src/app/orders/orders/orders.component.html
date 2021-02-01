@@ -85,15 +85,21 @@
                     <mat-header-cell *matHeaderCellDef> Fecha </mat-header-cell>
                     <mat-cell *matCellDef="let element" (click)="details(element)"> {{element.timestamp.toDate() | date: 'EEEE, h:mm a'}} </mat-cell>
                   </ng-container>
-                  <!--  Column -->
 
+                  <!--  Column -->
                   <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
                     <mat-cell *matCellDef="let element"> 
                       
-                    <button *ngIf="element.state != 'transfer-pending'" (click)="prepareOrder(element)" mat-raised-button class="prepare-button" >
+                    <button *ngIf="element.state != 'transfer-pending'" [matMenuTriggerFor]="timeMenu" mat-raised-button class="prepare-button" >
                       Preparar
                     </button>
+                    <mat-menu  #timeMenu="matMenu">
+                      <button mat-menu-item (click)="prepareOrder(element, 10)">10 mins</button>
+                      <button mat-menu-item (click)="prepareOrder(element, 15)">15 mins</button>
+                      <button mat-menu-item (click)="prepareOrder(element, 20)">20 mins</button>
+                      <button mat-menu-item (click)="prepareOrder(element, 30)">+ 20 mins</button>
+                    </mat-menu> 
                     <button   *ngIf="element.state == 'transfer-pending'" (click)="details(element)"  mat-raised-button color="primary" >
                       Confirmar                      
                     </button>
