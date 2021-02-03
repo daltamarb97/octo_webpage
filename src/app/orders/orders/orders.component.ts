@@ -72,18 +72,21 @@ export class OrdersComponent implements OnInit {
     .subscribe( res => {
       res.map(d => {
         let itemData = d.payload.doc.data();
-        itemData.id =  d.payload.doc.id;
+        itemData.id =  d.payload.doc.id;        
         if (d.type === 'added'){
-          if(itemData.state === 'pending') document.documentElement.dispatchEvent(this.orderEvent);
-          if (!this.showTableOrders) return this.dataSourceBack.push(itemData);            
+          if(!this.showTableOrders) this.dataSourceBack.push(itemData);            
         }  
         if (d.type === 'modified') {
-          if(itemData.state === 'pending') document.documentElement.dispatchEvent(this.orderEvent);
-          const filterDataModified = this.dataSourceBack.filter((i) => {
-            if (i.orderId !== itemData.orderId) return i;
-          });
-          filterDataModified.unshift(itemData);
-          this.dataSourceBack = filterDataModified;
+          if(itemData.state === 'pending') {
+            document.documentElement.dispatchEvent(this.orderEvent);
+            this.dataSourceBack.push(itemData); 
+          } else {
+            for (let i=0; i < this.dataSourceBack.length; i++) {
+              if(this.dataSourceBack[i].orderId === itemData.orderId) {
+                this.dataSourceBack[i] = itemData;
+              }
+            }
+          }
         }
       })
       this.dataSource = this.dataSourceBack;

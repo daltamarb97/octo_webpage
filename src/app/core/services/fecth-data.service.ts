@@ -549,7 +549,7 @@ export class FecthDataService {
     let ref = this.db.collection('delivery')
     .doc(companyId)
     .collection('orders', ref => ref.orderBy('timestamp', 'desc'))
-    return ref.stateChanges(['added','modified']);
+    return ref.stateChanges(['added', 'modified'])
   }
   //END OF ORDERS
 }
