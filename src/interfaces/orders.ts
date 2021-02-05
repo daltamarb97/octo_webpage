@@ -4,6 +4,7 @@ export interface order {
     clientPhone: number;
     comments: string;
     deliverMode: string;
+    deliveryAddress: string;
     order: Array<string>;
     orderCost:string;
     orderId:string;
