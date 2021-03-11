@@ -85,7 +85,7 @@ export class HomeComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.fetchData.getInviteCodes()
       .subscribe(data => {
-        const rta = data.docs.map(d => d.data());
+        const rta: any = data.docs.map(d => d.data());
         for (let i in rta) {
           if (rta[i].inviteId === this.inviteCode && rta[i].guestEmail === this.holdData.userInfo.email) {
             // delete invite if found one

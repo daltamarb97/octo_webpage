@@ -518,7 +518,6 @@ export class WhatsappComponent implements OnInit {
                           this.fileInfo = null;
                           this.fileName = '';
                           this.showSpinner = false;
-                          console.log(this.chatWhatsapp, '2');
                       })
                       .catch(error => {
                           if (error.status === 400) {
