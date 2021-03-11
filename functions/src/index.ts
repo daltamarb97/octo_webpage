@@ -51,13 +51,48 @@ exports.sendInviteEmail = functions.firestore
 
     })
 
+// function that sends email to agent when a chat is assigned to them
+exports.sendEmailChat = functions.https
+.onRequest(async (req, res) => {
+    cors(req, res, () => {
+        const data = {
+            email: req.body.email
+        }
+        console.log(data);
+        
+         // email Logic stated here
+         const authData = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false,
+            auth: {
+                user: SENDER_EMAIL,
+                pass: SENDER_PASSWORD
+            }
+        });
+    
+        authData.sendMail({
+            from: 'chats@octo.com',
+            to: data.email,
+            subject: `Se te ha asigando un chat en Octo`,
+            text: `Entra en tu cuenta de Octo y atiende el chat que se te ha sido asignado 💪`,
+        }).then((response)=>{
+            console.log('successfully sent email:' + response);
+            res.end();
+        }).catch(error =>{
+            console.log('error has raised and it is: ' + error); 
+            res.end();
+        });
+    })
+})
+
 
 exports.sendPushNot = functions.firestore
-    .document('chats/{companyId}/rooms/{roomId}/messages/{messageId}')
+    .document('privatechat/{chatId}/messages/{messageId}')
     .onCreate(async (snapshot, context) => {
         const message: any = snapshot.data();
-        const roomId = context.params.roomId;
-        const companyId = context.params.companyId;  
+        const chatId = context.params.chatId;
+        const messageId = context.params.messageId;  
 
         const payload = {
             notification: {
@@ -66,24 +101,22 @@ exports.sendPushNot = functions.firestore
             }
         }
   
-        const participants = await admin.firestore()
-            .collection('chats')
-            .doc(companyId)
-            .collection('rooms')
-            .doc(roomId)
-            .collection('participants')
+        const participant: any = await admin.firestore()
+            .collection('privatechat')
+            .doc(chatId)
+            .collection('messages')
+            .doc(messageId)
             .get();
-
-            participants.forEach(async (p) => {
-                try {
-                    const dataUser: any = await admin.firestore().collection('users').doc(p.id).get();
-                    const token = dataUser.data().token;
-                    await admin.messaging().sendToDevice(token, payload)
-                } catch(error) {
-                    console.error('error sending push not: ', error);
-                }
-            })
-
+            
+        console.log(participant);
+        
+            try {
+                const dataUser: any = await admin.firestore().collection('users').doc(participant.data().foreignUserId).get();
+                const token = dataUser.data().token;
+                await admin.messaging().sendToDevice(token, payload)
+            } catch(error) {
+                console.error('error sending push not: ', error);
+            }
     })
 
 

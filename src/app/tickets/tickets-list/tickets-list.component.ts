@@ -20,6 +20,7 @@ export interface TicketElement {
   description: string;
   phone: string;
   date: any;
+  shortId: string;
 }
 
 export class currentChatData {
@@ -68,7 +69,7 @@ let TICKETS: TicketElement[] = [];
 export class TicketsListComponent implements OnInit {
 
     dataSource = new MatTableDataSource<TicketElement>(TICKETS); 
-    displayedColumns: string[] = ['creator', 'title', 'assignee', 'phone', 'status', 'date', 'action'];
+    displayedColumns: string[] = ['creator', 'title', 'ticketId', 'phone', 'status', 'date', 'action'];
 
     companyId: string;
     searchText: any;
@@ -104,7 +105,7 @@ export class TicketsListComponent implements OnInit {
                     status: t.data().status,
                     description: t.data().description,
                     phone: t.data().phone,
-                    // date: t.data().date.toDate(),
+                    shortId: t.data().ticketId.substring(0, 4),
                     date: t.data().date
                 }
                 TICKETS.push(data);

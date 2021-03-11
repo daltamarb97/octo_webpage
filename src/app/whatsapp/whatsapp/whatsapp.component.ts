@@ -49,6 +49,7 @@ export class currentChatData {
   finished: boolean = false;
   ticketId: string;
   assignTo: any = [];
+  recordAssignTo: any = [];
   hasTicket: boolean = false;
   private: boolean = false;
   chatName?:string; 
@@ -147,12 +148,12 @@ export class WhatsappComponent implements OnInit {
   name:string;
   showDate:boolean;
   hideDate:boolean;
-  date:number;
   datePick: any;
   chatInfoSubscription: any;
   urlSelectedFile: any;
   responseBot: Array<string> = [];
   responseForm: Array<string> = [];
+  
   constructor(
       private fetchData: FecthDataService,
       private setData: SetDataService,
@@ -262,17 +263,17 @@ export class WhatsappComponent implements OnInit {
   *******************/
   getChatWhatsappNames() {
       // get chat rooms names
-      const timestamp = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(new Date("December 31, 1970 00:00:00"));
-      this.chatInfoSubscription = this.fetchData.getWhatsappChats(this.companyId, timestamp)
+      const timestampStart = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(new Date("December 31, 1970 00:00:00"));
+      const timestampEnd = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(new Date());
+      this.chatInfoSubscription = this.fetchData.getWhatsappChats(this.companyId, timestampStart, timestampEnd)
         .pipe(
             takeUntil(this.destroy$)
         )
         .subscribe(data => {
-            
             this.chatWhatsapp = [];
             this.chatWhatsappAssigned = [];
             data.forEach(d => {
-                if(!d.agent && d.finished) this.chatWhatsapp.push(d);
+                // if(!d.agent && d.finished) this.chatWhatsapp.push(d);
                 if (d.agent) {
                     this.chatWhatsapp.push(d);
                     for (let j = 0; j < d.assignTo.length; j++) {
@@ -287,8 +288,9 @@ export class WhatsappComponent implements OnInit {
 
   dateFilter(){
     if (this.chatInfoSubscription) this.chatInfoSubscription.unsubscribe();
-    const timestamp = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(this.datePick);
-      this.chatInfoSubscription = this.fetchData.getWhatsappChats(this.companyId, timestamp)
+    const timestampStart = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(this.datePick.begin);
+    const timestampEnd = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(this.datePick.end);
+      this.chatInfoSubscription = this.fetchData.getWhatsappChats(this.companyId, timestampStart, timestampEnd)
         .pipe(
             takeUntil(this.destroy$)
         )
@@ -367,6 +369,7 @@ export class WhatsappComponent implements OnInit {
           finished: (data.finished) ? data.finished : false,
           ticketId: (data.ticketId) ? data.ticketId : null,
           assignTo: (data.assignTo) ? data.assignTo : null,
+          recordAssignTo: (data.recordAssignTo) ? data.recordAssignTo : null,
           hasTicket: (data.hasTicket) ? data.hasTicket : false,
           private: (data.private) ? data.private : false,
           chatName: (data.chatName) ? data.chatName:'Sin nombre',
@@ -720,7 +723,8 @@ export class WhatsappComponent implements OnInit {
         companyId: this.companyId,
         number: this.currentChatData.phoneNumber,
         timestamp: this.currentChatData.timestamp,
-        assignTo: this.currentChatData.assignTo
+        assignTo: this.currentChatData.assignTo,
+        recordAssignTo: this.currentChatData.recordAssignTo,
     })
     // hide user interface 
     this.showDetail = false;
@@ -797,28 +801,28 @@ export class WhatsappComponent implements OnInit {
   createTicket() {
       const dialogRef = this.dialog.open(TicketDialogComponent);
       dialogRef.afterClosed()
-          .subscribe(async result => {
-              // create new chat room 
-              if (result.event === 'Cancel' || result.event === undefined) {} else if (result.event === 'Success') {
-                  let ticket = result.data;
-                  ticket.phone = this.currentChatData.phoneNumber;
-                  ticket.status = 'Pendiente';
-                  const ticketId: any = await this.setData.createTicket(ticket, this.companyId);
-                  this.setData.sendHasTicket(this.currentChatData.phoneNumber, this.companyId, ticketId);
-                  this.showDetail = false;
-                  //agregar snackbar
-                  this.currentChatData = {...this.currentChatData, hasTicket: true, ticketId: ticketId};
-                  this.getTicket();
-                  this._snackBar.open('Creación exitosa', 'Ok', {
-                      duration: 3000,
-                  });
-              }
-          });
+        .subscribe(async result => {
+            // create new chat room 
+            if (result.event === 'Cancel' || result.event === undefined) {} else if (result.event === 'Success') {
+                let ticket = result.data;
+                ticket.phone = this.currentChatData.phoneNumber;
+                ticket.status = 'Pendiente';
+                const ticketId: any = await this.setData.createTicket(ticket, this.companyId);
+                this.setData.sendHasTicket(this.currentChatData.phoneNumber, this.companyId, ticketId);
+                this.showDetail = false;
+                //agregar snackbar
+                this.currentChatData = {...this.currentChatData, hasTicket: true, ticketId: ticketId};
+                this.getTicket();
+                this._snackBar.open('Creación exitosa', 'Ok', {
+                    duration: 3000,
+                });
+            }
+        });
   }
 
   addPerson(person) {
       this.employeesAssignated.push(person);
-      this.setData.setAssignedpeople(this.companyId, this.currentChatData.phoneNumber, this.employeesAssignated)
+      this.setData.setAssignedpeople(this.companyId, this.currentChatData.phoneNumber, this.employeesAssignated, person)
       this.showAssignedChats = false;
       this.showTicket = false;
       if (person.userId === this.holdData.userId) this.showPrivateChat = true;
@@ -827,11 +831,13 @@ export class WhatsappComponent implements OnInit {
       });
   }
 
-  removePersonAssigned(person) {
+  async removePersonAssigned(person) {
       const index = this.employeesAssignated.indexOf(person);
       if (index >= 0) {
-          this.employeesAssignated.splice(index, 1);
-          this.setData.setAssignedpeople(this.companyId, this.currentChatData.phoneNumber, this.employeesAssignated)
+        const dataRemoved = this.employeesAssignated.splice(index, 1);
+        this.setData.setAssignedpeople(this.companyId, this.currentChatData.phoneNumber, this.employeesAssignated, null);
+        // set record of agent assigned
+        await this.setData.saveAgentsRecord(this.companyId, this.currentChatData.phoneNumber, dataRemoved[0]);
       }
   }
 
@@ -898,15 +904,6 @@ export class WhatsappComponent implements OnInit {
       this.currentChatData.chatName = name;
       this.name = '';
   }
-
-    showDates(chat){
-        this.date = chat.timestamp;
-        this.showDate = true;
-    }
-
-    hideDates(){
-        this.showDate = false;
-    }
 
     startVoiceRecording() {
         this.showMic = false;

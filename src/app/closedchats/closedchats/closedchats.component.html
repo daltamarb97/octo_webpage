@@ -20,13 +20,30 @@
             <mat-tab-group  mat-align-tabs="center"> 
                 <mat-tab label="Todos los chats">
                     <div class="date-filter">
-                        <mat-form-field id="datepicker-chats" appearance="fill">
-                            <mat-label>Filtrar por fecha</mat-label>
-                            <input matInput [matDatepicker]="picker" [(ngModel)]="datePick">
-                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                            <mat-datepicker #picker></mat-datepicker>
-                        </mat-form-field>
-                        <button mat-raised-button color="accent" (click)="dateFilter()">Filtrar</button>
+                        <button id="main-filter" mat-raised-button [matMenuTriggerFor]="menu" color="accent">Filtro</button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click)="changeFilter(1)">Filtro por fecha</button>
+                            <button mat-menu-item (click)="changeFilter(2)">Filtro por número de ticket</button>
+                        </mat-menu>
+                        <!-- filtro por fecha -->
+                        <div id="container-date__filter" style="text-align: center; padding: 10px;" *ngIf="showDateFilter">
+                            <mat-form-field>
+                                <input matInput
+                                    placeholder="Escoge las fechas para ver resultados"
+                                    [satDatepicker]="picker"
+                                    [(ngModel)]="datePick"
+                                    (focus)="picker.open()"
+                                    readonly>
+                                <sat-datepicker #picker [rangeMode]="true"></sat-datepicker>
+                                <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
+                            </mat-form-field>
+                            <button mat-raised-button color="accent" (click)="dateFilter()">Aceptar</button>
+                        </div>
+                        <div id="container-string__filter" *ngIf="showStringFilter">
+                            <mat-form-field id="container-date__filter">
+                                <input matInput placeholder="# de Ticket" (keyup)="applyStringFilter($event.target.value)">
+                            </mat-form-field>
+                        </div>
                     </div>
                     <mat-selection-list [multiple]="false">
                         <ng-container *ngFor="let chat of chatWhatsapp; index as i" >
@@ -90,7 +107,13 @@
         <mat-toolbar  class="background-room" style=" background-color: #2C3B4D !important;">
             <span class="toolbar-msg"  ># {{currentChatData.phoneNumber | slice:9}}</span>
             <mat-chip-list>
-                <mat-chip *ngFor="let agent of currentChatData.assignTo">{{agent.name}} {{agent.lastname}}</mat-chip>
+                <mat-chip *ngFor="let agent of currentChatData.assignTo">{{agent.name}} {{agent.lastname ? agent.lastname : ''}}</mat-chip>
+                <mat-chip 
+                    class="record-agent" 
+                    matTooltip="Este agente estuvo asignado a este chat en algún punto"
+                    *ngFor="let agent of currentChatData.recordAssignTo">
+                    {{agent.name}} {{agent.lastname ? agent.lastname : ''}}
+                </mat-chip>
             </mat-chip-list>
             <button *ngIf="currentChatData.finished" mat-raised-button class="m-r-5" [matMenuTriggerFor]="templatesClose">Enviar Template</button>     
         </mat-toolbar>

@@ -222,25 +222,26 @@ export class FecthDataService {
 
   // WHATSAPP
 
-  getWhatsappChats(companyId: string, timestamp: any){
-    
+  getWhatsappChats(companyId: string, timestampStart: any, timestampEnd: any){
     // getting chatrooms info
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
     .collection('chats', ref => ref.orderBy('timestamp', 'desc')
-    .where("timestamp", ">=", timestamp)
+    .where("timestamp", ">=", timestampStart)
+    .where("timestamp", "<=", timestampEnd)
     .where("finished", "==", false))
 
     return ref.valueChanges();
   }
  
-  getWhatsappClosedChats(companyId: string, timestamp: any){
+  getWhatsappClosedChats(companyId: string, timestampStart: any, timestampEnd: any){
     
     // getting chatrooms info
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
     .collection('chats', ref => ref.orderBy('timestamp', 'desc')
-    .where("timestamp", ">=", timestamp)
+    .where("timestamp", ">=", timestampStart)
+    .where("timestamp", "<=", timestampEnd)
     .where("finished", "==", true)
     .limit(200))
 
@@ -538,7 +539,7 @@ export class FecthDataService {
   getTickets(companyId: string) {
     let ref = this.db.collection('tickets')
       .doc(companyId)
-      .collection('tickets')
+      .collection('tickets', ref => ref.orderBy('date', 'desc'))
       .get()
     return ref;
   }

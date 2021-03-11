@@ -56,6 +56,7 @@ export class ComunicationsComponent implements OnInit {
   oldChat:any;
   firstTimeMsgLoad: boolean = false;
   firstTimePrivateMsgLoad: boolean = false;
+  currentForeignUserId: string;
   // showSearchBar:boolean = false;
 
   constructor(
@@ -244,24 +245,6 @@ private getParticipantsFromRoom(){
   })
 }
 
-// addChatRoom(){
-//   const dialogRef = this.dialog.open(ChatCreationDialogComponent, {data: this.companyId});
-//   dialogRef.afterClosed()
-//   .subscribe(result =>{
-//     // create new chat room  
-//     const roomData = {
-//       roomName: result.data.name,
-//       roomDescription: result.data.description
-//     }
-//     const participants: Array<any> = result.data.participants;
-//     this.setData.createChatRoom(
-//       this.companyId, 
-//       roomData, 
-//       participants
-//     );  
-//   })  
-// }
-
 sendMessage(){
   // send message in specific room
   if(this.currentMessage && this.currentMessage.length !== 0) {
@@ -326,7 +309,12 @@ getPrivateMessages(){
     data.map(a=>{
       if(a.type === 'added'){
         const data= a.payload.doc.data(); 
-        this.privateChatsNames.push(data);
+        this.privateChatsNames.push({
+          name: data.name,
+          lastname: data.lastname,
+          chatId: data.chatId, 
+          foreignChatId: a.payload.doc.id
+        });
       }else if( a.type === 'removed'){
         for(let i in this.privateChatsNames){
           if(this.privateChatsNames[i].chatId === this.currentRoomData.roomId){
@@ -362,6 +350,7 @@ getMessagesFromPrivateChat(data){
 
 
 getMessagesFromPrivateChatOnclick(data) {
+  this.currentForeignUserId = data.foreignChatId;
   this.firstTimePrivateMsgLoad = true;
   this.privateChats = [];
   this.currentPrivateChat = {
@@ -445,7 +434,8 @@ sendPrivateMessage(){
       lastname: this.holdData.userInfo.lastname,
       message: this.currentMessage,
       timestamp: this.holdData.convertJSDateIntoFirestoreTimestamp(),
-      userId: this.userId
+      userId: this.userId,
+      foreignUserId: this.currentForeignUserId
     }
   
     const tempPrivateMessage = {

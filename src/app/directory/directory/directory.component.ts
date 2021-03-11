@@ -79,12 +79,12 @@ export class DirectoryComponent implements OnInit {
         const localData = {
           userId: this.user.userId,
           name: this.user.name,
-          lastname: this.user.lastname,
+          lastname: this.user.lastname ? this.user.lastname : ' ',
         }
         const foreignData = {
           userId: person.userId,
           name: person.name,
-          lastname: person.lastname,
+          lastname: person.lastname ? person.lastname : ' ',
         }
         this.setData.createPrivateChat(localData, foreignData,this.holdData.userInfo.companyId)
           .then((res) => {

@@ -49,6 +49,7 @@ export class currentChatData {
   finished: boolean = false;
   ticketId: string;
   assignTo: any = [];
+  recordAssignTo: any = [];
   hasTicket: boolean = false;
   private: boolean = false;
   chatName?:string; 
@@ -93,6 +94,7 @@ export class ClosedchatsComponent implements OnInit {
   userId: string;
   companyId: string;
   chatWhatsapp: Array < any > = []; // list of names of rooms
+  chatWhatsappShadow: Array < any > = []; // list of names of rooms
   chatWhatsappAssigned: Array < any > = []; // list of names of rooms
   chatMessages: Array < any > = []; // array of messages of specific room
   currentMessage: string = null; // message to be send
@@ -145,6 +147,10 @@ export class ClosedchatsComponent implements OnInit {
   date:number;
   datePick: any;
   chatInfoSubscription: any;
+  showDateFilter: boolean = false;
+  showStringFilter: boolean = false;
+  currentFilter: string;
+
   constructor(
       private fetchData: FecthDataService,
       private setData: SetDataService,
@@ -251,8 +257,9 @@ export class ClosedchatsComponent implements OnInit {
   *******************/
   getChatWhatsappNames() {
       // get chat rooms names
-      const timestamp = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(new Date("December 31, 1970 00:00:00"));
-      this.chatInfoSubscription = this.fetchData.getWhatsappClosedChats(this.companyId, timestamp)
+      const timestampStart = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(new Date("December 31, 1970 00:00:00"));
+      const timestampEnd = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(new Date());
+      this.chatInfoSubscription = this.fetchData.getWhatsappClosedChats(this.companyId, timestampStart, timestampEnd)
         .pipe(
             takeUntil(this.destroy$)
         )
@@ -270,31 +277,33 @@ export class ClosedchatsComponent implements OnInit {
                     }
                 }
             })
+            this.chatWhatsappShadow = this.chatWhatsapp;
         });
   }
 
   dateFilter(){
     if (this.chatInfoSubscription) this.chatInfoSubscription.unsubscribe();
-    const timestamp = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(this.datePick);
-      this.chatInfoSubscription = this.fetchData.getWhatsappClosedChats(this.companyId, timestamp)
-        .pipe(
-            takeUntil(this.destroy$)
-        )
-        .subscribe(data => {
-            this.chatWhatsapp = [];
-            this.chatWhatsappAssigned = [];
-            data.forEach(d => {
-                if(!d.agent && d.finished) this.chatWhatsapp.push(d);
-                if (d.agent) {
-                    this.chatWhatsapp.push(d);
-                    for (let j = 0; j < d.assignTo.length; j++) {
-                        if (d.assignTo[j].userId === this.userId && !d.finished) {
-                            this.chatWhatsappAssigned.push(d);
-                        }
+    const timestampStart = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(this.datePick.begin);
+    const timestampEnd = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(this.datePick.end);
+    this.chatInfoSubscription = this.fetchData.getWhatsappClosedChats(this.companyId, timestampStart, timestampEnd)
+    .pipe(
+        takeUntil(this.destroy$)
+    )
+    .subscribe(data => {
+        this.chatWhatsapp = [];
+        this.chatWhatsappAssigned = [];
+        data.forEach(d => {
+            if(!d.agent && d.finished) this.chatWhatsapp.push(d);
+            if (d.agent) {
+                this.chatWhatsapp.push(d);
+                for (let j = 0; j < d.assignTo.length; j++) {
+                    if (d.assignTo[j].userId === this.userId && !d.finished) {
+                        this.chatWhatsappAssigned.push(d);
                     }
                 }
-            })
-        });
+            }
+        })
+    });
   }
 
   async getMessagesFromChatOnclick(data, assigned: boolean) {
@@ -356,6 +365,7 @@ export class ClosedchatsComponent implements OnInit {
           finished: (data.finished) ? data.finished : false,
           ticketId: (data.ticketId) ? data.ticketId : null,
           assignTo: (data.assignTo) ? data.assignTo : null,
+          recordAssignTo: (data.recordAssignTo) ? data.recordAssignTo : null,
           hasTicket: (data.hasTicket) ? data.hasTicket : false,
           private: (data.private) ? data.private : false,
           chatName: (data.chatName) ? data.chatName:'Sin nombre',
@@ -425,117 +435,6 @@ export class ClosedchatsComponent implements OnInit {
           })
   }
 
-  sendMessage() {
-      // check if chat is active
-      this.fetchData.checkWhatsapp24HourWindow({
-              companyId: this.companyId,
-              number: this.currentChatData.phoneNumber,
-              api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
-          }).toPromise()
-          .then(async (dataSession) => {
-              if (dataSession === 'false') {
-                  this.templatesActivated = true;
-                  this.templatesActivatedOptions = true;
-              }
-              this.showSpinner = true;
-              //send message in specific chat
-              if (this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {
-                  // uncomment in production
-                  let mediaUrl = null;
-                  if (this.fileInfo) {
-                      mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.fileInfo, this.fileName);
-                  }
-                  this.setData.sendWhatsappMessageHttp({
-                          message: this.currentMessage,
-                          number: this.currentChatData.phoneNumber,
-                          template: this.templatesActivated,
-                          companyId: this.companyId,
-                          mediaUrl: mediaUrl,
-                          api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
-                      }).toPromise()
-                      .then(async (data) => {
-                          const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
-                          let dataFirebase;
-                          if (mediaUrl) {
-                              dataFirebase = {
-                                  inbound: false,
-                                  message: this.currentMessage,
-                                  timestamp: timestamp,
-                                  mediaUrl: mediaUrl,
-                                  MediaContentType: this.fileInfo.type
-                              }
-                              await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
-                          } else {
-                              dataFirebase = {
-                                  inbound: false,
-                                  message: this.currentMessage,
-                                  timestamp: timestamp,
-                              }
-                              await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
-                          }
-                          this.currentMessage = null;
-                          this.fileInfo = null;
-                          this.fileName = '';
-                          this.showSpinner = false;
-                      })
-                      .catch(error => {
-                          if (error.status === 400) {
-                              alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
-                          } else {
-                              console.log(error);
-                              
-                              alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
-                          }
-                          this.currentMessage = null;
-                          this.fileInfo = null;
-                          this.fileName = '';
-                          this.showSpinner = false;
-                      })
-              } else if(this.voiceNote) {
-                let mediaUrl;
-                let randomName = this.holdData.createRandomId();
-                randomName = `${randomName}.mpeg`
-                mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.voiceNote, randomName);
-                this.setData.sendWhatsappMessageHttp({
-                        message: this.currentMessage,
-                        number: this.currentChatData.phoneNumber,
-                        template: this.templatesActivated,
-                        companyId: this.companyId,
-                        mediaUrl: mediaUrl,
-                        api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
-                    }).toPromise()
-                    .then(async (data) => {
-                        const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
-                        let dataFirebase;
-                        if (mediaUrl) {
-                            dataFirebase = {
-                                inbound: false,
-                                message: this.currentMessage,
-                                timestamp: timestamp,
-                                mediaUrl: mediaUrl,
-                                MediaContentType: 'file'
-                            }
-                            await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
-                        }                        
-                        this.voiceNote = null;
-                        this.showSpinner = false;
-                    })
-                    .catch(error => {
-                        if (error.status === 400) {
-                            alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
-                        } else {
-                            console.log(error);
-                            alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
-                        }
-                        this.voiceNote = null;
-                        this.showSpinner = false;
-                    })
-              } else {
-                  this.currentMessage = null;
-              }
-          })
-  }
-
   /*******************
   END OF ROOM CHAT
   *******************/
@@ -586,6 +485,28 @@ export class ClosedchatsComponent implements OnInit {
     
     goToOpenChats(){
         this.router.navigate(['/whatsapp']);
+    }
 
+    changeFilter(option: number) {
+        this.chatWhatsapp = [...this.chatWhatsappShadow];
+        if (option === 1) {
+            this.showDateFilter = true;
+            this.showStringFilter = false;
+        } else {
+            this.showStringFilter = true;
+            this.showDateFilter = false;
+        }
+    }
+
+    applyStringFilter(value: string) {   
+        if (value.length === 0) {
+            this.chatWhatsapp = [...this.chatWhatsappShadow];          
+        } else {
+            this.chatWhatsapp = this.chatWhatsappShadow.filter(item => {
+                if (item.hasTicket) {
+                    if (item.ticketId.substring(0, 4).startsWith(value)) return item;
+                }
+            })
+        }
     }
 }

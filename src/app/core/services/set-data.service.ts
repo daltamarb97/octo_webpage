@@ -296,7 +296,8 @@ export class SetDataService {
       lastname: messageData.lastname,
       message: messageData.message,
       timestamp: messageData.timestamp,
-      userId: messageData.userId
+      userId: messageData.userId,
+      foreignUserId: messageData.foreignUserId
     })
   }
 
@@ -460,7 +461,8 @@ export class SetDataService {
       number: data.number,
       timestamp: data.timestamp,
       assignTo: data.assignTo,
-      responseBot: []
+      responseBot: [],
+      recordAssignTo: data.recordAssignTo
     })
   }
 
@@ -605,16 +607,26 @@ export class SetDataService {
     });
   }
 
-  setAssignedpeople(companyId,chatId,people){
+  async setAssignedpeople(companyId, chatId, people, lastAdded){
     //add person to assigned Chats
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
     .collection('chats')
     .doc(chatId)
-  
+
+    if (lastAdded) {
+      this.sendReminderEmail(lastAdded.email);
+    }    
     return ref.update({
       assignTo:people
     });
+  }
+
+  private async sendReminderEmail(email) {
+    const api_url = "https://us-central1-octo-work.cloudfunctions.net/sendEmailChat";
+    let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
+    const req = await this.httpClient.post(api_url, JSON.stringify({email: email}), {headers: headers, responseType: 'json'}).toPromise();
+    return req;
   }
 
   async setStatus(companyId: string,ticketId: string, status: string, number: string){
@@ -694,14 +706,12 @@ export class SetDataService {
     })
    }
 
-
    createCategory(companyId, categoryName){
     // send tag to Categories to firestore
     let ref = this.db.collection('whatsapp')
     .doc(companyId)
     .collection('tags')
     
-
     return ref.add({
       name: categoryName,            
     })
@@ -713,6 +723,32 @@ export class SetDataService {
       })
     })
    }
+
+   async saveAgentsRecord(companyId, number, agentData){
+    // send tag to Categories to firestore
+    let ref = this.db.collection('whatsapp')
+    .doc(companyId)
+    .collection('chats')
+    .doc(number);
+    
+    const data = await ref.get().toPromise();
+    if (data.data().recordAssignTo) {
+      const holdResponse = data.data().recordAssignTo.filter(item => {
+        if (item.userId === agentData.userId) return item;
+      })
+      if (holdResponse.length === 0) {
+        await ref.update({
+          recordAssignTo: [...data.data().recordAssignTo, agentData]
+        })
+      }
+    } else {
+      await ref.update({
+        recordAssignTo: [agentData]
+      })
+    }
+    return;
+   }
+
     // END OF WhatsApp services
 
   // --*--*--*--*--*--*--*--*--*--*--*--*--*--*--*
