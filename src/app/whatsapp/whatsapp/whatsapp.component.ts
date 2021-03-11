@@ -43,6 +43,7 @@ import {
 } from '@angular/material/snack-bar';
 import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter } from '@angular/material/core';
 import { formatDate } from '@angular/common';
+import { addDays } from 'date-fns';
 
 export class currentChatData {
   phoneNumber: string;
@@ -264,7 +265,7 @@ export class WhatsappComponent implements OnInit {
   getChatWhatsappNames() {
       // get chat rooms names
       const timestampStart = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(new Date("December 31, 1970 00:00:00"));
-      const timestampEnd = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(new Date());
+      const timestampEnd = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(addDays(new Date(), 1));
       this.chatInfoSubscription = this.fetchData.getWhatsappChats(this.companyId, timestampStart, timestampEnd)
         .pipe(
             takeUntil(this.destroy$)
@@ -273,7 +274,7 @@ export class WhatsappComponent implements OnInit {
             this.chatWhatsapp = [];
             this.chatWhatsappAssigned = [];
             data.forEach(d => {
-                // if(!d.agent && d.finished) this.chatWhatsapp.push(d);
+                if(!d.agent && d.finished) this.chatWhatsapp.push(d);
                 if (d.agent) {
                     this.chatWhatsapp.push(d);
                     for (let j = 0; j < d.assignTo.length; j++) {
@@ -517,6 +518,7 @@ export class WhatsappComponent implements OnInit {
                           this.fileInfo = null;
                           this.fileName = '';
                           this.showSpinner = false;
+                          console.log(this.chatWhatsapp, '2');
                       })
                       .catch(error => {
                           if (error.status === 400) {
