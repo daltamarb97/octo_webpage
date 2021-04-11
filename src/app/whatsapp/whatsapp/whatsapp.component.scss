@@ -276,3 +276,11 @@ mat-list-option[aria-selected="true"] {
 .back-btn {
   cursor: pointer;
 }
+#chat-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  #content-messages, #content-messages-private {
+    width: 80%;
+  }
+}

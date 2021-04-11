@@ -86,6 +86,46 @@ exports.sendEmailChat = functions.https
     })
 })
 
+// sends email when a ticket is assigned to and agent
+exports.sendEmailTicket = functions.https
+.onRequest(async (req, res) => {
+    cors(req, res, () => {
+        const data = {
+            email: req.body.email,
+            ticketId: req.body.ticketId
+        }
+        console.log(data);
+        
+         // email Logic stated here
+         const authData = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false,
+            auth: {
+                user: SENDER_EMAIL,
+                pass: SENDER_PASSWORD
+            }
+        });
+    
+        authData.sendMail({
+            from: 'tickets@octo.com',
+            to: data.email,
+            subject: `Se te ha asigando un TICKET en Octo`,
+            text: `
+            Entra en tu cuenta de Octo y atiende el ticket que se te ha sido asignado 💪 
+            
+            Número de ticket: ${data.ticketId}
+            `,
+        }).then((response)=>{
+            console.log('successfully sent email:' + response);
+            res.end();
+        }).catch(error =>{
+            console.log('error has raised and it is: ' + error); 
+            res.end();
+        });
+    })
+})
+
 
 exports.sendPushNot = functions.firestore
     .document('privatechat/{chatId}/messages/{messageId}')

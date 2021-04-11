@@ -44,6 +44,7 @@ import {
 import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter } from '@angular/material/core';
 import { formatDate } from '@angular/common';
 import { addDays } from 'date-fns';
+import Swal from 'sweetalert2'
 
 export class currentChatData {
   phoneNumber: string;
@@ -154,6 +155,8 @@ export class WhatsappComponent implements OnInit {
   urlSelectedFile: any;
   responseBot: Array<string> = [];
   responseForm: Array<string> = [];
+  public showLoadingOnChatOpening: boolean = false;
+  public showSpinnerOnMessageLoading: boolean = false;
   
   constructor(
       private fetchData: FecthDataService,
@@ -312,16 +315,46 @@ export class WhatsappComponent implements OnInit {
         });
   }
 
+  private actionsAmongChatOpenings() {
+    //chat is allowed to see
+    this.employeesAssignated = [];
+    if (this.messageSubscription) this.messageSubscription.unsubscribe();
+    if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
+    // get comments of this chat
+    this.chatNote = null;
+    this.firstTimeMsgLoad = true;
+    this.chatMessages = [];
+    this.templatesActivated = false;
+    this.templatesActivatedOptions = false;
+    this.iAmAssigned = false;
+    this.showGeneralChats = false;
+    this.showAssignedChats = false;
+    this.showLoadingOnChatOpening = true;
+  }
+
   async getMessagesFromChatOnclick(data, assigned: boolean) {
-      this.templatesActivated = false;
-      this.templatesActivatedOptions = false;
-      this.iAmAssigned = false;
+    //   //chat is allowed to see
+    //   this.employeesAssignated = [];
+    //   if (this.messageSubscription) this.messageSubscription.unsubscribe();
+    //   if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
+    //   // get comments of this chat
+    //   this.chatNote = null;
+    //   this.firstTimeMsgLoad = true;
+    //   this.chatMessages = [];
+    //   this.templatesActivated = false;
+    //   this.templatesActivatedOptions = false;
+    //   this.iAmAssigned = false;
+    //   this.showGeneralChats = false;
+    //   this.showAssignedChats = false;
+    //   this.showLoadingOnChatOpening = true;
+        this.actionsAmongChatOpenings();    
       this.fetchData.checkWhatsapp24HourWindow({
         companyId: (this.companyId) ? this.companyId : data.companyId,
         number: data.number,
         api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
       }).toPromise()
       .then(dataSession => {
+        this.showLoadingOnChatOpening = false;
         if(dataSession === 'false') {
           this.templatesActivated = true;
           this.templatesActivatedOptions = true;
@@ -354,17 +387,36 @@ export class WhatsappComponent implements OnInit {
             }
         }
       })
+      .catch(async error => {
+        this.showLoadingOnChatOpening = false;
+        const dataError = {
+            message: error.message,
+            name: error.name,
+            ok: error.ok,
+            status: error.status,
+            statusText: error.name,
+            url: error.url
+        };
+        await this.setData.setError(this.companyId, dataError);
+        Swal.fire(
+            'Hubo un error cargando los mensajes', 
+            'Por favor intenta de nuevo',
+            'error'
+        ).then(data => {
+            this.actionsAmongChatOpenings();    
+        });
+      })
   }
 
   allowGetChatInformation(data, assigned: boolean) {
-      //chat is allowed to see
-      this.employeesAssignated = [];
-      if (this.messageSubscription) this.messageSubscription.unsubscribe();
-      if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
-      // get comments of this chat
-      this.chatNote = null;
-      this.firstTimeMsgLoad = true;
-      this.chatMessages = [];
+    //   //chat is allowed to see
+    //   this.employeesAssignated = [];
+    //   if (this.messageSubscription) this.messageSubscription.unsubscribe();
+    //   if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
+    //   // get comments of this chat
+    //   this.chatNote = null;
+    //   this.firstTimeMsgLoad = true;
+    //   this.chatMessages = [];
       this.currentChatData = {
           phoneNumber: data.number,
           finished: (data.finished) ? data.finished : false,
@@ -389,38 +441,59 @@ export class WhatsappComponent implements OnInit {
           this.showAssignedChats = false;
       }
       this.getTagsFromConversation(data.number);
+      this.showSpinnerOnMessageLoading = true; 
       this.messageSubscription = this.fetchData.getMessagesFromSpecificWChat(
-              this.companyId,
-              data.number
-          )
-          .subscribe((dataRta) => {              
-              if (this.showGeneralChats) {
-                  const el = document.getElementById('content-messages');
-                  el.scrollTop = el.scrollHeight;
-              } else if (this.showAssignedChats) {
-                  const el = document.getElementById('content-messages-private');
-                  el.scrollTop = el.scrollHeight;
-              }
-              dataRta.map(d => {
-                  if (this.firstTimeMsgLoad === true) {
-                      this.chatMessages.unshift({
-                          ...d.payload.doc.data(),
-                          MediaContentType: (d.payload.doc.data().MediaContentType) ?
-                              (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file' :
-                              null
-                      });
-                  } else {
-                      this.chatMessages.push({
-                          ...d.payload.doc.data(),
-                          MediaContentType: (d.payload.doc.data().MediaContentType) ?
-                              (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file' :
-                              null
-                      });
-                  }
+            this.companyId,
+            data.number
+        )
+        .subscribe((dataRta) => {   
+            this.showSpinnerOnMessageLoading = false;           
+            if (this.showGeneralChats) {
+                const el = document.getElementById('content-messages');
+                el.scrollTop = el.scrollHeight;
+            } else if (this.showAssignedChats) {
+                const el = document.getElementById('content-messages-private');
+                el.scrollTop = el.scrollHeight;
+            }
+            dataRta.map(d => {
+                if (this.firstTimeMsgLoad === true) {
+                    this.chatMessages.unshift({
+                        ...d.payload.doc.data(),
+                        MediaContentType: (d.payload.doc.data().MediaContentType) ?
+                            (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file' :
+                            null
+                    });
+                } else {
+                    this.chatMessages.push({
+                        ...d.payload.doc.data(),
+                        MediaContentType: (d.payload.doc.data().MediaContentType) ?
+                            (d.payload.doc.data().MediaContentType.includes('image')) ? 'image' : 'file' :
+                            null
+                    });
+                }
 
-              })
-              this.firstTimeMsgLoad = false;
-          })
+            })
+            this.firstTimeMsgLoad = false;
+        }, async error => {
+            this.showSpinnerOnMessageLoading = false;   
+            this.actionsAmongChatOpenings();
+            const dataError = {
+                message: error.message,
+                name: error.name,
+                ok: error.ok,
+                status: error.status,
+                statusText: error.name,
+                url: error.url
+            };
+            await this.setData.setError(this.companyId, dataError);
+            Swal.fire(
+                'Hubo un error cargando los mensajes de este chat', 
+                'Por favor intenta de nuevo',
+                'error'
+            ).then(data => {
+                this.actionsAmongChatOpenings();    
+            })
+        })
 
       // .catch(error => {
       //   console.error(error);
@@ -460,122 +533,118 @@ export class WhatsappComponent implements OnInit {
           })
   }
 
-  sendMessage() {
-      // check if chat is active
-      this.fetchData.checkWhatsapp24HourWindow({
-              companyId: this.companyId,
+  async sendMessage() {
+      try {
+        const dataSession = await this.fetchData.checkWhatsapp24HourWindow({
+            companyId: this.companyId,
+            number: this.currentChatData.phoneNumber,
+            api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
+        }).toPromise();
+        if (dataSession === 'false') {
+            this.templatesActivated = true;
+            this.templatesActivatedOptions = true;
+        }
+        this.showSpinner = true;
+        // upload file if file
+        let mediaUrl = null;
+        if (this.fileInfo) {
+            mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.fileInfo, this.fileName);
+            if (this.currentMessage.length <= 1) this.currentMessage = 'Imagen';
+        }
+        //send message in specific chat
+        if (this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {
+          const data = await this.setData.sendWhatsappMessageHttp({
+              message: this.currentMessage,
               number: this.currentChatData.phoneNumber,
+              template: this.templatesActivated,
+              companyId: this.companyId,
+              mediaUrl: mediaUrl,
               api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
-          }).toPromise()
-          .then(async (dataSession) => {
-              if (dataSession === 'false') {
-                  this.templatesActivated = true;
-                  this.templatesActivatedOptions = true;
+          }).toPromise();
+          const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
+          let dataFirebase;
+          if (mediaUrl) {
+              dataFirebase = {
+                  inbound: false,
+                  message: this.currentMessage,
+                  timestamp: timestamp,
+                  mediaUrl: mediaUrl,
+                  MediaContentType: this.fileInfo.type
               }
-              this.showSpinner = true;
-              // upload file if file
-              let mediaUrl = null;
-                  if (this.fileInfo) {
-                    try {
-                      mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.fileInfo, this.fileName);
-                      if (this.currentMessage.length <= 1) this.currentMessage = 'Imagen';
-                    } catch(error) {
-                      console.log('error uploading file');
-                      alert('Error enviando archivo');
-                    }
-                  }
-              //send message in specific chat
-              if (this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {
-                  this.setData.sendWhatsappMessageHttp({
-                          message: this.currentMessage,
-                          number: this.currentChatData.phoneNumber,
-                          template: this.templatesActivated,
-                          companyId: this.companyId,
-                          mediaUrl: mediaUrl,
-                          api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
-                      }).toPromise()
-                      .then(async (data) => {
-                          const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
-                          let dataFirebase;
-                          if (mediaUrl) {
-                              dataFirebase = {
-                                  inbound: false,
-                                  message: this.currentMessage,
-                                  timestamp: timestamp,
-                                  mediaUrl: mediaUrl,
-                                  MediaContentType: this.fileInfo.type
-                              }
-                              await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
-                          } else {
-                              dataFirebase = {
-                                  inbound: false,
-                                  message: this.currentMessage,
-                                  timestamp: timestamp,
-                              }
-                              await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
-                          }
-                          this.currentMessage = null;
-                          this.fileInfo = null;
-                          this.fileName = '';
-                          this.showSpinner = false;
-                      })
-                      .catch(error => {
-                          if (error.status === 400) {
-                              alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
-                          } else {
-                              console.log(error);
-                              
-                              alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
-                          }
-                          this.currentMessage = null;
-                          this.fileInfo = null;
-                          this.fileName = '';
-                          this.showSpinner = false;
-                      })
-              } else if(this.voiceNote) {
-                let mediaUrl;
-                let randomName = this.holdData.createRandomId();
-                randomName = `${randomName}.mpeg`
-                mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.voiceNote, randomName);
-                this.setData.sendWhatsappMessageHttp({
-                        message: this.currentMessage,
-                        number: this.currentChatData.phoneNumber,
-                        template: this.templatesActivated,
-                        companyId: this.companyId,
-                        mediaUrl: mediaUrl,
-                        api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
-                    }).toPromise()
-                    .then(async (data) => {
-                        const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
-                        let dataFirebase;
-                        if (mediaUrl) {
-                            dataFirebase = {
-                                inbound: false,
-                                message: this.currentMessage,
-                                timestamp: timestamp,
-                                mediaUrl: mediaUrl,
-                                MediaContentType: 'file'
-                            }
-                            await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
-                        }                        
-                        this.voiceNote = null;
-                        this.showSpinner = false;
-                    })
-                    .catch(error => {
-                        if (error.status === 400) {
-                            alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
-                        } else {
-                            console.log(error);
-                            alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
-                        }
-                        this.voiceNote = null;
-                        this.showSpinner = false;
-                    })
-              } else {
-                this.currentMessage = null;
-                this.showSpinner = false;
+              await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
+          } else {
+              dataFirebase = {
+                  inbound: false,
+                  message: this.currentMessage,
+                  timestamp: timestamp,
               }
-          })
+              await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
+          }
+          this.currentMessage = null;
+          this.fileInfo = null;
+          this.fileName = '';
+          this.showSpinner = false;
+
+        } else if(this.voiceNote) {
+          let mediaUrl;
+          let randomName = this.holdData.createRandomId();
+          randomName = `${randomName}.mpeg`
+          mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.voiceNote, randomName);
+          const data = await this.setData.sendWhatsappMessageHttp({
+              message: this.currentMessage,
+              number: this.currentChatData.phoneNumber,
+              template: this.templatesActivated,
+              companyId: this.companyId,
+              mediaUrl: mediaUrl,
+              api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
+          }).toPromise();
+          const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
+          let dataFirebase;
+          if (mediaUrl) {
+              dataFirebase = {
+                  inbound: false,
+                  message: this.currentMessage,
+                  timestamp: timestamp,
+                  mediaUrl: mediaUrl,
+                  MediaContentType: 'file'
+              }
+              await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
+          }                        
+          this.voiceNote = null;
+          this.showSpinner = false;
+        } else {
+          this.currentMessage = null;
+          this.showSpinner = false;
+        }
+      } catch(error) {
+        if (error.status === 400) {
+            Swal.fire(
+                'No se puede enviar mensajes', 
+                'La empresa no tiene saldo suficiente',
+                'error'
+            );
+        } else {
+            const dataError = {
+                message: error.message,
+                name: error.name,
+                ok: error.ok,
+                status: error.status,
+                statusText: error.name,
+                url: error.url
+            };
+            await this.setData.setError(this.companyId, dataError);
+            Swal.fire(
+                'No pudimos enviar tu mensaje', 
+                'Si el error persiste por favor contáctanos a daniel@octochat.co',
+                'error'
+            );
+        }
+        this.currentMessage = null;
+        this.fileInfo = null;
+        this.fileName = '';
+        this.showSpinner = false;
+        this.voiceNote = null;
+      }
   }
 
   /*******************
@@ -679,13 +748,29 @@ export class WhatsappComponent implements OnInit {
         }
         await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
     })
-    .catch(error => {
+    .catch(async error => {
         if (error.status === 400) {
-            alert('No se puede enviar mensajes porque la empresa no tiene saldo suficiente');
-        } else {
-            console.log(error);
-            alert('No pudimos enviar tu mensaje, si el error persiste por favor contáctanos a octo.colombia@gmail.com');
-        }
+            Swal.fire(
+                'No se puede enviar mensajes', 
+                'La empresa no tiene saldo suficiente',
+                'error'
+            );
+          } else {
+            const dataError = {
+                message: error.message,
+                name: error.name,
+                ok: error.ok,
+                status: error.status,
+                statusText: error.name,
+                url: error.url
+            };
+            await this.setData.setError(this.companyId, dataError);
+            Swal.fire(
+                'No pudimos enviar tu mensaje', 
+                'Si el error persiste por favor contáctanos a daniel@octochat.co',
+                'error'
+            );
+          }
     })
   }
 

@@ -40,13 +40,15 @@
                                     <div style="display: flex; flex-direction: column">
                                         <h3 
                                             [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }" 
-                                            *ngIf="chat.chatName === undefined">
+                                            *ngIf="!chat.chatName">
                                             {{chat.number | slice:9}} 
                                         </h3>
-                                        <h3 [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }">
+                                        <h3 
+                                            *ngIf="chat.chatName"
+                                            [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }">
                                             {{chat.chatName }} 
                                         </h3> 
-                                        <span style="font-size: 9px; padding-left:16px">{{chat.timestamp.toDate() | date:'medium'}}</span> 
+                                        <span *ngIf="chat.timestamp" style="font-size: 9px; padding-left:16px">{{chat.timestamp.toDate() | date:'medium'}}</span> 
                                     </div>
                                     <mat-chip-list  style="margin-left: auto;" >
                                         <mat-chip style="background-color: #44DB5E" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
@@ -88,13 +90,15 @@
                                     <div style="display: flex; flex-direction: column">
                                         <h3 
                                             [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }" 
-                                            *ngIf="chat.chatName === undefined">
+                                            *ngIf="!chat.chatName">
                                             {{chat.number | slice:9}} 
                                         </h3>
-                                        <h3 [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }">
+                                        <h3 
+                                            [ngStyle]="{'font-weight': chat.unseen ? 'bold' : '300' }"
+                                            *ngIf="chat.chatName">
                                             {{chat.chatName }} 
                                         </h3> 
-                                        <span style="font-size: 9px; padding-left:16px">{{chat.timestamp.toDate() | date:'medium'}}</span> 
+                                        <span *ngIf="chat.timestamp" style="font-size: 9px; padding-left:16px">{{chat.timestamp.toDate() | date:'medium'}}</span> 
                                     </div>
                                     <mat-chip-list  style="margin-left: auto;" >
                                         <mat-chip style="background-color: #44DB5E" class="chip" selected *ngIf="!chat.finished">abierto</mat-chip>
@@ -174,7 +178,7 @@
                 </mat-form-field>
             </mat-card-content>
         </mat-card>
-    <!-- ************** END OF TICKET ************** -->
+        <!-- ************** END OF TICKET ************** -->
         <!-- DETALLES -->
         <mat-card *ngIf="showDetail"  >
             <mat-card-header class="details-menu_header">
@@ -267,7 +271,7 @@
                 </mat-menu>
                 <mat-menu #assignment="matMenu" class="mymegamenu" style="overflow-y: auto;">
                     <button mat-menu-item *ngFor="let e of employeesList" matTooltip="{{e.email}}" (click)="addPerson(e)">
-                        {{e.name | titlecase}} {{e.lastname | titlecase}}
+                        {{e.name | titlecase}}
                     </button>
                 </mat-menu>
                 <mat-menu  #forms="matMenu">
@@ -290,11 +294,11 @@
               </mat-card-content>
         </mat-card>
         <!-- ************** END OF DETALLES ************** -->
-    <input hidden #fileInput type="file" class="form-control" (change)="selectImage($event)" placeholder="Upload image" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
-    text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">  
+        <input hidden #fileInput type="file" class="form-control" (change)="selectImage($event)" placeholder="Upload image" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
+        text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">  
     </mat-sidenav>
     <!-- CENTER PART -->
-    <mat-sidenav-content opened mode="side" position="end">
+    <mat-sidenav-content id="chat-container" opened mode="side" position="end">
 
         <!-- GENERAL CHATS -->
         <mat-card *ngIf="showGeneralChats" id="content-messages" style="height: 100%; overflow-y: auto;">
@@ -347,7 +351,7 @@
                     </div>
                 </div>  
                 <!-- if no messages show this card -->
-                <div *ngIf="chatMessages.length === 0">
+                <div *ngIf="chatMessages.length === 0 && !showSpinnerOnMessageLoading">
                     <mat-card class="message-card">
                         <mat-card-content>
                             <p>
@@ -356,6 +360,9 @@
                         </mat-card-content>
                     </mat-card>
                 </div>
+
+                <mat-spinner *ngIf="showSpinnerOnMessageLoading && chatMessages.length === 0"></mat-spinner>
+
             </mat-card-content>
             <mat-card-actions style="border-top: 1px solid #CED5D8;">
                 <mat-spinner *ngIf="showSpinner"></mat-spinner>
@@ -416,7 +423,7 @@
                 </mat-form-field>
             </mat-card-actions>
         </mat-card>
-            <!-- /*******
+        <!-- /*******
         ASSIGNED CHAT
         *******/ -->   
         <mat-card *ngIf="showAssignedChats" id="content-messages-private" style="height: 100%; overflow-y: auto;" >
@@ -489,7 +496,7 @@
                     </div>            
                 </div>  
                 <!-- if no messages show this card -->
-                <div *ngIf="chatMessages.length === 0">
+                <div *ngIf="chatMessages.length === 0 && !showSpinnerOnMessageLoading">
                     <mat-card class="message-card">
                         <mat-card-content>
                             <p>
@@ -498,6 +505,9 @@
                         </mat-card-content>
                     </mat-card>
                 </div>
+
+                <mat-spinner *ngIf="showSpinnerOnMessageLoading && chatMessages.length === 0"></mat-spinner>
+
             </mat-card-content>
             <mat-card-actions style="border-top: 1px solid #CED5D8;">
                 <mat-spinner *ngIf="showSpinner"></mat-spinner>
@@ -556,5 +566,6 @@
                 </mat-form-field>
             </mat-card-actions>
         </mat-card>
+        <mat-spinner *ngIf="!showAssignedChats && !showGeneralChats && showLoadingOnChatOpening"></mat-spinner>
     </mat-sidenav-content>
 </mat-sidenav-container>

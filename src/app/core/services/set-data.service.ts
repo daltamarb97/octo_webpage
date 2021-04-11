@@ -382,8 +382,8 @@ export class SetDataService {
 
   sendWhatsappMessageHttp(data){
      const responseId = this.holdData.createRandomId(); 
-    //  const api_url = "http://localhost:5000/message/sendFromOcto"
-    const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
+     const api_url = "http://localhost:5000/message/sendFromOcto"
+    // const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {
           message: data.message,
@@ -526,7 +526,7 @@ export class SetDataService {
     })
   }
 
-  async createTicket(ticket,companyId){
+  async createTicket(ticket, companyId){
     // generate ticket in firestore
     let ref = this.db.collection('tickets')
     .doc(companyId)
@@ -536,9 +536,21 @@ export class SetDataService {
     await ref.doc(rta.id).update({
       ticketId: rta.id
     })
+    await Promise.all(ticket.assignTo.map(async item => {
+      await this.sendReminderEmailTicket(item.email, rta.id.substring(0, 4));
+    }))
     return rta.id;
  }
 
+  private async sendReminderEmailTicket(email: string, ticketId: string) {
+    const api_url = "https://us-central1-octo-work.cloudfunctions.net/sendEmailTicket";
+    let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
+    const req = await this.httpClient.post(api_url, JSON.stringify({
+      email: email,
+      ticketId: ticketId
+    }), {headers: headers, responseType: 'json'}).toPromise();
+    return req;
+  }
 
   async changeOptionNumber(data) {
     let ref = this.db.collection('whatsapp')
@@ -961,8 +973,8 @@ export class SetDataService {
   }
 
   sendOrderUpdateHttp(data){
-    // const api_url = "http://localhost:5000/message/orderStatusNotification"
-    const api_url = (data.api_url) ? `${data.api_url}/message/orderStatusNotification` : "https://octo-api-wa.herokuapp.com/message/orderStatusNotification";
+    const api_url = "http://localhost:5000/message/orderStatusNotification"
+    // const api_url = (data.api_url) ? `${data.api_url}/message/orderStatusNotification` : "https://octo-api-wa.herokuapp.com/message/orderStatusNotification";
     const finalData = {
       message: data.message,
       number: data.number,
@@ -974,6 +986,15 @@ export class SetDataService {
     return req;
  }
 
- 
+//  ERRORS
+
+ async setError(companyId: string, data) {
+  let ref = this.db.collection('errors')
+      .doc(companyId)
+      .collection('errors');
+    await ref.add({
+      ...data
+    })
+ }
 }
 
