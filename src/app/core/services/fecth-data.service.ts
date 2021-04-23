@@ -554,4 +554,3 @@ export class FecthDataService {
   }
   //END OF ORDERS
 }
-

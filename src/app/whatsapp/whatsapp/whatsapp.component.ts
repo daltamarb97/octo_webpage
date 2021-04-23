@@ -51,7 +51,7 @@ export class currentChatData {
   finished: boolean = false;
   ticketId: string;
   assignTo: any = [];
-  recordAssignTo: any = [];
+  recordAssignTo?: any = [];
   hasTicket: boolean = false;
   private: boolean = false;
   chatName?:string; 
@@ -169,6 +169,7 @@ export class WhatsappComponent implements OnInit {
       private router: Router,
       private _snackBar: MatSnackBar,
       private route: ActivatedRoute,
+      public zone: NgZone
   ) {
       //getting info of chat if comes
     this.route.queryParams.subscribe(async() => {
@@ -347,7 +348,7 @@ export class WhatsappComponent implements OnInit {
     //   this.showGeneralChats = false;
     //   this.showAssignedChats = false;
     //   this.showLoadingOnChatOpening = true;
-        this.actionsAmongChatOpenings();    
+      this.actionsAmongChatOpenings();    
       this.fetchData.checkWhatsapp24HourWindow({
         companyId: (this.companyId) ? this.companyId : data.companyId,
         number: data.number,
@@ -408,15 +409,15 @@ export class WhatsappComponent implements OnInit {
       })
   }
 
-  allowGetChatInformation(data, assigned: boolean) {
-    //   //chat is allowed to see
-    //   this.employeesAssignated = [];
-    //   if (this.messageSubscription) this.messageSubscription.unsubscribe();
-    //   if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
-    //   // get comments of this chat
-    //   this.chatNote = null;
-    //   this.firstTimeMsgLoad = true;
-    //   this.chatMessages = [];
+allowGetChatInformation(data, assigned: boolean) {
+      //chat is allowed to see
+      this.employeesAssignated = [];
+      if (this.messageSubscription) this.messageSubscription.unsubscribe();
+      if (this.commentsSubscription) this.commentsSubscription.unsubscribe();
+      // get comments of this chat
+      this.chatNote = null;
+      this.firstTimeMsgLoad = true;
+      this.chatMessages = [];
       this.currentChatData = {
           phoneNumber: data.number,
           finished: (data.finished) ? data.finished : false,
@@ -446,7 +447,7 @@ export class WhatsappComponent implements OnInit {
             this.companyId,
             data.number
         )
-        .subscribe((dataRta) => {   
+        .subscribe((dataRta) => {  
             this.showSpinnerOnMessageLoading = false;           
             if (this.showGeneralChats) {
                 const el = document.getElementById('content-messages');
@@ -471,8 +472,7 @@ export class WhatsappComponent implements OnInit {
                             null
                     });
                 }
-
-            })
+            });
             this.firstTimeMsgLoad = false;
         }, async error => {
             this.showSpinnerOnMessageLoading = false;   
@@ -494,10 +494,6 @@ export class WhatsappComponent implements OnInit {
                 this.actionsAmongChatOpenings();    
             })
         })
-
-      // .catch(error => {
-      //   console.error(error);
-      // })
     // set unseen flag to false
     this.setData.setUnseenToFalse(this.companyId, this.currentChatData.phoneNumber);
   }
@@ -1046,5 +1042,5 @@ export class WhatsappComponent implements OnInit {
             return `${key} : ${responseFormData.results[key]}`;
         });
     }
-    
+
 }
