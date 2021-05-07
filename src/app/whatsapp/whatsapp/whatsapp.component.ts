@@ -45,6 +45,7 @@ import { DateAdapter, MAT_DATE_FORMATS, NativeDateAdapter } from '@angular/mater
 import { formatDate } from '@angular/common';
 import { addDays } from 'date-fns';
 import Swal from 'sweetalert2'
+import { DropFilesComponent } from '../../material-component/drop-files/drop-files.component';
 
 export class currentChatData {
   phoneNumber: string;
@@ -779,7 +780,10 @@ allowGetChatInformation(data, assigned: boolean) {
       let reader = new FileReader();
       reader.readAsDataURL(this.fileInfo);
       reader.onload = () => {
-        this.urlSelectedFile = reader.result;
+        this.urlSelectedFile = {
+            url: reader.result,
+            typeImage: file.target.files[0].type.includes('image') ? true : false
+        };
       }
       this.fileName = file.target.files[0].name;
   }
@@ -1041,6 +1045,29 @@ allowGetChatInformation(data, assigned: boolean) {
         this.responseForm = Object.keys(responseFormData.results).map((key) => {
             return `${key} : ${responseFormData.results[key]}`;
         });
+    }
+
+    openDropFile() {
+        const dialogRef = this.dialog.open(DropFilesComponent, {
+            minWidth: "500px",
+            height: "550px",
+            panelClass: 'drop-files-dialog',
+        });
+        dialogRef.afterClosed()
+        .subscribe(result => {
+            if (result.event !== 'cancel') {
+                this.fileInfo = result.files[0];
+                let reader = new FileReader();
+                reader.readAsDataURL(this.fileInfo);
+                reader.onload = () => {
+                    this.urlSelectedFile = {
+                        url: reader.result,
+                        typeImage: result.files[0].type.includes('image') ? true : false
+                    };
+                }
+                this.fileName = result.files[0].name;
+            }
+        })
     }
 
 }

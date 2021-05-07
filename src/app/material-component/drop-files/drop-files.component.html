@@ -1,0 +1,25 @@
+<div class="main-container">
+    <mat-icon id="close-icon" (click)="closeModal()" *ngIf="!loadingDoc">close</mat-icon>
+    <div class="drop-zone" *ngIf="!loadingDoc">
+        <input 
+            multiple
+            type="file"
+            #fileDropRef
+            id="fileDropRef"
+            (change)="newFileDropped($event.target.files)">
+        <mat-icon 
+            style="
+                height: 120px;
+                width: 120px;
+                font-size: 120px;
+                position: absolute;
+                z-index: 4;
+                bottom: 52%;
+            ">file_upload
+        </mat-icon>
+        <h4 id="title-drop">Arrastra y suelta el documento aqui</h4>
+        <h6>O</h6>
+        <label id="pick-file" for="fileDropRef">Selecciona el documento</label>
+    </div>
+    <mat-spinner *ngIf="loadingDoc" diameter="100"></mat-spinner>
+</div>

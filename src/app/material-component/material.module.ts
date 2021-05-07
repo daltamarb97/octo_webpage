@@ -25,6 +25,7 @@ import { QuickResponsesDialogComponent } from './quick-responses-dialog/quick-re
 import { EditOptDialogComponent } from './editopt-dialog/editopt-dialog.component';
 import { TicketDialogComponent } from './ticket-dialog/ticket-dialog.component';
 import { ClosedTicketDialogComponent } from './closedticket-dialog/closedticket-dialog.component';
+import { DropFilesComponent } from './drop-files/drop-files.component';
 
 @NgModule({
   imports: [
@@ -52,7 +53,8 @@ import { ClosedTicketDialogComponent } from './closedticket-dialog/closedticket-
     MessageComponent,
     QuickResponsesDialogComponent,
     TicketDialogComponent,
-    ClosedTicketDialogComponent
+    ClosedTicketDialogComponent,
+    DropFilesComponent
   ]
 })
 export class MaterialComponentsModule {}

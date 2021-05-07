@@ -294,8 +294,8 @@
               </mat-card-content>
         </mat-card>
         <!-- ************** END OF DETALLES ************** -->
-        <input hidden #fileInput type="file" class="form-control" (change)="selectImage($event)" placeholder="Upload image" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
-        text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">  
+        <!-- <input hidden #fileInput type="file" class="form-control" (change)="selectImage($event)" placeholder="Upload image" accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
+        text/plain, application/pdf, image/*, .xls, .xlsx, .doc, .docx, .ppt, .pptx">   -->
     </mat-sidenav>
     <!-- CENTER PART -->
     <mat-sidenav-content id="chat-container" opened mode="side" position="end">
@@ -388,7 +388,7 @@
                                         <mat-icon (click)="sendMessage()">send</mat-icon>
                                     </button>
                                     <button mat-mini-fab color="warn">
-                                        <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
+                                        <mat-icon (click)="openDropFile()">attach_file</mat-icon>
                                     </button>
                                     <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
                                         <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
@@ -411,7 +411,8 @@
                         </div>
                     </div>
                     <div class="yes-pic" *ngIf="fileInfo">
-                        <img [src]="urlSelectedFile" alt="preview image to send"/>
+                        <img *ngIf="urlSelectedFile.typeImage" [src]="urlSelectedFile.url" alt="preview image to send"/>
+                        <img *ngIf="!urlSelectedFile.typeImage" src="../../../assets/images/dosier.png" alt="preview file type to send"/>
                     </div>
                     <input *ngIf="!iAmAssigned  && !currentChatData.finished" matInput value="Asígnate este chat para responder" readonly>
                     <input *ngIf="currentChatData.finished" matInput value="Este chat fue cerrado, envía un template para reanudar la conversación" readonly>
@@ -533,7 +534,7 @@
                                         <mat-icon (click)="sendMessage()">send</mat-icon>
                                     </button>
                                     <button mat-mini-fab color="warn">
-                                        <mat-icon (click)="fileInput.click()">attach_file</mat-icon>
+                                        <mat-icon (click)="openDropFile()">attach_file</mat-icon>
                                     </button>
                                     <button mat-mini-fab color="accent" matTooltip="Respuestas rápidas">
                                         <mat-icon (click)="showQuickResponses()">insert_comment</mat-icon>
@@ -556,7 +557,8 @@
                         </div>
                     </div>
                     <div class="yes-pic" *ngIf="fileInfo">
-                        <img [src]="urlSelectedFile" alt="preview image to send"/>
+                        <img *ngIf="urlSelectedFile.typeImage" [src]="urlSelectedFile.url" alt="preview image to send"/>
+                        <img *ngIf="!urlSelectedFile.typeImage" src="../../../assets/images/dosier.png" alt="preview file type to send"/>
                     </div>
                     <input 
                         *ngIf="templatesActivated" 
