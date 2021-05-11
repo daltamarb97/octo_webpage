@@ -721,10 +721,11 @@ allowGetChatInformation(data, assigned: boolean) {
       this.showGeneralChats = false;
   }
 
-  templateSelected(template) {
-      this.currentMessage = template;
-      this.templatesActivated = false;
-  }
+//   templateSelected(template) {
+//     //   alert('hola');
+//       this.currentMessage = template;
+//       this.templatesActivated = false;
+//   }
 
   templateSelectedClose(template) {
     this.setData.sendWhatsappMessageHttp({
@@ -1003,7 +1004,7 @@ allowGetChatInformation(data, assigned: boolean) {
                   audioChunks.push(event.data);
                 });
                 this.mediaRecorder.addEventListener("stop", () => {
-                    this.voiceNote = new Blob(audioChunks, {'type': 'audio/mpeg'});
+                    this.voiceNote = new Blob(audioChunks, {'type': 'audio/mp3'});
                     clearInterval(time);
                     if(this.saveAudio) {
                         this.sendMessage();

@@ -265,7 +265,7 @@
                    </div>
                 <!-- MENUS START -->
                 <mat-menu #templates="matMenu" class="mymegamenu" style="overflow-y: auto;">
-                    <button mat-menu-item *ngFor="let t of templatesArray" (click)="templateSelected(t)">
+                    <button mat-menu-item *ngFor="let t of templatesArray" (click)="templateSelectedClose(t)">
                         {{t}}
                     </button>
                 </mat-menu>
