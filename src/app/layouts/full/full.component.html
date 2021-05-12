@@ -60,6 +60,10 @@
         <!-- ============================================================== -->
         <app-header></app-header>
     </mat-toolbar>
+    <div class="navbar-header warning-message" *ngIf="showWarningMessage">
+        <p>Te informamos que ya han acabado los "Contactos Mensuales" de tu empresa por este mes, por lo que la plataforma no mostrará los mensajes de aquellas personas que no hayan escrito a tu empresa previamente este mes</p>
+        <mat-icon (click)="showWarningMessage = false">close</mat-icon>
+    </div>
     <!-- ============================================================== -->
     <!-- End Topbar - style you can find in pages.scss -->
     <!-- ============================================================== -->
@@ -83,7 +87,6 @@
         <mat-sidenav-content class="page-wrapper">
                  
                 <div class="page-content">
-                   
                         <router-outlet><app-spinner></app-spinner></router-outlet>
                         <!-- <router-outlet name="print"></router-outlet> -->
 

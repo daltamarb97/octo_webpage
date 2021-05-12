@@ -14,6 +14,7 @@ export class HoldDataService {
   userId:string;
   hideSpinner: boolean = false;
   currentOrder: order;
+  showWarningMessageMC: boolean = false;
   constructor(
     private db: AngularFirestore
   ) { }

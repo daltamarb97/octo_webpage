@@ -15,6 +15,7 @@ import { MenuItems } from '../../shared/menu-items/menu-items';
 import { AppHeaderComponent } from './header/header.component';
 
 import { AppSidebarComponent } from './sidebar/sidebar.component';
+import { HoldDataService } from '../../core/services/hold-data.service';
 
 /** @title Responsive sidenav */
 @Component({
@@ -24,17 +25,20 @@ import { AppSidebarComponent } from './sidebar/sidebar.component';
 })
 export class FullComponent implements OnDestroy, AfterViewInit {
   mobileQuery: MediaQueryList;
+  public showWarningMessage: boolean = false;
 
   private _mobileQueryListener: () => void;
 
   constructor(
     changeDetectorRef: ChangeDetectorRef,
     media: MediaMatcher,
-    public menuItems: MenuItems
+    public menuItems: MenuItems,
+    private holddataService: HoldDataService
   ) {
     this.mobileQuery = media.matchMedia('(min-width: 769px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
+    if (this.holddataService.showWarningMessageMC) this.showWarningMessage = true;
   }
 
   ngOnDestroy(): void {
