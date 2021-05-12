@@ -721,11 +721,10 @@ allowGetChatInformation(data, assigned: boolean) {
       this.showGeneralChats = false;
   }
 
-//   templateSelected(template) {
-//     //   alert('hola');
-//       this.currentMessage = template;
-//       this.templatesActivated = false;
-//   }
+  templateSelected(template) {
+      this.currentMessage = template;
+      this.templatesActivated = false;
+  }
 
   templateSelectedClose(template) {
     this.setData.sendWhatsappMessageHttp({

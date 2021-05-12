@@ -33,7 +33,9 @@ export const AppRoutes: Routes = [
       {
         path: 'closedchats',
         canActivate: [
-          UserinfoGuard
+          CurrentUserGuard,
+          EmailVerifiedGuardService,
+          UserinfoGuard,
         ],
         loadChildren: 
           () => import('./closedchats/closedchats.module').then(m => m.ClosedchatsModule)
