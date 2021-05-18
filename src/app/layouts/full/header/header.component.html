@@ -2,13 +2,19 @@
 <!-- ============================================================== -->
 <!-- Profile - style you can find in header.scss -->
 <!-- ============================================================== -->
+<mat-slide-toggle 
+    class="availability-toggle"
+    [checked]="available" 
+    (change)="changeAvailability()"
+    >{{ availableText }}
+</mat-slide-toggle>
 <button [matMenuTriggerFor]="profile" mat-icon-button class="m-r-10">
     <mat-icon style="color: white">settings</mat-icon>
 </button>
 <mat-menu #profile="matMenu" class="mymegamenu">
     <a class=" m-r-20 " mat-menu-item style="margin-bottom: 10px;" (click)="sendSuggestion()">Sugerencias</a>
-    <button *ngIf="!showNot && compId" mat-menu-item (click)="allowSound()">Activar sonido de Notifiaciones</button>
-    <button *ngIf="showNot && compId" mat-menu-item (click)="disallowSound()">Desactivar sonido de Notifiaciones</button>
+    <!-- <button *ngIf="!showNot" mat-menu-item (click)="allowSound()">Activar sonido de Notifiaciones</button>
+    <button *ngIf="showNot" mat-menu-item (click)="disallowSound()">Desactivar sonido de Notifiaciones</button> -->
     <a class=" m-r-20 " mat-menu-item style="margin-bottom: 10px;" href="https://octo-work.web.app/">Ir a version antigüa</a>
 </mat-menu>
 

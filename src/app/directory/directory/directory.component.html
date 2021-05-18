@@ -18,16 +18,21 @@
                     <span class="mail-desc">{{empl.email}} </span>
                 </div>    
                 <div class="actions-container">
-                    <button id="chat-button" (click)="chat(empl)" mat-mini-fab  aria-label="chat icon">
+                    <button 
+                        id="chat-button"             
+                        (click)="chat(empl)" 
+                        *ngIf="empl.userId !== user.userId"
+                        mat-mini-fab  
+                        aria-label="chat icon">
                       <mat-icon>chat</mat-icon>
                     </button>
-                    <mat-slide-toggle 
+                    <!-- <mat-slide-toggle 
                         [checked]="available" 
                         (change)="changeAvailability()"
                         *ngIf="empl.userId === user.userId"
                         >Estoy disponible
-                    </mat-slide-toggle>
-                    <div class="availability-visual" *ngIf="empl.userId != user.userId">
+                    </mat-slide-toggle> -->
+                    <div class="availability-visual">
                         <div *ngIf="empl.available" id="green-dot"></div>
                         <div *ngIf="!empl.available" id="red-dot"></div>
                         <p *ngIf="empl.available">Disponible</p>

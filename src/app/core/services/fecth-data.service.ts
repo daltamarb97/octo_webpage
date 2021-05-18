@@ -231,7 +231,7 @@ export class FecthDataService {
     .where("timestamp", "<=", timestampEnd)
     .where("finished", "==", false))
 
-    return ref.valueChanges();
+    return ref.stateChanges(['added', 'modified']);
   }
  
   getWhatsappClosedChats(companyId: string, timestampStart: any, timestampEnd: any){

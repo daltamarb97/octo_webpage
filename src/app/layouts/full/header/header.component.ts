@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { SetDataService } from '../../../core/services/set-data.service';
@@ -13,11 +13,13 @@ import { FecthDataService } from '../../../core/services/fecth-data.service';
   templateUrl: './header.component.html',
   styleUrls: []
 })
-export class AppHeaderComponent {
+export class AppHeaderComponent implements OnInit {
 
   event: Event = new Event('not');
   showNot: boolean = false;
   compId: boolean = false;
+  public available: boolean;
+  public availableText: string;
 
   constructor(
     private dialog: MatDialog,
@@ -27,26 +29,42 @@ export class AppHeaderComponent {
     private holdData: HoldDataService,
   ){
     if (this.holdData.userInfo.companyId) {
-      this.getNewMessages();
+      // this.getNewMessages();
     }
   }
 
-  getNewMessages() {
-    this.compId = true;
-    this.fetchData.getWhatsappChatsSound(this.holdData.companyInfo.companyId)
-      .subscribe(data => {
-        data.map(d => {
-          if (this.showNot) {
-            for (let i = 0; i < d.payload.doc.data().assignTo.length; i++) {
-              if (d.payload.doc.data().assignTo[i].userId === this.holdData.userId) {
-                document.documentElement.dispatchEvent(this.event);
-                break;
-              }
-            }
-          } 
-        })
-      })
+  async ngOnInit() {
+    await this._getUserAvailability()
   }
+
+  private async _getUserAvailability() {
+    const response = await this.fetchData.getUserInfoWeightOnce(this.holdData.companyInfo.companyId, this.holdData.userId).toPromise();
+    this.available = response.data().available;
+    this.availableText = this.available ? 'Disponible' : 'No Disponible';
+  }
+
+  async changeAvailability() {
+    await this.setData.changeAgentAvailability(this.holdData.companyInfo.companyId, this.holdData.userId);
+    this.available = !this.available;
+    this.availableText = this.available ? 'Disponible' : 'No Disponible';
+  }
+
+  // getNewMessages() {
+  //   this.compId = true;
+  //   this.fetchData.getWhatsappChatsSound(this.holdData.companyInfo.companyId)
+  //     .subscribe(data => {
+  //       data.map(d => {
+  //         if (this.showNot) {
+  //           for (let i = 0; i < d.payload.doc.data().assignTo.length; i++) {
+  //             if (d.payload.doc.data().assignTo[i].userId === this.holdData.userId) {
+  //               document.documentElement.dispatchEvent(this.event);
+  //               break;
+  //             }
+  //           }
+  //         } 
+  //       })
+  //     })
+  // }
 
   sendSuggestion() {
     const dialogRef = this.dialog.open(HelpDialogComponent);

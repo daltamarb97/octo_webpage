@@ -46,6 +46,8 @@ import { formatDate } from '@angular/common';
 import { addDays } from 'date-fns';
 import Swal from 'sweetalert2'
 import { DropFilesComponent } from '../../material-component/drop-files/drop-files.component';
+import { AppHeaderComponent } from '../../layouts/full/header/header.component';
+import { Howl } from 'howler';
 
 export class currentChatData {
   phoneNumber: string;
@@ -158,6 +160,8 @@ export class WhatsappComponent implements OnInit {
   responseForm: Array<string> = [];
   public showLoadingOnChatOpening: boolean = false;
   public showSpinnerOnMessageLoading: boolean = false;
+  public soundOn: boolean = false;
+  eventNot: Event = new Event('not');
   
   constructor(
       private fetchData: FecthDataService,
@@ -276,16 +280,26 @@ export class WhatsappComponent implements OnInit {
             takeUntil(this.destroy$)
         )
         .subscribe(data => {
-            this.chatWhatsapp = [];
-            this.chatWhatsappAssigned = [];
             data.forEach(d => {
-                if(!d.agent && d.finished) this.chatWhatsapp.push(d);
-                if (d.agent) {
-                    this.chatWhatsapp.push(d);
-                    for (let j = 0; j < d.assignTo.length; j++) {
-                        if (d.assignTo[j].userId === this.userId && !d.finished) {
-                            this.chatWhatsappAssigned.push(d);
+                if (d.type === 'added') {
+                    const docData = d.payload.doc.data();
+                    if(!docData.agent && docData.finished) this.chatWhatsapp.push(docData);
+                    if (docData.agent) {
+                        this.chatWhatsapp.push(docData);
+                        for (let j = 0; j < docData.assignTo.length; j++) {
+                            if (docData.assignTo[j].userId === this.userId && !docData.finished) {
+                                this.chatWhatsappAssigned.push(docData);
+                            }
                         }
+                    }
+                } else {
+                    const docData = d.payload.doc.data();
+                    if (docData.unseen && this.soundOn) document.documentElement.dispatchEvent(this.eventNot);
+                    const indexChat = this.chatWhatsapp.findIndex(item => item.number === docData.number);
+                    this.chatWhatsapp[indexChat] = docData;
+                    const indexChatAssigned = this.chatWhatsappAssigned.findIndex(item => item.number === docData.number);
+                    if (indexChatAssigned !== null && indexChatAssigned !== undefined) {
+                        this.chatWhatsappAssigned[indexChatAssigned] = docData;
                     }
                 }
             })
@@ -294,6 +308,8 @@ export class WhatsappComponent implements OnInit {
 
   dateFilter(){
     if (this.chatInfoSubscription) this.chatInfoSubscription.unsubscribe();
+    this.chatWhatsapp = [];
+    this.chatWhatsappAssigned = [];
     const timestampStart = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(this.datePick.begin);
     const timestampEnd = this.holdData.convertJSCustomDateIntoFirestoreTimestamp(this.datePick.end);
       this.chatInfoSubscription = this.fetchData.getWhatsappChats(this.companyId, timestampStart, timestampEnd)
@@ -301,23 +317,33 @@ export class WhatsappComponent implements OnInit {
             takeUntil(this.destroy$)
         )
         .subscribe(data => {
-            this.chatWhatsapp = [];
-            this.chatWhatsappAssigned = [];
             data.forEach(d => {
-                if(!d.agent && d.finished) this.chatWhatsapp.push(d);
-                if (d.agent) {
-                    this.chatWhatsapp.push(d);
-                    for (let j = 0; j < d.assignTo.length; j++) {
-                        if (d.assignTo[j].userId === this.userId && !d.finished) {
-                            this.chatWhatsappAssigned.push(d);
+                if (d.type === 'added') {
+                    const docData = d.payload.doc.data();
+                    if(!docData.agent && docData.finished) this.chatWhatsapp.push(docData);
+                    if (docData.agent) {
+                        this.chatWhatsapp.push(docData);
+                        for (let j = 0; j < docData.assignTo.length; j++) {
+                            if (docData.assignTo[j].userId === this.userId && !docData.finished) {
+                                this.chatWhatsappAssigned.push(docData);
+                            }
                         }
+                    }
+                } else {
+                    const docData = d.payload.doc.data();
+                    if (docData.unseen && this.soundOn) document.documentElement.dispatchEvent(this.eventNot);
+                    const indexChat = this.chatWhatsapp.findIndex(item => item.number === docData.number);
+                    this.chatWhatsapp[indexChat] = docData;
+                    const indexChatAssigned = this.chatWhatsappAssigned.findIndex(item => item.number === docData.number);
+                    if (indexChatAssigned !== null && indexChatAssigned !== undefined) {
+                        this.chatWhatsappAssigned[indexChatAssigned] = docData;
                     }
                 }
             })
         });
   }
 
-  private actionsAmongChatOpenings() {
+  private actionsAmongChatOpenings(data?) {
     //chat is allowed to see
     this.employeesAssignated = [];
     if (this.messageSubscription) this.messageSubscription.unsubscribe();
@@ -332,6 +358,12 @@ export class WhatsappComponent implements OnInit {
     this.showGeneralChats = false;
     this.showAssignedChats = false;
     this.showLoadingOnChatOpening = true;
+    this.chatWhatsapp.forEach((item, index) => {
+        if (item.number === data.number) this.chatWhatsapp[index].unseen = false;
+    });
+    this.chatWhatsappAssigned.forEach((item, index) => {
+        if (item.number === data.number) this.chatWhatsappAssigned[index].unseen = false;
+    });
   }
 
   async getMessagesFromChatOnclick(data, assigned: boolean) {
@@ -349,7 +381,7 @@ export class WhatsappComponent implements OnInit {
     //   this.showGeneralChats = false;
     //   this.showAssignedChats = false;
     //   this.showLoadingOnChatOpening = true;
-      this.actionsAmongChatOpenings();    
+      this.actionsAmongChatOpenings(data);    
       this.fetchData.checkWhatsapp24HourWindow({
         companyId: (this.companyId) ? this.companyId : data.companyId,
         number: data.number,
@@ -1070,4 +1102,27 @@ allowGetChatInformation(data, assigned: boolean) {
         })
     }
 
+    turnSound() {
+        this.soundOn = !this.soundOn;
+        if (this.soundOn) {
+            this.allowSound();
+        } else {
+            this.disallowSound();
+        }
+    }
+
+    private allowSound() {
+        this.soundOn = true;
+        const audioHowl = new Howl({
+          src: ['../../../assets/images/sounds/piece-of-cake.mp3']
+        });
+        document.documentElement.addEventListener("not", () => {
+          audioHowl.play();
+        })
+      }
+    
+    private disallowSound() {
+        this.soundOn = false;
+        document.documentElement.removeEventListener("not", () => {})
+      }
 }
