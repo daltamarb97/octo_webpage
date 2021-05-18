@@ -8,17 +8,25 @@
                 <h4 class="card-title  m-0 font-20 font-medium">Chats Abiertos</h4>
                 <button 
                     mat-mini-fab 
-                    color="accent" 
+                    class="octo-btn octo-fab"
                     (click)="goToTags()"
                     aria-label="dd tags button"
                     matTooltip="Agregar Tags">
                     <mat-icon>add</mat-icon>
                 </button>
+                <button 
+                    mat-mini-fab 
+                    class="octo-fab"
+                    [ngStyle]="{'background-color': soundOn ? 'green' : '#910C4E'}"
+                    (click)="turnSound()"
+                    [matTooltip]="soundOn ? 'Desactivar sonido de notificaciones' :'Activar sonido de notificaciones'">
+                    <mat-icon>{{ soundOn ? 'notifications_active' : 'notifications' }}</mat-icon>
+                </button>
             </div>
             <div style="display: flex; justify-content: center;">
                 <button 
                 mat-raised-button 
-                color="accent" 
+                class="octo-btn"
                 (click)="goToClosedChats()"
                 aria-label="dd tags button">
                 Ver chats cerrados
@@ -27,7 +35,7 @@
             
             <mat-tab-group  mat-align-tabs="center" (selectedTabChange)="onTabChanged()"> 
                 <!-- Tab 1 -->
-                <mat-tab  label="Mis chats" >   
+                <mat-tab  label="Mis chats" >
                     <mat-selection-list  [multiple]="false">   
                         <ng-container *ngFor="let chat of chatWhatsappAssigned; index as i">
                             <mat-list-option 

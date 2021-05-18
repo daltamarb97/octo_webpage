@@ -21,6 +21,7 @@
 .availability-visual{
     display: flex;
     flex-direction: row;
+    align-self: center;
     #green-dot {
         border-radius: 50%;
         background-color: green;
