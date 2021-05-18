@@ -850,6 +850,10 @@ allowGetChatInformation(data, assigned: boolean) {
         assignTo: this.currentChatData.assignTo,
         recordAssignTo: this.currentChatData.recordAssignTo,
     })
+    const indexChatRev = this.chatWhatsapp.findIndex(item => item.number === this.currentChatData.phoneNumber);
+    const indexChatAssignedRev = this.chatWhatsappAssigned.findIndex(item => item.number === this.currentChatData.phoneNumber);
+    if (indexChatRev !== -1) this.chatWhatsapp.splice(indexChatRev, 1);
+    if (indexChatAssignedRev !== -1) this.chatWhatsappAssigned.splice(indexChatAssignedRev, 1);
     // hide user interface 
     this.showDetail = false;
     this.showAssignedChats = false;
