@@ -281,14 +281,17 @@ export class WhatsappComponent implements OnInit {
         )
         .subscribe(data => {
             data.forEach(d => {
-                if (d.type === 'added') {
+                const indexChatRev = this.chatWhatsapp.findIndex(item => item.number === d.payload.doc.data().number);
+                const indexChatAssignedRev = this.chatWhatsappAssigned.findIndex(item => item.number === d.payload.doc.data().number);
+                if ((d.type === 'added' && indexChatRev === -1 && indexChatAssignedRev === -1) || 
+                    (d.type === 'modified' && indexChatRev === -1 && indexChatAssignedRev === -1)) {
                     const docData = d.payload.doc.data();
                     if(!docData.agent && docData.finished) this.chatWhatsapp.push(docData);
                     if (docData.agent) {
-                        this.chatWhatsapp.push(docData);
+                        d.type === 'added' ? this.chatWhatsapp.push(docData) : this.chatWhatsapp.unshift(docData);
                         for (let j = 0; j < docData.assignTo.length; j++) {
                             if (docData.assignTo[j].userId === this.userId && !docData.finished) {
-                                this.chatWhatsappAssigned.push(docData);
+                                d.type === 'added' ? this.chatWhatsappAssigned.push(docData) : this.chatWhatsappAssigned.unshift(docData);
                             }
                         }
                     }
@@ -318,14 +321,17 @@ export class WhatsappComponent implements OnInit {
         )
         .subscribe(data => {
             data.forEach(d => {
-                if (d.type === 'added') {
+                const indexChatRev = this.chatWhatsapp.findIndex(item => item.number === d.payload.doc.data().number);
+                const indexChatAssignedRev = this.chatWhatsappAssigned.findIndex(item => item.number === d.payload.doc.data().number);
+                if ((d.type === 'added' && indexChatRev === -1 && indexChatAssignedRev === -1) || 
+                (d.type === 'modified' && indexChatRev === -1 && indexChatAssignedRev === -1)) {
                     const docData = d.payload.doc.data();
                     if(!docData.agent && docData.finished) this.chatWhatsapp.push(docData);
                     if (docData.agent) {
-                        this.chatWhatsapp.push(docData);
+                        d.type === 'added' ? this.chatWhatsapp.push(docData) : this.chatWhatsapp.unshift(docData);
                         for (let j = 0; j < docData.assignTo.length; j++) {
                             if (docData.assignTo[j].userId === this.userId && !docData.finished) {
-                                this.chatWhatsappAssigned.push(docData);
+                                d.type === 'added' ? this.chatWhatsappAssigned.push(docData) : this.chatWhatsappAssigned.unshift(docData);
                             }
                         }
                     }
@@ -938,12 +944,15 @@ allowGetChatInformation(data, assigned: boolean) {
         });
   }
 
-  addPerson(person) {
+  async addPerson(person) {
       this.employeesAssignated.push(person);
-      this.setData.setAssignedpeople(this.companyId, this.currentChatData.phoneNumber, this.employeesAssignated, person)
+      await this.setData.setAssignedpeople(this.companyId, this.currentChatData.phoneNumber, this.employeesAssignated, person);
       this.showAssignedChats = false;
       this.showTicket = false;
-      if (person.userId === this.holdData.userId) this.showPrivateChat = true;
+      if (person.userId === this.holdData.userId) {
+          window.location.reload();
+          this.showPrivateChat = true;
+      }
       this._snackBar.open('Nueva persona agregada al chat', 'Ok', {
           duration: 5000,
       });

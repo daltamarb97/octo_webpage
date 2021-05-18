@@ -1,7 +1,7 @@
 {
   "hosting": {
     "public": "dist",
-    "site": "edutech-octo",
+    "site": "octo-chat",
     "rewrites": [
       {
         "source": "**",
