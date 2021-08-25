@@ -58,6 +58,17 @@ mat-icon {
     height: 470px;
     opacity: 0;
 }
+#title-copy {
+    margin-bottom: 15px;
+}
+#url-copy {
+    font-size: 10px;
+}
+.octo-btn {
+    margin-top: 15px;
+    background-color: #910C4E;
+    color: white;
+  }
 :host ::ng-deep .mat-progress-spinner circle, .mat-spinner circle {
     stroke: #910C4E !important;
 }

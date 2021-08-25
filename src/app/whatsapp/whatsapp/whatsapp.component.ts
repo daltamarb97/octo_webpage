@@ -250,13 +250,15 @@ export class WhatsappComponent implements OnInit {
   getWhatsappTemplateMessages() {
       // get whatsapp approve templates  
       if (this.holdData.companyInfo.api_url) {
-          this.fetchData.getWhatsappTemplates(this.companyId, true)
-              .subscribe(data => {
-                  let obj = data.data();
-                  Object.keys(obj).forEach(k => {
-                      this.templatesArray.push(obj[k]);
-                  })
-              })
+        this.fetchData.getWhatsappTemplates(this.companyId, true)
+            .subscribe(data => {
+                let obj = data.data();
+                if (obj) {
+                Object.keys(obj).forEach(k => {
+                    this.templatesArray.push(obj[k]);
+                });
+                }
+            });
       } else {
           this.fetchData.getWhatsappTemplates(this.companyId, false)
               .subscribe(data => {
@@ -583,73 +585,92 @@ allowGetChatInformation(data, assigned: boolean) {
         // upload file if file
         let mediaUrl = null;
         if (this.fileInfo) {
+            // this.urlSelectedFile.typeImage ? console.log('image') : console.log('other');
             mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.fileInfo, this.fileName);
             if (this.currentMessage.length <= 1) this.currentMessage = 'Imagen';
         }
-        //send message in specific chat
-        if (this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {
-          const data = await this.setData.sendWhatsappMessageHttp({
-              message: this.currentMessage,
-              number: this.currentChatData.phoneNumber,
-              template: this.templatesActivated,
-              companyId: this.companyId,
-              mediaUrl: mediaUrl,
-              api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
-          }).toPromise();
-          const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
-          let dataFirebase;
-          if (mediaUrl) {
-              dataFirebase = {
-                  inbound: false,
+        if (!this.fileInfo || (this.fileInfo && this.urlSelectedFile.typeImage)) {
+            //send message in specific chat
+            if (this.currentMessage !== undefined && this.currentMessage !== null && this.currentMessage.trim().length !== 0) {
+              const data = await this.setData.sendWhatsappMessageHttp({
                   message: this.currentMessage,
-                  timestamp: timestamp,
+                  number: this.currentChatData.phoneNumber,
+                  template: this.templatesActivated,
+                  companyId: this.companyId,
                   mediaUrl: mediaUrl,
-                  MediaContentType: this.fileInfo.type
+                  api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
+              }).toPromise();
+              const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
+              let dataFirebase;
+              if (mediaUrl) {
+                  dataFirebase = {
+                      inbound: false,
+                      message: this.currentMessage,
+                      timestamp: timestamp,
+                      mediaUrl: mediaUrl,
+                      MediaContentType: this.fileInfo.type
+                  }
+                  await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
+              } else {
+                  dataFirebase = {
+                      inbound: false,
+                      message: this.currentMessage,
+                      timestamp: timestamp,
+                  }
+                  await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
               }
-              await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
-          } else {
-              dataFirebase = {
-                  inbound: false,
-                  message: this.currentMessage,
-                  timestamp: timestamp,
-              }
-              await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
-          }
-          this.currentMessage = null;
-          this.fileInfo = null;
-          this.fileName = '';
-          this.showSpinner = false;
-
-        } else if(this.voiceNote) {
-          let mediaUrl;
-          let randomName = this.holdData.createRandomId();
-          randomName = `${randomName}.mpeg`
-          mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.voiceNote, randomName);
-          const data = await this.setData.sendWhatsappMessageHttp({
-              message: this.currentMessage,
-              number: this.currentChatData.phoneNumber,
-              template: this.templatesActivated,
-              companyId: this.companyId,
-              mediaUrl: mediaUrl,
-              api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
-          }).toPromise();
-          const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
-          let dataFirebase;
-          if (mediaUrl) {
-              dataFirebase = {
-                  inbound: false,
-                  message: this.currentMessage,
-                  timestamp: timestamp,
-                  mediaUrl: mediaUrl,
-                  MediaContentType: 'file'
-              }
-              await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
-          }                        
-          this.voiceNote = null;
-          this.showSpinner = false;
-        } else {
-          this.currentMessage = null;
-          this.showSpinner = false;
+              this.currentMessage = null;
+              this.fileInfo = null;
+              this.fileName = '';
+              this.showSpinner = false;
+    
+            } 
+            
+            // else if(this.voiceNote) {
+            //   let mediaUrl;
+            //   let randomName = this.holdData.createRandomId();
+            //   randomName = `${randomName}.mpeg`
+            //   mediaUrl = await this.setData.uploadMediaFile(this.companyId, this.currentChatData.phoneNumber, this.voiceNote, randomName);
+            //   const data = await this.setData.sendWhatsappMessageHttp({
+            //       message: this.currentMessage,
+            //       number: this.currentChatData.phoneNumber,
+            //       template: this.templatesActivated,
+            //       companyId: this.companyId,
+            //       mediaUrl: mediaUrl,
+            //       api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null
+            //   }).toPromise();
+            //   const timestamp = this.holdData.convertJSDateIntoFirestoreTimestamp();
+            //   let dataFirebase;
+            //   if (mediaUrl) {
+            //       dataFirebase = {
+            //           inbound: false,
+            //           message: this.currentMessage,
+            //           timestamp: timestamp,
+            //           mediaUrl: mediaUrl,
+            //           MediaContentType: 'file'
+            //       }
+            //       await this.setData.sendWhatsappMessageFirebase(this.companyId, this.currentChatData.phoneNumber, dataFirebase);
+            //   }                        
+            //   this.voiceNote = null;
+            //   this.showSpinner = false;
+            // } 
+            
+            else {
+              this.currentMessage = null;
+              this.showSpinner = false;
+            }
+        } else {
+            // there is a file different than image
+            const dialogRef = this.dialog.open(DropFilesComponent, {
+                minWidth: "200px",
+                height: "250px",
+                panelClass: 'drop-files-dialog',
+                data: {
+                    uploadFile: true,
+                    fileUrl: mediaUrl
+                }
+            });
+            this.showSpinner = false;
         }
       } catch(error) {
         if (error.status === 400) {
@@ -757,6 +778,9 @@ allowGetChatInformation(data, assigned: boolean) {
   onTabChanged() {
       this.showAssignedChats = false;
       this.showGeneralChats = false;
+      this.fileInfo = null;
+      this.urlSelectedFile = null;
+      this.currentMessage = null;
   }
 
   templateSelected(template) {
@@ -813,18 +837,18 @@ allowGetChatInformation(data, assigned: boolean) {
       window.open(url, "_blank");
   }
 
-  selectImage(file) {
-      this.fileInfo = file.target.files[0];
-      let reader = new FileReader();
-      reader.readAsDataURL(this.fileInfo);
-      reader.onload = () => {
-        this.urlSelectedFile = {
-            url: reader.result,
-            typeImage: file.target.files[0].type.includes('image') ? true : false
-        };
-      }
-      this.fileName = file.target.files[0].name;
-  }
+//   selectImage(file) {
+//       this.fileInfo = file.target.files[0];
+//       let reader = new FileReader();
+//       reader.readAsDataURL(this.fileInfo);
+//       reader.onload = () => {
+//         this.urlSelectedFile = {
+//             url: reader.result,
+//             typeImage: file.target.files[0].type.includes('image') ? true : false
+//         };
+//       }
+//       this.fileName = file.target.files[0].name;
+//   }
 
   setChatNote() {
       if (this.chatNote) {
@@ -1097,11 +1121,14 @@ allowGetChatInformation(data, assigned: boolean) {
             minWidth: "500px",
             height: "550px",
             panelClass: 'drop-files-dialog',
+            data: {
+                uploadFile: false,
+            }
         });
         dialogRef.afterClosed()
         .subscribe(result => {
             if (result.event !== 'cancel') {
-                this.fileInfo = result.files[0];
+                this.fileInfo = result.files[0];                
                 let reader = new FileReader();
                 reader.readAsDataURL(this.fileInfo);
                 reader.onload = () => {
@@ -1113,6 +1140,15 @@ allowGetChatInformation(data, assigned: boolean) {
                 this.fileName = result.files[0].name;
             }
         })
+    }
+
+    getBackgroundColorForms(chat) {
+        /**
+         * Set backgroundcolor to those chats with 'Domicilios' form for Hot Restaurante
+         */
+        if (chat.formId && chat.formId === 'fwerUhfI0IY2CMKuwgME' && this.companyId === 'AUj8qk9hf8p04kSYi6sj') {
+            return '#F6D07F';
+        }
     }
 
     turnSound() {

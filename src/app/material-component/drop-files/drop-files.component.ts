@@ -27,5 +27,9 @@ export class DropFilesComponent {
     this.dialogRef.close({event: 'picture', files: files});
   }
 
+  copyUrl() {
+    this.dialogRef.close({event: 'cancel'});
+  }
+
 }
 

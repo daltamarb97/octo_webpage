@@ -25,12 +25,12 @@
             </div>
             <div style="display: flex; justify-content: center;">
                 <button 
-                mat-raised-button 
-                class="octo-btn"
-                (click)="goToClosedChats()"
-                aria-label="dd tags button">
-                Ver chats cerrados
-            </button>
+                    mat-raised-button 
+                    class="octo-btn"
+                    (click)="goToClosedChats()"
+                    aria-label="dd tags button">
+                    Ver chats cerrados
+                </button>
             </div>
             
             <mat-tab-group  mat-align-tabs="center" (selectedTabChange)="onTabChanged()"> 
@@ -39,6 +39,7 @@
                     <mat-selection-list  [multiple]="false">   
                         <ng-container *ngFor="let chat of chatWhatsappAssigned; index as i">
                             <mat-list-option 
+                                [ngStyle]="{'background-color': getBackgroundColorForms(chat)}"
                                 aria-selected="true"
                                 class="chat-option"
                                 *ngIf="!chat.finished" 
@@ -419,8 +420,8 @@
                         </div>
                     </div>
                     <div class="yes-pic" *ngIf="fileInfo">
-                        <img *ngIf="urlSelectedFile.typeImage" [src]="urlSelectedFile.url" alt="preview image to send"/>
-                        <img *ngIf="!urlSelectedFile.typeImage" src="../../../assets/images/dosier.png" alt="preview file type to send"/>
+                        <img *ngIf="urlSelectedFile && urlSelectedFile.typeImage" [src]="urlSelectedFile.url" alt="preview image to send"/>
+                        <img *ngIf="urlSelectedFile && !urlSelectedFile.typeImage" src="../../../assets/images/dosier.png" alt="preview file type to send"/>
                     </div>
                     <input *ngIf="!iAmAssigned  && !currentChatData.finished" matInput value="Asígnate este chat para responder" readonly>
                     <input *ngIf="currentChatData.finished" matInput value="Este chat fue cerrado, envía un template para reanudar la conversación" readonly>
@@ -565,8 +566,8 @@
                         </div>
                     </div>
                     <div class="yes-pic" *ngIf="fileInfo">
-                        <img *ngIf="urlSelectedFile.typeImage" [src]="urlSelectedFile.url" alt="preview image to send"/>
-                        <img *ngIf="!urlSelectedFile.typeImage" src="../../../assets/images/dosier.png" alt="preview file type to send"/>
+                        <img *ngIf="urlSelectedFile && urlSelectedFile.typeImage" [src]="urlSelectedFile.url" alt="preview image to send"/>
+                        <img *ngIf="urlSelectedFile && !urlSelectedFile.typeImage" src="../../../assets/images/dosier.png" alt="preview file type to send"/>
                     </div>
                     <input 
                         *ngIf="templatesActivated" 
