@@ -52,6 +52,7 @@ class PickDateAdapter extends NativeDateAdapter {
 export class FormsTableComponent implements OnInit {
 
   dataSource: Array<any> = [];
+  tempDataSource: Array<any> = [];
   columnsToDisplay = ['numero','acciones'];
   companyId: string;
   companyInfo: any;
@@ -75,7 +76,15 @@ export class FormsTableComponent implements OnInit {
   // PORTHOS EXCLUSIVE
   averageRate: number;
   selectedFilter: string;
-  dataSourceTemp;
+  keyWordFilter: string;
+  gradesIndividual = {
+    five: 0,
+    four: 0,
+    three: 0,
+    two: 0,
+    one: 0,
+    zero: 0
+  }
 
   constructor(
     private fetchData: FecthDataService,
@@ -107,7 +116,7 @@ export class FormsTableComponent implements OnInit {
       this.isActive = this.fetchData.getResultsForms(this.companyId, this.currentForm)
         .subscribe(dataRta => {
           this.dataSource = dataRta;    
-                
+          this.tempDataSource = dataRta;      
         });
       formFlow = await this.fetchData.getSingleFormInfo(this.companyId, this.currentForm);
       formFlow.forEach(d => {
@@ -123,6 +132,7 @@ export class FormsTableComponent implements OnInit {
       this.currentForm.formId === 'I7vdIZKaWSs5xZuffL85' || 
       this.currentForm.formId === '341LZce0tV0SEBqj8Qqq') this.showCardsVersion = true;
     this.dataSource = [];
+    this.tempDataSource = [];
     this.datePick = null;
     // empty variables
     this.formFlow = [];
@@ -133,6 +143,7 @@ export class FormsTableComponent implements OnInit {
       this.isActive = this.fetchData.getResultsForms(this.companyId, this.currentForm)
         .subscribe(dataRta => {          
           this.dataSource = dataRta;
+          this.tempDataSource = dataRta;
         })
       formFlow = await this.fetchData.getSingleFormInfo(this.companyId, this.currentForm);
       formFlow.forEach(d => {
@@ -156,13 +167,15 @@ export class FormsTableComponent implements OnInit {
           Object.keys(dataRta).forEach(k => {
             tempArr.push(dataRta[k]);
           })
-          this.dataSource = tempArr;  
+          this.dataSource = tempArr; 
+          this.tempDataSource = tempArr; 
           this.responsesLength = this.dataSource.length;
           this.dataSource.map(d => {
             if (!this.filterCases.includes(d.punto)) {
               this.filterCases.push(d.punto);
             }
-          });                     
+          });    
+          this.filterCases.push('Todos');                 
         })
     } else {
       if (this.isActive) this.isActive.unsubscribe();
@@ -170,20 +183,47 @@ export class FormsTableComponent implements OnInit {
       this.isActive = this.fetchData.getResultsFormsWithDate(this.companyId, this.currentForm, dateToSend)
         .subscribe(dataRta => {
           this.dataSource = dataRta;
+          this.tempDataSource = dataRta; 
         })
     }
   }
 
   selectFilter(event) {
-    let rate: number = 0;
-    let counter: number = 0;
-    this.dataSource.map(d => {
-      if (d.punto === event.value) {
-        rate = rate + d.calificacion
-        counter++;
-      }
-    });
-    this.averageRate = rate / counter;
+    if (event.value !== 'Todos') {
+      this.dataSource = this.tempDataSource.filter(item => {
+        if(event.value === item.punto) return item;
+      });
+      let rate: number = 0;
+      let counter: number = 0;
+      this.tempDataSource.forEach(d => {
+        if (d.punto === event.value) {
+          rate = rate + d.calificacion
+          counter++;
+        }
+      });
+      this.responsesLength = this.dataSource.length;
+      this.averageRate = rate / counter;
+      this.getGradingTotal();
+    } else {
+      this.dataSource = this.tempDataSource;
+      this.averageRate = null;
+      this.responsesLength = this.dataSource.length;
+    }    
+  }
+
+  getGradingTotal() {
+    const five = this.dataSource.filter(item => item.calificacion === 5);
+    this.gradesIndividual.five = five.length;
+    const four = this.dataSource.filter(item => item.calificacion === 4);
+    this.gradesIndividual.four = four.length;
+    const three = this.dataSource.filter(item => item.calificacion === 3);
+    this.gradesIndividual.three = three.length;
+    const two = this.dataSource.filter(item => item.calificacion === 2);
+    this.gradesIndividual.two = two.length;
+    const one = this.dataSource.filter(item => item.calificacion === 1);
+    this.gradesIndividual.one = one.length;
+    const zero = this.dataSource.filter(item => item.calificacion === 0);
+    this.gradesIndividual.zero = zero.length;
   }
 
   convertDate(str) {
@@ -345,6 +385,15 @@ export class FormsTableComponent implements OnInit {
       responseArray.push(rta);
     }
     return responseArray;
+  }
+
+  onChangeKeyWordFilter(event) {
+    this.dataSource = this.tempDataSource.filter(item => {
+      if(this.selectedFilter === item.punto) return item;
+    });
+    this.dataSource = this.dataSource.filter(item => {
+      if (item.comentarios && item.comentarios.toLowerCase().includes(event.toLowerCase())) return item;
+    });
   }
 
 }
