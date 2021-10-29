@@ -216,8 +216,14 @@ table {
   flex-direction: row;
   justify-content: start;
   margin-top: 10px;
-  .filter-options__select {
+  .filter-options__select__container {
     width: 50%;
+    display: flex;
+    flex-direction: column;
+  }
+  .filter-options__select {
+    width: 100%;
+    margin: 10px 0;
   }
   .filter-options__text{
     margin: 10px 0 0 30px;

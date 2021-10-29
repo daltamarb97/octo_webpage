@@ -45,16 +45,28 @@
             </div>
 
             <!-- filter of points, just for porthos -->
-            <div class="filter-options" *ngIf="showTable && showCardsVersion && dataSource.length >= 1">
-                <mat-form-field class="filter-options__select" appearance="fill">
-                    <mat-label>Filtra por Punto</mat-label>
-                    <mat-select [(value)]="selectedFilter" (selectionChange)="selectFilter($event)">
-                        <mat-option *ngFor="let o of filterCases" [value]="o">{{o}}</mat-option>
-                    </mat-select>
-                </mat-form-field>
+            <div class="filter-options" *ngIf="showTable && showCardsVersion && tempDataSource.length >= 1">
+                <div class="filter-options__select__container">
+                    <mat-form-field class="filter-options__select" appearance="fill">
+                        <mat-label>Filtra por Punto</mat-label>
+                        <mat-select [(value)]="selectedFilter" (selectionChange)="selectFilter($event)">
+                            <mat-option *ngFor="let o of filterCases" [value]="o">{{o}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="filter-options__select" appearance="fill" *ngIf="selectedFilter && selectedFilter !== 'Todos'">
+                        <mat-label>Filtra por Palabra Clave</mat-label>
+                        <input matInput [(ngModel)]="keyWordFilter" (ngModelChange)="onChangeKeyWordFilter($event)">
+                    </mat-form-field>
+                </div>
                 <div class="filter-options__text">
                     <p><span class="bold-subtitle">Calificación promedio:   </span>{{averageRate | number:'1.2-2'}}</p>
                     <p><span class="bold-subtitle">Total respuestas:   </span>{{responsesLength}}</p>
+                    <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 5:   </span>{{gradesIndividual.five}}</p>
+                    <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 4:   </span>{{gradesIndividual.four}}</p>
+                    <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 3:   </span>{{gradesIndividual.three}}</p>
+                    <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 2:   </span>{{gradesIndividual.two}}</p>
+                    <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 1:   </span>{{gradesIndividual.one}}</p>
+                    <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 0:   </span>{{gradesIndividual.zero}}</p>
                 </div>
             </div>
 
