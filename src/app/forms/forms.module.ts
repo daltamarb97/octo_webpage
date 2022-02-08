@@ -7,6 +7,7 @@ import { FormsTableComponent } from './forms-table/forms-table.component';
 import { DemoMaterialModule } from '../demo-material-module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxChartsModule
   ]
 })
 export class FormModule { }

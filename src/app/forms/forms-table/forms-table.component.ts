@@ -85,6 +85,7 @@ export class FormsTableComponent implements OnInit {
     one: 0,
     zero: 0
   }
+  pieChartStatistics: {name: string, value: number}[] = [];
 
   constructor(
     private fetchData: FecthDataService,
@@ -224,6 +225,26 @@ export class FormsTableComponent implements OnInit {
     this.gradesIndividual.one = one.length;
     const zero = this.dataSource.filter(item => item.calificacion === 0);
     this.gradesIndividual.zero = zero.length;
+    if ( this.pieChartStatistics.length === 0) {
+      Object.keys(this.gradesIndividual).forEach(key => {
+        this.pieChartStatistics.push({
+          name: key,
+          value: this.gradesIndividual[key]
+        })
+      });
+    } else {
+      Object.keys(this.gradesIndividual).forEach(key => {
+        this.pieChartStatistics.forEach((item, index) => {
+          if (item.name === key) {
+            this.pieChartStatistics[index] = {
+              name: item.name,
+              value: this.gradesIndividual[key]
+            }
+          }
+        })
+      });
+      this.pieChartStatistics = [...this.pieChartStatistics];
+    }
   }
 
   convertDate(str) {
@@ -393,6 +414,11 @@ export class FormsTableComponent implements OnInit {
     });
     this.dataSource = this.dataSource.filter(item => {
       if (item.comentarios && item.comentarios.toLowerCase().includes(event.toLowerCase())) return item;
+    }).map(itemMap => {
+      return {
+        ...itemMap,
+        comentarios: itemMap.comentarios.includes(event) ? itemMap.comentarios.replace(event, `<span class=highlight>${event}</span>`) : itemMap.comentarios
+      }
     });
   }
 

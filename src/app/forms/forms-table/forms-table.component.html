@@ -61,14 +61,23 @@
                 <div class="filter-options__text">
                     <p><span class="bold-subtitle">Calificación promedio:   </span>{{averageRate | number:'1.2-2'}}</p>
                     <p><span class="bold-subtitle">Total respuestas:   </span>{{responsesLength}}</p>
-                    <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 5:   </span>{{gradesIndividual.five}}</p>
+                    <!-- <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 5:   </span>{{gradesIndividual.five}}</p>
                     <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 4:   </span>{{gradesIndividual.four}}</p>
                     <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 3:   </span>{{gradesIndividual.three}}</p>
                     <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 2:   </span>{{gradesIndividual.two}}</p>
                     <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 1:   </span>{{gradesIndividual.one}}</p>
-                    <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 0:   </span>{{gradesIndividual.zero}}</p>
+                    <p *ngIf="selectedFilter && selectedFilter !== 'Todos'"><span class="bold-subtitle">Total respuestas con calificación 0:   </span>{{gradesIndividual.zero}}</p> -->
                 </div>
             </div>
+            <!--  GRAPH HERE -->
+            <ngx-charts-pie-chart style="display: flex;"
+                *ngIf="pieChartStatistics.length && selectedFilter && selectedFilter !== 'Todos'"
+                [results]="pieChartStatistics"
+                [legend]="true"
+                [legendTitle]="'Puntos'" 
+                [view]="[800,300]"
+                [labels]="true" >
+            </ngx-charts-pie-chart>
 
             <!-- <div class="responsive-table" *ngIf="showTable && !showCardsVersion">
                 <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
@@ -156,7 +165,7 @@
                     </mat-card-header>
                     <mat-card-content class="text-center">
                         <p class="m-b-5 title-bold">Calificación:  {{d.calificacion}}</p>
-                        <small>{{d.comentarios}}</small>
+                        <small [innerHTML]="d.comentarios"></small>
                         <!-- see more details -->
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
