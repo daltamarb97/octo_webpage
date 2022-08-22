@@ -291,7 +291,7 @@ export class FecthDataService {
 
 
   checkWhatsapp24HourWindow(data) {
-      // const api_url = "http://localhost:5000/message/check-user"
+      // const api_url = "http://localhost:5001/message/check-user"
       const api_url = (data.api_url) ? `${data.api_url}/message/check-user` : "https://octo-api-wa.herokuapp.com/message/check-user"
       const finalData = {
         companyId: data.companyId,
@@ -521,11 +521,12 @@ export class FecthDataService {
 }
 
   getResultsFormsForeign(data) {
-    // const api_url = `http://localhost:5000/foreigndb/encuesta`
+    // const api_url = `http://localhost:5001/foreigndb/encuesta`
       const api_url = (data.api_url) ? `${data.api_url}/foreigndb/encuesta` : `https://octo-api-wa.herokuapp.com/foreigndb/encuesta`;
     const dates = {
       begin: data.begin,
-      end: data.end
+      end: data.end,
+      page: data.page
     }
       let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
     const req = this.httpClient.post(api_url, JSON.stringify(dates), {headers: headers, responseType: 'json'});

@@ -382,7 +382,7 @@ export class SetDataService {
 
   sendWhatsappMessageHttp(data){
      const responseId = this.holdData.createRandomId(); 
-    //  const api_url = "http://localhost:5000/message/sendFromOcto"
+    //  const api_url = "http://localhost:5001/message/sendFromOcto"
     const api_url = (data.api_url) ? `${data.api_url}/message/sendFromOcto` : "https://octo-api-wa.herokuapp.com/message/sendFromOcto";
     if(data.mediaUrl) {
         const finalData = {
@@ -973,7 +973,7 @@ export class SetDataService {
   }
 
   sendOrderUpdateHttp(data){
-    // const api_url = "http://localhost:5000/message/orderStatusNotification"
+    // const api_url = "http://localhost:5001/message/orderStatusNotification"
     const api_url = (data.api_url) ? `${data.api_url}/message/orderStatusNotification` : "https://octo-api-wa.herokuapp.com/message/orderStatusNotification";
     const finalData = {
       message: data.message,

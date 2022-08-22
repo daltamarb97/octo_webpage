@@ -85,6 +85,8 @@ export class FormsTableComponent implements OnInit {
     one: 0,
     zero: 0
   }
+  dataSourceMeta: {data: any[], total: number, maxPage: number, currentPage: number};
+  currentPage: number = 1
   pieChartStatistics: {name: string, value: number}[] = [];
 
   constructor(
@@ -157,20 +159,24 @@ export class FormsTableComponent implements OnInit {
 
   searchFields() {
     this.formFlow = [];
-    let tempArr = [];    
+    let tempArr = [];  
+    this.dataSourceMeta = null;  
     if (this.currentForm.foreign) {
       this.fetchData.getResultsFormsForeign({
         api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null,
         begin: this.convertDate(this.datePick.begin),
-        end: this.convertDate(this.datePick.end)
+        end: this.convertDate(this.datePick.end),
+        page: this.currentPage
       })
-        .subscribe(dataRta => {          
-          Object.keys(dataRta).forEach(k => {
-            tempArr.push(dataRta[k]);
+        .subscribe((dataRta: any) => {
+          console.log(dataRta)
+          this.dataSourceMeta = dataRta;    
+          Object.keys(dataRta.data).forEach(k => {
+            tempArr.push(dataRta.data[k]);
           })
           this.dataSource = tempArr; 
           this.tempDataSource = tempArr; 
-          this.responsesLength = this.dataSource.length;
+          this.responsesLength = dataRta.total;
           this.dataSource.map(d => {
             if (!this.filterCases.includes(d.punto)) {
               this.filterCases.push(d.punto);
@@ -187,6 +193,14 @@ export class FormsTableComponent implements OnInit {
           this.tempDataSource = dataRta; 
         })
     }
+  }
+
+  pageEvent(event) {
+    this.averageRate = null;
+    this.selectedFilter = 'Todos';
+    this.selectedFilter = null;
+    this.currentPage = event.pageIndex + 1;
+    this.searchFields();
   }
 
   selectFilter(event) {

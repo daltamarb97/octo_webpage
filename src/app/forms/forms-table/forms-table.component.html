@@ -184,6 +184,12 @@
                     </mat-card-actions>
                     </mat-card>
                 </div>
+                <mat-paginator
+                    [length]="dataSourceMeta?.total || 0"
+                    [pageSize]="100"
+                    (page)="pageEvent($event)"
+                    aria-label="Select page">
+                </mat-paginator>
             </div>
             <!-- form builder -->
             <div class="bubble" *ngIf="!showTable">
