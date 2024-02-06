@@ -88,7 +88,7 @@ export class FormsTableComponent implements OnInit {
   dataSourceMeta: {data: any[], total: number, maxPage: number, currentPage: number};
   currentPage: number = 1
   pieChartStatistics: {name: string, value: number}[] = [];
-
+  showLoader:boolean = false;
   constructor(
     private fetchData: FecthDataService,
     private holdData: HoldDataService,
@@ -157,19 +157,23 @@ export class FormsTableComponent implements OnInit {
     }
   }
 
-  searchFields() {
+  searchFields(currentIndex?) {
     this.formFlow = [];
     let tempArr = [];  
     this.dataSourceMeta = null;  
+    //show loader
+    this.showLoader = true;
+    setTimeout(() => {
+        this.showLoader = false;
+      }, 3000); // 3 seconds of loader
     if (this.currentForm.foreign) {
       this.fetchData.getResultsFormsForeign({
         api_url: (this.holdData.companyInfo.api_url) ? this.holdData.companyInfo.api_url : null,
         begin: this.convertDate(this.datePick.begin),
         end: this.convertDate(this.datePick.end),
-        page: this.currentPage
+        after: currentIndex ? currentIndex : null
       })
         .subscribe((dataRta: any) => {
-          console.log(dataRta)
           this.dataSourceMeta = dataRta;    
           Object.keys(dataRta.data).forEach(k => {
             tempArr.push(dataRta.data[k]);
@@ -194,8 +198,14 @@ export class FormsTableComponent implements OnInit {
         })
     }
   }
-
-  pageEvent(event) {
+  paginationButtons(position){
+  if (position === 'after'){
+      // // if the position is after, trigger the search in the foreignDB with the element of the last index    
+      let currentIndex = this.dataSource[this.dataSource.length-1].id;
+      this.searchFields(currentIndex);
+    }
+  } 
+ pageEvent(event) {
     this.averageRate = null;
     this.selectedFilter = 'Todos';
     this.selectedFilter = null;

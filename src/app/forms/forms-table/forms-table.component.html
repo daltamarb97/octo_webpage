@@ -184,12 +184,15 @@
                     </mat-card-actions>
                     </mat-card>
                 </div>
-                <mat-paginator
-                    [length]="dataSourceMeta?.total || 0"
-                    [pageSize]="100"
-                    (page)="pageEvent($event)"
-                    aria-label="Select page">
-                </mat-paginator>
+                <div *ngIf="dataSource.length >= 99" class="pagination-buttons">
+
+                    <mat-spinner *ngIf="showLoader"></mat-spinner>
+                    <button mat-mini-fab color="accent" (click)="paginationButtons('after')" matTooltip="Página siguiente">
+                        <mat-icon>navigate_next</mat-icon>
+                    </button>
+                </div>
+
+
             </div>
             <!-- form builder -->
             <div class="bubble" *ngIf="!showTable">

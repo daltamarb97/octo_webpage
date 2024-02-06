@@ -526,8 +526,8 @@ export class FecthDataService {
     const dates = {
       begin: data.begin,
       end: data.end,
-      page: data.page
-    }
+      after: data.after
+    }    
       let headers = new HttpHeaders({ 'Content-Type': 'application/JSON' });
     const req = this.httpClient.post(api_url, JSON.stringify(dates), {headers: headers, responseType: 'json'});
     return req;
